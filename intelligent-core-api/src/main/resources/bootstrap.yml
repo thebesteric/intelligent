@@ -1,0 +1,36 @@
+spring:
+  profiles:
+    active: dev
+---
+# 开发环境
+spring:
+  config:
+    activate:
+      on-profile: dev
+  cloud:
+    nacos:
+      server-addr: 127.0.0.1:8848
+      username: nacos
+      password: nacos
+---
+# 测试环境
+spring:
+  config:
+    activate:
+      on-profile: test
+  cloud:
+    nacos:
+      server-addr: 127.0.0.1:8848
+      username: nacos
+      password: nacos
+---
+# 生产环境
+spring:
+  config:
+    activate:
+      on-profile: prod
+  cloud:
+    nacos:
+      server-addr: 127.0.0.1:8848
+      username: nacos
+      password: nacos

@@ -1,0 +1,18 @@
+server:
+  port: 8888
+
+spring:
+  application:
+    name: intelligent-gateway
+
+  cloud:
+    gateway:
+      default-filters:
+        # 令牌中继，会在请求头中添加 token 向下游传递
+        - TokenRelay=
+        - DedupeResponseHeader=Access-Control-Allow-Origin
+      routes:
+        - id: intelligent-module-crm-route
+          uri: lb://intelligent-module-crm
+          predicates:
+            - Path=/crm/**

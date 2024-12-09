@@ -1,0 +1,63 @@
+spring:
+  cloud:
+    nacos:
+      # 注册中心
+      discovery:
+        namespace: 7fb21b9b-d47b-4592-80ef-637fabc5ae6a
+      # 配置中心
+      config:
+        namespace: 7fb21b9b-d47b-4592-80ef-637fabc5ae6a
+        file-extension: yml
+  datasource:
+    dynamic:
+      primary: master
+      strict: false
+      grace-destroy: true
+      datasource:
+        master:
+          type: com.zaxxer.hikari.HikariDataSource
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://localhost:3306/intelligent-oauth-server?useUnicode=true&characterEncoding=UTF-8&useSSL=false&autoReconnect=true&failOverReadOnly=false&serverTimezone=Asia/Shanghai&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull
+          username: root
+          password: root
+
+  security:
+    oauth2:
+      # 资源服务器配置
+      resource-server:
+        jwt:
+          # Jwt 中 claims 的 iss 属性，也就是 jwt 的签发地址，即认证服务器的根路径
+          # 资源服务器会进一步的配置，通过该地址获取公钥以解析 jwt
+          issuer-uri: http://localhost:6666
+      client:
+        provider:
+          # 认证服务器信息
+          oauth-server:
+            # 授权地址
+            issuer-uri: ${spring.security.oauth2.resource-server.jwt.issuer-uri}
+            authorizationUri: ${spring.security.oauth2.client.provider.oauth-server.issuer-uri}/oauth2/authorize
+            # 令牌获取地址
+            tokenUri: ${spring.security.oauth2.client.provider.oauth-server.issuer-uri}/oauth2/token
+        registration:
+          oidc-client:
+            # 认证提供者，标识由哪个认证服务器进行认证，和上面的 oauth-server 进行关联
+            provider: oauth-server
+            # 客户端名称
+            client-name: 网关服务
+            # 客户端id，从认证平台申请的客户端id
+            client-id: test-client-id
+            # 客户端秘钥
+            client-secret: secret
+            # 客户端认证方式
+            client-authentication-method: client_secret_basic
+            # 使用授权码模式获取令牌（token）
+            authorization-grant-type: authorization_code
+            # 回调地址，接收认证服务器回传 code 的接口地址
+            redirect-uri: http://${spring.application.name}:${server.port}/login/oauth2/code/oidc-client
+            scope:
+              - profile
+              - openid
+
+oauth2:
+  cors:
+    allowed-origins: "*"

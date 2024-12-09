@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.3.6</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
+    <groupId>io.github.thebesteric.project</groupId>
+    <artifactId>intelligent</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>intelligent</name>
+    <description>intelligent</description>
+    <url/>
+    <modules>
+        <module>intelligent-core</module>
+        <module>intelligent-core-api</module>
+        <module>intelligent-oauth-server</module>
+        <module>intelligent-gateway-server</module>
+        <module>intelligent-modules</module>
+        <module>intelligent-modules/intelligent-module-crm</module>
+        <module>intelligent-modules-common</module>
+
+    </modules>
+
+    <properties>
+        <java.version>17</java.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <mybatis-plus-boot-starter.version>3.5.9</mybatis-plus-boot-starter.version>
+        <mybatis-spring.version>3.0.4</mybatis-spring.version>
+        <dynamic-datasource.version>4.3.1</dynamic-datasource.version>
+        <agile.version>1.0.16.7</agile.version>
+        <spring-boot.version>3.3.6</spring-boot.version>
+        <spring-cloud.version>2023.0.3</spring-cloud.version>
+        <spring-cloud-alibaba.version>2023.0.1.3</spring-cloud-alibaba.version>
+        <mysql-connector-j.version>9.1.0</mysql-connector-j.version>
+        <jakarta-servlet-api.version>6.1.0</jakarta-servlet-api.version>
+        <netty.version>4.1.115.Final</netty.version>
+        <grpc-netty.version>1.68.2</grpc-netty.version>
+        <knife4j.version>4.5.0</knife4j.version>
+        <mapstruct.version>1.6.3</mapstruct.version>
+        <hutool.version>5.8.34</hutool.version>
+        <apache.commons.lang3.version>3.17.0</apache.commons.lang3.version>
+        <apache.commons.beanutils.version>1.9.4</apache.commons.beanutils.version>
+    </properties>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-bootstrap</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.thebesteric.framework.agile</groupId>
+            <artifactId>agile-spring-boot-starter</artifactId>
+            <version>${agile.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>${mapstruct.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct-processor</artifactId>
+            <version>${mapstruct.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>${hutool.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${apache.commons.lang3.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>${apache.commons.beanutils.version}</version>
+        </dependency>
+
+    </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-security</artifactId>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.alibaba.cloud</groupId>
+                <artifactId>spring-cloud-alibaba-dependencies</artifactId>
+                <version>${spring-cloud-alibaba.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>io.github.thebesteric.framework.agile.plugins</groupId>
+                <artifactId>logger-plugin</artifactId>
+                <version>${agile.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.github.thebesteric.framework.agile.plugins</groupId>
+                <artifactId>database-plugin</artifactId>
+                <version>${agile.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.github.thebesteric.framework.agile.plugins</groupId>
+                <artifactId>annotation-scanner-plugin</artifactId>
+                <version>${agile.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.github.thebesteric.framework.agile.wechat</groupId>
+                <artifactId>wechat-open-platform-plugin</artifactId>
+                <version>${agile.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.github.thebesteric.framework.agile.plugins</groupId>
+                <artifactId>idempotent-plugin</artifactId>
+                <version>${agile.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.github.thebesteric.framework.agile.plugins</groupId>
+                <artifactId>idempotent-plugin-redis</artifactId>
+                <version>${agile.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.github.thebesteric.framework.agile.plugins</groupId>
+                <artifactId>limiter-plugin</artifactId>
+                <version>${agile.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.github.thebesteric.framework.agile.plugins</groupId>
+                <artifactId>limiter-plugin-redis</artifactId>
+                <version>${agile.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.github.thebesteric.framework.agile.plugins</groupId>
+                <artifactId>distributed-locks-plugin</artifactId>
+                <version>${agile.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.github.thebesteric.framework.agile.plugins</groupId>
+                <artifactId>distributed-locks-plugin-redis</artifactId>
+                <version>${agile.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.mysql</groupId>
+                <artifactId>mysql-connector-j</artifactId>
+                <version>${mysql-connector-j.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+                <version>${mybatis-plus-boot-starter.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-jsqlparser</artifactId>
+                <version>${mybatis-plus-boot-starter.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>dynamic-datasource-spring-boot3-starter</artifactId>
+                <version>${dynamic-datasource.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.netty</groupId>
+                <artifactId>netty-resolver-dns-native-macos</artifactId>
+                <version>${netty.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-netty</artifactId>
+                <version>${grpc-netty.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+                <version>${knife4j.version}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+    <repositories>
+        <repository>
+            <id>huawei-cloud</id>
+            <name>huawei nexus</name>
+            <url>https://mirrors.huaweicloud.com/repository/maven/</url>
+            <layout>default</layout>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>huawei-cloud</id>
+            <name>huawei nexus</name>
+            <url>https://mirrors.huaweicloud.com/repository/maven/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <spring.profiles.active>dev</spring.profiles.active>
+            </properties>
+        </profile>
+        <profile>
+            <id>test</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <spring.profiles.active>test</spring.profiles.active>
+            </properties>
+        </profile>
+        <profile>
+            <id>prod</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <spring.profiles.active>prod</spring.profiles.active>
+            </properties>
+        </profile>
+    </profiles>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
