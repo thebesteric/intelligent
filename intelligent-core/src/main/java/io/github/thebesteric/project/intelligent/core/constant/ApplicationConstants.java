@@ -20,17 +20,58 @@ public final class ApplicationConstants extends AbstractUtils {
 
     /** 数据源 */
     public static final class DataSource extends AbstractUtils {
-        /** 主数据源 */
+        /** 主数据源（默认数据源） */
         public static final String MASTER = "master";
 
-        /** INTELLIGENT_AUTH_SERVER 数据源，对应 intelligent-auth-server 库 */
+        /** intelligent-auth-server 库 */
         public static final String INTELLIGENT_AUTH_SERVER = "intelligent-oauth-server";
 
-        /** INTELLIGENT_CORE_API 数据源，对应 intelligent-core-api 库 */
+        /** intelligent-core-api 库 */
         public static final String INTELLIGENT_CORE_API = "intelligent-core-api";
 
-        /** INTELLIGENT_MODULE_CRM 数据源，对应 intelligent-module-crm 库 */
+        /** 对应 intelligent-module-crm 库 */
         public static final String INTELLIGENT_MODULE_CRM = "intelligent-module-crm";
+
+        /** 对应 intelligent-module-crm 库 */
+        public static final String INTELLIGENT_MODULE_PRODUCT = "intelligent-module-product";
     }
+
+    /** 系统应用 */
+    public static final class Application extends AbstractUtils {
+
+        /** 服务 */
+        public static final class Server extends AbstractUtils {
+            /** 认证服务 */
+            public static final class OAuth extends AbstractUtils {
+
+            }
+
+            /** 网关服务 */
+            public static final class Gateway extends AbstractUtils {
+
+            }
+
+            /** 核心服务 */
+            public static final class CoreApi extends AbstractUtils {
+                public static final String TABLE_NAME_PREFIX = "t_core_";
+            }
+        }
+
+        /** 模块 */
+        public static final class Module extends AbstractUtils {
+
+            /** 客户管理 */
+            public static final class CRM extends AbstractUtils {
+                public static final String TABLE_NAME_PREFIX = "t_crm_";
+            }
+
+            /** 商品管理 */
+            public static final class Product extends AbstractUtils {
+                public static final String TABLE_NAME_PREFIX = "t_product_";
+            }
+        }
+
+    }
+
 
 }

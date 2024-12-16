@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.6</version>
+        <version>3.4.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
@@ -35,12 +35,11 @@
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mybatis-plus-boot-starter.version>3.5.9</mybatis-plus-boot-starter.version>
-        <mybatis-spring.version>3.0.4</mybatis-spring.version>
         <dynamic-datasource.version>4.3.1</dynamic-datasource.version>
-        <agile.version>1.0.16.7</agile.version>
-        <spring-boot.version>3.3.6</spring-boot.version>
-        <spring-cloud.version>2023.0.3</spring-cloud.version>
-        <spring-cloud-alibaba.version>2023.0.1.3</spring-cloud-alibaba.version>
+        <agile.version>1.0.17</agile.version>
+        <spring-boot.version>>3.4.0</spring-boot.version>
+        <spring-cloud.version>2024.0.0</spring-cloud.version>
+        <spring-cloud-alibaba.version>2023.0.3.2</spring-cloud-alibaba.version>
         <mysql-connector-j.version>9.1.0</mysql-connector-j.version>
         <jakarta-servlet-api.version>6.1.0</jakarta-servlet-api.version>
         <netty.version>4.1.115.Final</netty.version>

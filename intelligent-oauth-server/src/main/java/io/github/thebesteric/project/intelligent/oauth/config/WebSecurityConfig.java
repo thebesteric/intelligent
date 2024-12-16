@@ -6,6 +6,7 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import io.github.thebesteric.project.intelligent.core.constant.security.SecurityConstants;
+import io.github.thebesteric.project.intelligent.core.model.entity.core.Role;
 import io.github.thebesteric.project.intelligent.core.properties.OAuth2Properties;
 import io.github.thebesteric.project.intelligent.core.security.SecurityAccessDeniedHandler;
 import io.github.thebesteric.project.intelligent.core.security.SecurityAuthenticationEntryPoint;
@@ -13,7 +14,8 @@ import io.github.thebesteric.project.intelligent.core.security.SecurityAuthentic
 import io.github.thebesteric.project.intelligent.core.security.SecurityExceptionTranslationFilter;
 import io.github.thebesteric.project.intelligent.oauth.config.convert.PasswordGrantAuthenticationConverter;
 import io.github.thebesteric.project.intelligent.oauth.config.convert.PasswordGrantAuthenticationProvider;
-import io.github.thebesteric.project.intelligent.oauth.mapper.ShadowUserMapper;
+import io.github.thebesteric.project.intelligent.oauth.model.domain.UserDomain;
+import io.github.thebesteric.project.intelligent.oauth.service.UserDetailsManager;
 import org.apache.catalina.util.StandardSessionIdGenerator;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.context.annotation.Bean;
@@ -27,6 +29,8 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -58,7 +62,9 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.text.ParseException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -83,33 +89,23 @@ public class WebSecurityConfig {
                                                                       OAuth2AuthorizationService authorizationService,
                                                                       OAuth2TokenGenerator<?> tokenGenerator) throws Exception {
 
-        // OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = OAuth2AuthorizationServerConfigurer.authorizationServer();
-        // http.securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
-        //         .with(authorizationServerConfigurer, (authorizationServer) ->
-        //                 // 配置 Token 生成策略
-        //                 authorizationServer.tokenEndpoint(tokenEndpoint -> {
-        //                             tokenEndpoint.accessTokenRequestConverter(new PasswordGrantAuthenticationConverter());
-        //                             tokenEndpoint.authenticationProvider(new PasswordGrantAuthenticationProvider(userDetailsService, passwordEncoder, authorizationService, tokenGenerator));
-        //                         })
-        //                         // 开启 OpenID Connect 1.0
-        //                         .oidc(Customizer.withDefaults())
-        //         );
-
-        // 将默认的 OAuth2 security configuration 应用到 HttpSecurity
-        OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(httpSecurity);
-
-        httpSecurity.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
-                .clientAuthentication(clientAuthentication ->
-                        // 客户端异常处理
-                        clientAuthentication.errorResponseHandler(new SecurityAuthenticationFailureHandler())
-                )
-                // 配置密码模式
-                .tokenEndpoint(tokenEndpoint -> tokenEndpoint
-                        .accessTokenRequestConverters(authenticationConverters -> authenticationConverters.add(new PasswordGrantAuthenticationConverter()))
-                        .authenticationProviders(authenticationProviders -> authenticationProviders.add(new PasswordGrantAuthenticationProvider(userDetailsService, passwordEncoder, authorizationService, tokenGenerator)))
-                        .errorResponseHandler(new SecurityAuthenticationFailureHandler()))
-                // 开启 OpenID Connect 1.0，oidc 就是 OpenID Connect 的缩写
-                .oidc(Customizer.withDefaults());
+        OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = OAuth2AuthorizationServerConfigurer.authorizationServer();
+        httpSecurity.securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
+                .with(authorizationServerConfigurer, (authorizationServer) -> {
+                            authorizationServer.clientAuthentication(clientAuthentication -> {
+                                // 客户端异常处理
+                                clientAuthentication.errorResponseHandler(new SecurityAuthenticationFailureHandler());
+                            });
+                            // 配置 Token 生成策略
+                            authorizationServer.tokenEndpoint(tokenEndpoint -> {
+                                        tokenEndpoint.accessTokenRequestConverter(new PasswordGrantAuthenticationConverter());
+                                        tokenEndpoint.authenticationProvider(new PasswordGrantAuthenticationProvider(userDetailsService, passwordEncoder, authorizationService, tokenGenerator));
+                                        tokenEndpoint.errorResponseHandler(new SecurityAuthenticationFailureHandler());
+                                    })
+                                    // 开启 OpenID Connect 1.0
+                                    .oidc(Customizer.withDefaults());
+                        }
+                );
 
         httpSecurity
                 // 在 ExceptionTranslationFilter 过滤器之前加入 SecurityExceptionTranslationFilter 过滤器
@@ -192,8 +188,8 @@ public class WebSecurityConfig {
      * 基于数据库的用户信息
      */
     @Bean
-    public UserDetailsService userDetailsService(ShadowUserMapper shadowUserMapper) {
-        return new InDBUserDetailsManager(shadowUserMapper);
+    public UserDetailsService userDetailsService() {
+        return new UserDetailsManager();
     }
 
     /**
@@ -300,19 +296,38 @@ public class WebSecurityConfig {
     @Bean
     public OAuth2TokenCustomizer<JwtEncodingContext> jwtCustomizer() {
         return context -> {
+            OAuth2TokenType tokenType = context.getTokenType();
+            Authentication authentication = context.getPrincipal();
+            UserDomain userDomain = (UserDomain) authentication.getPrincipal();
+            if (tokenType.equals(OAuth2TokenType.ACCESS_TOKEN) || tokenType.getValue().equals(OidcParameterNames.ID_TOKEN)) {
+                List<GrantedAuthority> authorities = userDomain.getAuthorities();
+                List<String> roleCodes = userDomain.getRoles().stream().map(Role::getCode).toList();
 
-            if (context.getTokenType().equals(OAuth2TokenType.ACCESS_TOKEN) || context.getTokenType().getValue().equals(OidcParameterNames.ID_TOKEN)) {
                 // Customize headers/claims for access_token
                 JwsHeader.Builder headers = context.getJwsHeader();
+                headers.header("created", "intelligent");
 
                 JwtClaimsSet.Builder claims = context.getClaims();
                 // Customize headers/claims for id_token
                 claims.claim(IdTokenClaimNames.AUTH_TIME, Date.from(Instant.now()));
-                StandardSessionIdGenerator standardSessionIdGenerator = new StandardSessionIdGenerator();
-                claims.claim("sid", standardSessionIdGenerator.generateSessionId());
-
+                claims.claim(SecurityConstants.CLAIM_IDENTITY, userDomain.getId());
+                claims.claim(SecurityConstants.CLAIM_SID, new StandardSessionIdGenerator().generateSessionId());
+                claims.claim(SecurityConstants.CLAIM_ROLES, clone(roleCodes));
+                claims.claim(SecurityConstants.CLAIM_AUTHORITIES, clone(authorities.stream().map(GrantedAuthority::getAuthority).toList()));
             }
         };
+    }
+
+    /**
+     * 克隆
+     * 解决：The class with java.util.ImmutableCollections$ListN and name of java.util.ImmutableCollections$ListN is not in the allowList 问题
+     */
+    private List<String> clone(List<String> rawList) {
+        List<String> cloneList = new ArrayList<>();
+        if (rawList != null && !rawList.isEmpty()) {
+            cloneList.addAll(rawList);
+        }
+        return cloneList;
     }
 
 }

@@ -27,6 +27,7 @@ public final class SecurityConstants {
     public static final String AUTH_SOURCE = "auth_source";
 
     /** CLAIM 设置 */
+    public static final String CLAIM_SID = "sid";
     public static final String CLAIM_AUTHORITIES = "authorities";
     public static final String CLAIM_ROLES = "roles";
     public static final String CLAIM_SCOPE = "scope";

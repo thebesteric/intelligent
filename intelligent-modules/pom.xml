@@ -16,6 +16,7 @@
     <url>http://maven.apache.org</url>
 
     <modules>
+        <module>intelligent-module-product</module>
     </modules>
 
     <dependencies>
@@ -23,6 +24,12 @@
         <dependency>
             <groupId>io.github.thebesteric.project</groupId>
             <artifactId>intelligent-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.thebesteric.project</groupId>
+            <artifactId>intelligent-modules-common</artifactId>
             <version>${project.version}</version>
         </dependency>
 
