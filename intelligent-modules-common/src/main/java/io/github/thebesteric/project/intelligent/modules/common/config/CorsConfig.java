@@ -1,4 +1,4 @@
-package io.github.thebesteric.project.intelligent.core.config;
+package io.github.thebesteric.project.intelligent.modules.common.config;
 
 import io.github.thebesteric.project.intelligent.core.annotation.ConditionalOnProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

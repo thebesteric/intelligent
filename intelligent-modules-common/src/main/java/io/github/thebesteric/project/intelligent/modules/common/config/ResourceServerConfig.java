@@ -1,4 +1,4 @@
-package io.github.thebesteric.project.intelligent.core.config;
+package io.github.thebesteric.project.intelligent.modules.common.config;
 
 import io.github.thebesteric.framework.agile.commons.util.CollectionUtils;
 import io.github.thebesteric.framework.agile.plugins.annotation.scanner.AnnotationParasiticContext;
