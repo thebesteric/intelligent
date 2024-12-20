@@ -1,7 +1,10 @@
 package io.github.thebesteric.project.intelligent.core.base;
 
 import io.github.thebesteric.project.intelligent.core.exception.BizException;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.vavr.control.Try;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.BeanUtils;
 
 import java.io.Serial;
@@ -16,9 +19,14 @@ import java.lang.reflect.Type;
  * @version v1.0
  * @since 2024-12-04 17:10:25
  */
+@Getter
+@Setter
 public abstract class BaseRequest<T extends BaseEntity> implements Serializable {
     @Serial
     private static final long serialVersionUID = -5167786334495406870L;
+
+    @Schema(description = "租户 ID", hidden = true)
+    private String tenantId;
 
     public T transform(String... ignoreProperties) {
         return Try.of(() -> {

@@ -2,6 +2,8 @@ package io.github.thebesteric.project.intelligent.module.product.controller;
 
 import io.github.thebesteric.framework.agile.core.domain.R;
 import io.github.thebesteric.framework.agile.plugins.logger.annotation.AgileLogger;
+import io.github.thebesteric.project.intelligent.modules.common.model.domain.product.request.BrandCreateRequest;
+import io.github.thebesteric.project.intelligent.modules.common.model.domain.product.request.BrandUpdateRequest;
 import io.github.thebesteric.project.intelligent.modules.common.model.domain.product.response.BrandResponse;
 import io.github.thebesteric.project.intelligent.modules.common.service.product.BrandService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,10 +11,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -38,6 +38,28 @@ public class ProductBrandController {
     @Parameter(name = "firstLetter", description = "首字母")
     public R<List<BrandResponse>> list(@RequestParam(required = false) String firstLetter) {
         return R.success(brandService.list(firstLetter));
+    }
+
+    @PostMapping("/create")
+    @Operation(summary = "创建品牌")
+    public R<Void> create(@Validated @RequestBody BrandCreateRequest createRequest) {
+        brandService.create(createRequest);
+        return R.success();
+    }
+
+    @PostMapping("/update")
+    @Operation(summary = "更新品牌")
+    public R<Void> update(@Validated @RequestBody BrandUpdateRequest updateRequest) {
+        brandService.update(updateRequest);
+        return R.success();
+    }
+
+    @GetMapping("/delete")
+    @Operation(summary = "删除品牌")
+    @Parameter(name = "id", description = "ID")
+    public R<Void> delete(@RequestParam Long id) {
+        brandService.delete(id);
+        return R.success();
     }
 
 }

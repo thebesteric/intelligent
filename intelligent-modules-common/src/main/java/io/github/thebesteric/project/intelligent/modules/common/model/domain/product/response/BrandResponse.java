@@ -40,4 +40,7 @@ public class BrandResponse extends BaseResponse<Brand> {
     @Schema(description = "图标 ID")
     private Long iconImageId;
 
+    @Schema(description = "状态：0-禁用，1-启用")
+    protected Integer state;
+
 }

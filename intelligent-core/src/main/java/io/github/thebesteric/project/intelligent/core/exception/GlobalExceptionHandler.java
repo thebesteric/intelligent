@@ -15,6 +15,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.support.WebExchangeBindException;
@@ -60,6 +61,17 @@ public class GlobalExceptionHandler {
         if (log.isTraceEnabled()) {
             log.trace(ex.getMessage(), ex);
         }
+        return R.error(HttpStatus.BAD_REQUEST.value(), message);
+    }
+
+    @ExceptionHandler(value = MissingServletRequestParameterException.class)
+    public R<String> handleException(MissingServletRequestParameterException ex) {
+        String parameterName = ex.getParameterName();
+        String parameterType = ex.getParameterType();
+        if (log.isTraceEnabled()) {
+            log.trace(ex.getMessage(), ex);
+        }
+        String message = String.format("缺少类型为 %s 的参数: %s", parameterType, parameterName);
         return R.error(HttpStatus.BAD_REQUEST.value(), message);
     }
 
