@@ -1,7 +1,7 @@
 package io.github.thebesteric.project.intelligent.core.api.initializer;
 
 import io.github.thebesteric.project.intelligent.core.initializer.AbstractApplicationInitializer;
-import io.github.thebesteric.project.intelligent.core.service.*;
+import io.github.thebesteric.project.intelligent.core.service.core.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

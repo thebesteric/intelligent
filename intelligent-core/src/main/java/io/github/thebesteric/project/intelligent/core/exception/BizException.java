@@ -73,7 +73,7 @@ public class BizException extends RuntimeException {
         BAD_REQUEST("40", "000", "错误的请求"),
         INVALID_PARAMETER_ERROR("40", "001", "参数校验异常"),
         DATA_ALREADY_EXISTS("40", "002", "数据已存在，请核实"),
-        DATA_NOT_EXISTS("40", "003", "数据不存在，请核实"),
+        DATA_NOT_FOUND("40", "003", "数据不存在，请核实"),
         DATA_VALID_ERROR("40", "004", "数据校验异常"),
         ILLEGAL_REQUEST("40", "999", "非法的请求"),
 

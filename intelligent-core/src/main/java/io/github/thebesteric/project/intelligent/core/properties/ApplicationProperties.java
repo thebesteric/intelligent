@@ -1,7 +1,5 @@
 package io.github.thebesteric.project.intelligent.core.properties;
 
-import io.github.thebesteric.project.intelligent.core.constant.security.AuthSource;
-import io.github.thebesteric.project.intelligent.core.constant.security.AuthType;
 import io.github.thebesteric.project.intelligent.core.constant.security.GrantType;
 import io.github.thebesteric.project.intelligent.core.constant.security.Scope;
 import io.github.thebesteric.project.intelligent.core.model.domain.security.request.OAuth2TokenRequest;
@@ -98,7 +96,7 @@ public class ApplicationProperties {
             public static class Contact {
                 private String name;
                 private String email = "whatisjava@hotmail.com";
-                private String url = "http://doc.xiaominfo.com";
+                private String url = "https://doc.xiaominfo.com";
             }
 
             @Data
@@ -106,7 +104,7 @@ public class ApplicationProperties {
                 private String title = "服务 API 接口文档";
                 private String version = "1.0";
                 private String description;
-                private String termsOfService = "http://doc.xiaominfo.com";
+                private String termsOfService = "https://doc.xiaominfo.com";
                 @NestedConfigurationProperty
                 private License license;
             }
@@ -114,7 +112,7 @@ public class ApplicationProperties {
             @Data
             public static class License {
                 private String name = "Apache 2.0";
-                private String url = "http://www.apache.org/licenses/LICENSE-2.0.html";
+                private String url = "https://www.apache.org/licenses/LICENSE-2.0.html";
             }
         }
 
@@ -168,17 +166,13 @@ public class ApplicationProperties {
         private String issuerUri;
         /** 认证类型 */
         private GrantType grantType = GrantType.GRANT_TYPE_PASSWORD;
-        /** 认证源 */
-        private AuthSource authSource = AuthSource.PMS;
-        /** 认证类型 */
-        private AuthType authType = AuthType.PASSWORD;
         /** 权限范围 */
         private List<Scope> scopes = List.of(Scope.PROFILE, Scope.OPENID);
         /** 认证客户端 */
         private ClientInfo clientInfo;
 
         public String getTokenUri(String username, String password) {
-            OAuth2TokenRequest oAuth2TokenRequest = OAuth2TokenRequest.of(username, password, grantType, authType, authSource, scopes);
+            OAuth2TokenRequest oAuth2TokenRequest = OAuth2TokenRequest.of(username, password, grantType, scopes);
             return getTokenUri(oAuth2TokenRequest);
         }
 
@@ -188,8 +182,6 @@ public class ApplicationProperties {
             params.put("password", tokenRequest.getPassword());
             params.put("grant_type", tokenRequest.getGrantType());
             params.put("scope", tokenRequest.getScope());
-            params.put("auth_source", tokenRequest.getAuthSource());
-            params.put("auth_type", tokenRequest.getAuthType());
             String queryString = toQueryString(params);
             return issuerUri + "/oauth2/token?" + queryString;
         }

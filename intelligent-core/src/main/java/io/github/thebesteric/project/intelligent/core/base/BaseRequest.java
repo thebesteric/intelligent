@@ -6,6 +6,8 @@ import org.springframework.beans.BeanUtils;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
 /**
  * BaseRequest
@@ -18,9 +20,9 @@ public abstract class BaseRequest<T extends BaseEntity> implements Serializable 
     @Serial
     private static final long serialVersionUID = -5167786334495406870L;
 
-    public T transform(Class<T> clazz, String... ignoreProperties) {
+    public T transform(String... ignoreProperties) {
         return Try.of(() -> {
-            T target = clazz.getConstructor().newInstance();
+            T target = getEntityClass().getConstructor().newInstance();
             BeanUtils.copyProperties(this, target, ignoreProperties);
             return target;
         }).onFailure(e -> {
@@ -33,5 +35,22 @@ public abstract class BaseRequest<T extends BaseEntity> implements Serializable 
         return target;
     }
 
+    @SuppressWarnings("unchecked")
+    public Class<T> getEntityClass() {
+        Class<?> clazz = getClass();
+        Type genericSuperclass;
+        do {
+            genericSuperclass = clazz.getGenericSuperclass();
+            clazz = clazz.getSuperclass();
+        } while (clazz != BaseRequest.class && clazz != Object.class);
+
+        if (genericSuperclass instanceof ParameterizedType parameterizedType) {
+            Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+            if (actualTypeArguments.length > 0) {
+                return (Class<T>) actualTypeArguments[0];
+            }
+        }
+        return null;
+    }
 
 }

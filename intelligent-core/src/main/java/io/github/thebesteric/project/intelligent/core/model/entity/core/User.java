@@ -3,9 +3,9 @@ package io.github.thebesteric.project.intelligent.core.model.entity.core;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.github.thebesteric.framework.agile.plugins.database.core.annotation.EntityClass;
 import io.github.thebesteric.framework.agile.plugins.database.core.annotation.EntityColumn;
+import io.github.thebesteric.project.intelligent.core.base.BaseTenantBizEntity;
 import io.github.thebesteric.project.intelligent.core.constant.ApplicationConstants;
 import io.github.thebesteric.project.intelligent.core.constant.UserType;
-import io.github.thebesteric.project.intelligent.core.base.BaseTenantBizEntity;
 import io.github.thebesteric.project.intelligent.core.util.BCryptUtils;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -34,7 +34,7 @@ public class User extends BaseTenantBizEntity {
     @EntityColumn(length = 64, nullable = false, comment = "用户名")
     private String username;
 
-    @EntityColumn(length = 64, nullable = false, comment = "密码")
+    @EntityColumn(length = 128, nullable = false, comment = "密码")
     private String password;
 
     @EntityColumn(length = 32, comment = "姓名")

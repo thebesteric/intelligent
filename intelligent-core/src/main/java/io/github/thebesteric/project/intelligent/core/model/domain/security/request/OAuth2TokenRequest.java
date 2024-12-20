@@ -1,7 +1,5 @@
 package io.github.thebesteric.project.intelligent.core.model.domain.security.request;
 
-import io.github.thebesteric.project.intelligent.core.constant.security.AuthSource;
-import io.github.thebesteric.project.intelligent.core.constant.security.AuthType;
 import io.github.thebesteric.project.intelligent.core.constant.security.GrantType;
 import io.github.thebesteric.project.intelligent.core.constant.security.Scope;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -36,14 +34,6 @@ public class OAuth2TokenRequest implements Serializable {
     @Schema(name = "grant_type", description = "授权类型", enumAsRef = true)
     private String grantType = GrantType.GRANT_TYPE_PASSWORD.getType();
 
-    @NotNull(message = "认证模式不能为空")
-    @Schema(name = "auth_type", description = "认证模式")
-    private String authType = AuthType.PASSWORD.getType();
-
-    @NotNull(message = "认证源不能为空")
-    @Schema(name = "auth_source", description = "认证源")
-    private String authSource = AuthSource.PMS.getSource();
-
     @NotBlank(message = "授权范围不能为空")
     private String scope = "profile openid";
 
@@ -54,11 +44,9 @@ public class OAuth2TokenRequest implements Serializable {
         return tokenRequest;
     }
 
-    public static OAuth2TokenRequest of(String username, String password, GrantType grantType, AuthType authType, AuthSource authSource, List<Scope> scopes) {
+    public static OAuth2TokenRequest of(String username, String password, GrantType grantType, List<Scope> scopes) {
         OAuth2TokenRequest tokenRequest = of(username, password);
         tokenRequest.grantType = grantType.getType();
-        tokenRequest.authType = authType.getType();
-        tokenRequest.authSource = authSource.getSource();
         tokenRequest.scope = scopes.stream().map(Scope::getName).collect(Collectors.joining(" "));
         return tokenRequest;
     }

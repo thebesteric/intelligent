@@ -12,6 +12,9 @@ spring:
       server-addr: 127.0.0.1:8848
       username: nacos
       password: nacos
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 ---
 # 测试环境
 spring:
@@ -23,6 +26,9 @@ spring:
       server-addr: 127.0.0.1:8848
       username: nacos
       password: nacos
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 ---
 # 生产环境
 spring:

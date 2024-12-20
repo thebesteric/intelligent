@@ -31,17 +31,16 @@ public final class SecurityConstants {
     public static final String CLAIM_AUTHORITIES = "authorities";
     public static final String CLAIM_ROLES = "roles";
     public static final String CLAIM_SCOPE = "scope";
-    public static final String CLAIM_IDENTITY = "identity";
-    public static final String CLAIM_USERNAME = "username";
-    public static final String CLAIM_AUTH_TYPE = "auth_type";
-    public static final String CLAIM_AUTH_SOURCE= "auth_source";
-    public static final String CLAIM_EXTRA = "extra";
     public static final String CLAIM_ISSUER = "iss";
     public static final String CLAIM_ISSUED_AT = "iat";
     public static final String CLAIM_EXPIRE = "exp";
     public static final String CLAIM_SUBJECT = "sub";
     public static final String CLAIM_AUDIENCE = "aud";
     public static final String CLAIM_NOT_BEFORE = "nbf";
+    public static final String CLAIM_IDENTITY = "identity";
+    public static final String CLAIM_USERNAME = "username";
+    public static final String CLAIM_TENANT_ID = "tenant_id";
+    public static final String CLAIM_EXTRA = "extra";
 
     /** 授权范围 */
     public static final class Scope {

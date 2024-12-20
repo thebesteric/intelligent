@@ -20,7 +20,7 @@ public enum RoleType {
     private final String desc;
 
     public static RoleType of(String code) {
-        return Arrays.stream(values()).filter(i -> i.code.equals(code)).findFirst().orElse(null);
+        return Arrays.stream(values()).filter(i -> i.code.equalsIgnoreCase(code)).findFirst().orElse(null);
     }
 
 }

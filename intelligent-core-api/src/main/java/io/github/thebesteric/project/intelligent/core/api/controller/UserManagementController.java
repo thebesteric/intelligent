@@ -3,7 +3,7 @@ package io.github.thebesteric.project.intelligent.core.api.controller;
 import io.github.thebesteric.framework.agile.core.domain.R;
 import io.github.thebesteric.project.intelligent.core.model.domain.core.request.UserCreateRequest;
 import io.github.thebesteric.project.intelligent.core.model.domain.core.request.UserUpdateRequest;
-import io.github.thebesteric.project.intelligent.core.service.UserService;
+import io.github.thebesteric.project.intelligent.core.service.core.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,7 @@
 package io.github.thebesteric.project.intelligent.core.generator;
 
 import io.github.thebesteric.project.intelligent.core.exception.BizException;
-import io.github.thebesteric.project.intelligent.core.service.PrivilegeService;
+import io.github.thebesteric.project.intelligent.core.service.core.PrivilegeService;
 import io.github.thebesteric.project.intelligent.core.util.code.AbstractDictShortCodeGenerator;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;

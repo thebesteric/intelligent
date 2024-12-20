@@ -14,8 +14,7 @@ import java.util.Arrays;
 @Getter
 @AllArgsConstructor
 public enum DeviceType {
-    // PC、APP、MP (小程序)
-    PC("PC", "WEB 端"),
+    PC("PC", "PC"),
     APP("APP", "APP"),
     H5("H5", "H5"),
     MP("MP", "小程序");

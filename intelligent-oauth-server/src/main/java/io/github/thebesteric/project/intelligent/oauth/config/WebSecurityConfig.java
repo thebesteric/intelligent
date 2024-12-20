@@ -89,23 +89,41 @@ public class WebSecurityConfig {
                                                                       OAuth2AuthorizationService authorizationService,
                                                                       OAuth2TokenGenerator<?> tokenGenerator) throws Exception {
 
-        OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = OAuth2AuthorizationServerConfigurer.authorizationServer();
-        httpSecurity.securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
-                .with(authorizationServerConfigurer, (authorizationServer) -> {
-                            authorizationServer.clientAuthentication(clientAuthentication -> {
-                                // 客户端异常处理
-                                clientAuthentication.errorResponseHandler(new SecurityAuthenticationFailureHandler());
-                            });
-                            // 配置 Token 生成策略
-                            authorizationServer.tokenEndpoint(tokenEndpoint -> {
-                                        tokenEndpoint.accessTokenRequestConverter(new PasswordGrantAuthenticationConverter());
-                                        tokenEndpoint.authenticationProvider(new PasswordGrantAuthenticationProvider(userDetailsService, passwordEncoder, authorizationService, tokenGenerator));
-                                        tokenEndpoint.errorResponseHandler(new SecurityAuthenticationFailureHandler());
-                                    })
-                                    // 开启 OpenID Connect 1.0
-                                    .oidc(Customizer.withDefaults());
-                        }
-                );
+        // FOR Spring Boot 3.4.x
+        // OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = OAuth2AuthorizationServerConfigurer.authorizationServer();
+        // httpSecurity.securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
+        //         .with(authorizationServerConfigurer, (authorizationServer) -> {
+        //                     authorizationServer.clientAuthentication(clientAuthentication -> {
+        //                         // 客户端异常处理
+        //                         clientAuthentication.errorResponseHandler(new SecurityAuthenticationFailureHandler());
+        //                     });
+        //                     // 配置 Token 生成策略
+        //                     authorizationServer.tokenEndpoint(tokenEndpoint -> {
+        //                                 tokenEndpoint.accessTokenRequestConverter(new PasswordGrantAuthenticationConverter());
+        //                                 tokenEndpoint.authenticationProvider(new PasswordGrantAuthenticationProvider(userDetailsService, passwordEncoder, authorizationService, tokenGenerator));
+        //                                 tokenEndpoint.errorResponseHandler(new SecurityAuthenticationFailureHandler());
+        //                             })
+        //                             // 开启 OpenID Connect 1.0
+        //                             .oidc(Customizer.withDefaults());
+        //                 }
+        //         );
+
+        // For Spring Boot 3.3.x
+        // 将默认的 OAuth2 security configuration 应用到 HttpSecurity
+        OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(httpSecurity);
+
+        httpSecurity.getConfigurer(OAuth2AuthorizationServerConfigurer.class)
+                .clientAuthentication(clientAuthentication ->
+                        // 客户端异常处理
+                        clientAuthentication.errorResponseHandler(new SecurityAuthenticationFailureHandler())
+                )
+                // 配置密码模式
+                .tokenEndpoint(tokenEndpoint -> tokenEndpoint
+                        .accessTokenRequestConverters(authenticationConverters -> authenticationConverters.add(new PasswordGrantAuthenticationConverter()))
+                        .authenticationProviders(authenticationProviders -> authenticationProviders.add(new PasswordGrantAuthenticationProvider(userDetailsService, passwordEncoder, authorizationService, tokenGenerator)))
+                        .errorResponseHandler(new SecurityAuthenticationFailureHandler()))
+                // 开启 OpenID Connect 1.0，oidc 就是 OpenID Connect 的缩写
+                .oidc(Customizer.withDefaults());
 
         httpSecurity
                 // 在 ExceptionTranslationFilter 过滤器之前加入 SecurityExceptionTranslationFilter 过滤器
@@ -311,6 +329,8 @@ public class WebSecurityConfig {
                 // Customize headers/claims for id_token
                 claims.claim(IdTokenClaimNames.AUTH_TIME, Date.from(Instant.now()));
                 claims.claim(SecurityConstants.CLAIM_IDENTITY, userDomain.getId());
+                claims.claim(SecurityConstants.CLAIM_USERNAME, userDomain.getUsername());
+                claims.claim(SecurityConstants.CLAIM_TENANT_ID, userDomain.getTenantId());
                 claims.claim(SecurityConstants.CLAIM_SID, new StandardSessionIdGenerator().generateSessionId());
                 claims.claim(SecurityConstants.CLAIM_ROLES, clone(roleCodes));
                 claims.claim(SecurityConstants.CLAIM_AUTHORITIES, clone(authorities.stream().map(GrantedAuthority::getAuthority).toList()));

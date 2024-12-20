@@ -21,7 +21,7 @@ public enum NodeType {
     private final String desc;
 
     public static NodeType of(String code) {
-        return Arrays.stream(values()).filter(i -> i.code.equals(code)).findFirst().orElse(null);
+        return Arrays.stream(values()).filter(i -> i.code.equalsIgnoreCase(code)).findFirst().orElse(null);
     }
 
 }

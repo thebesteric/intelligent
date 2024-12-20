@@ -28,3 +28,13 @@ sourceflag:
       show-sql: true
       ddl-auto: update
       delete-column: false
+
+application:
+  components:
+    swagger:
+      enable: true
+    caching:
+      enable: true
+      entry-ttl: 3600s
+      cache-type: redis
+      cache-name-suffix: ${application.name:}

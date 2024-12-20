@@ -5,6 +5,7 @@ import io.github.thebesteric.project.intelligent.core.constant.UserType;
 import io.github.thebesteric.project.intelligent.core.model.entity.core.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -28,11 +29,12 @@ public class UserCreateRequest extends BaseRequest<User> {
     private String id;
 
     @Schema(description = "用户名")
-    @NotBlank
+    @NotBlank(message = "用户名不能为空")
     private String username;
 
     @Schema(description = "密码")
-    @NotBlank
+    @NotBlank(message = "密码不能为空")
+    @Size(min = 6, max = 20, message = "密码长度在 6-20 位之间")
     private String password;
 
     @Schema(description = "姓名")

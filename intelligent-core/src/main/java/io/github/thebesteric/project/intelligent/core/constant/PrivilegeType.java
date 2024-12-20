@@ -22,7 +22,7 @@ public enum PrivilegeType {
     private final String desc;
 
     public static PrivilegeType of(String code) {
-        return Arrays.stream(values()).filter(i -> i.code.equals(code)).findFirst().orElse(null);
+        return Arrays.stream(values()).filter(i -> i.code.equalsIgnoreCase(code)).findFirst().orElse(null);
     }
 
 }

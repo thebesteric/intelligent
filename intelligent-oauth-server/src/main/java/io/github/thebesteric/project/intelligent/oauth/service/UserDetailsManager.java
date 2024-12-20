@@ -3,7 +3,7 @@ package io.github.thebesteric.project.intelligent.oauth.service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import io.github.thebesteric.project.intelligent.core.exception.BizException;
 import io.github.thebesteric.project.intelligent.core.model.entity.core.*;
-import io.github.thebesteric.project.intelligent.core.service.*;
+import io.github.thebesteric.project.intelligent.core.service.core.*;
 import io.github.thebesteric.project.intelligent.oauth.model.domain.UserDomain;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
