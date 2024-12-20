@@ -18,6 +18,7 @@
 ## 服务依赖关系
 ```text
 intelligent                         根 
+├── asserts                         资源文件夹
 ├── intelligent-core                核心包
 ├── intelligent-core-api            核心 API
 ├── intelligent-gateway-server      网关
@@ -341,18 +342,3 @@ public R<Id2Vo> limit(@RequestBody Id2Vo id2Vo) {
   return R.success(id2Vo);
 }
 ```
-
-# 数据校验
-DataValidator
-
-# 基类
-## IBaseService
-
-## IBaseMapper
-
-# 相关注解
-## 日志 @AgileLogger
-
-## 限流 @RateLimiter
-
-## 幂等 @Idempotent
