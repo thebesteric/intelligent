@@ -1,6 +1,6 @@
 # Intelligent
 ## 架构设计
-![img.png](asserts/images/architecture.png)
+![architecture.png](asserts/images/architecture.png)
 
 ## 组件版本
 - **[Require] Spring Boot 3.3.6**
