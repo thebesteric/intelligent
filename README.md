@@ -26,19 +26,20 @@ intelligent                         根
 └── intelligent-modules             模块
     ├── intelligent-module-crm      微服务-客户服务
     └── intelligent-module-product  微服务-商品服务
+    └── ...                         微服务-...
 ```
 
 
 
 ## 数据库表设计约定
 ### 表名
-- 普通表：使用`t_`开头，加具体业务名称，如：`t_d_a_agreement`表示，`t`表示表的前缀，`d_a`表示分账业务，`agreement`表示具体业务
-- 关联表：使用`r_`开头，表示 relation 关系，后面加具体关联的表，如：`r_user_role`，`r`表示这是一张关联表，`user_role`表示这是用户和角色表的关联关系
+- 普通表：使用`t_`开头，加具体业务名称，如：`t_crm_customer_discount_info`表示，`t`表示表的前缀，`crm`表示客户服务模块，`customer_discount_info`表示具体业务
+- 关联表：使用`t_xxx_r_`开头，表示 relation 关系，后面加具体关联的表，如：`t_core_r_user_role`，`core`表示客户服务模块，`r`表示这是一张关联表，`user_role`表示这是用户和角色表的关联关系
 
 ### 继承建议
-1. 原则上所有表都要继承 BaseEntity 或 BaseBusinessEntity，以保证业务的安全和扩展性
-2. 业务表建议继承 BaseBusinessEntity
-3. 非需要留存历史记录的关联关系表，可以不继承基类
+1. 原则上所有表都要继承`BaseEntity`或`BaseBizEntity`，以保证业务的安全和扩展性
+2. 业务表建议继承`BaseBizEntity`，和租户相关的表建议继承`BaseTenantBizEntity`
+3. 字典表，可以不继承基类
 
 ### 字段约定
 - **id**：主键：使用雪花算法，数据库对应类型 bigint
@@ -52,27 +53,45 @@ intelligent                         根
 - **deleted**：逻辑删除：无需手动维护，0-正常，1-已删除
 - **extra**：扩展字段：对应数据库类型 json
 
-### 业务异常约定
-所有业务异常均应继承`BusinessException`，同时使用`BusinessCode`作为异常代码，如：
+## 业务异常约定
+所有业务异常均应继承`BizException`，同时使用`BizCode`作为异常代码，如：
 ```java
-@Getter
-public class ParameterNotValidException extends BusinessException {
+public class DataNotFoundException extends BizException {
     @Serial
-    private static final long serialVersionUID = -5919323526825575010L;
-
-    private final BusinessCode businessCode;
-
-    public ParameterNotValidException(String message) {
-        super(message);
-        this.businessCode = BusinessCode.VALID_PARAMETER_ERROR;
+    private static final long serialVersionUID = 6225586610980929742L;
+    
+    public DataNotFoundException() {
+      this("数据不存在");
+    }
+    
+    public DataNotFoundException(String message) {
+      super(BizCode.DATA_NOT_FOUND, message);
     }
 }
 ```
->`BusinessCode`定义了所有业务异常的 code，如需要扩展新的 code，可以扩充此类
+>`BizCode`定义了所有业务异常的 code，如需要扩展新的 code，可以扩充此类
 
-### 分页相关约定
+## 分页相关约定
 - 入参：可以继承`PagingRequest`做为入参的基类，该类提供了`size`和`current`参数
 - 出参：可以继承或直接使用`PagingResponse`做为出参，该类提供了分页相关参数，以及扩展字段`extension`字段的扩展
+```java
+@PostMapping("/page")
+@Operation(summary = "等级列表")
+public R<PagingResponse<CustomerLevelResponse>> page(@Validated @RequestBody CustomerLevelSearchRequest searchRequest) {
+    return R.success(levelService.page(searchRequest));
+}
+
+@Override
+public PagingResponse<CustomerLevelResponse> page(CustomerLevelSearchRequest searchRequest) {
+    IPage<CustomerLevel> page = this.lambdaQuery()
+            .like(StringUtils.isNotBlank(searchRequest.getName()), CustomerLevel::getName, searchRequest.getName())
+            .page(searchRequest.getPage(CustomerLevel.class));
+    List<CustomerLevelResponse> records = page.getRecords().stream().map(r -> {
+      return (CustomerLevelResponse) new CustomerLevelResponse().transform(r);
+    }).toList();
+    return PagingResponse.of(page.getCurrent(), page.getSize(), page.getTotal(), records);
+}
+```
 
 ## 分支管理约定
 ### 基本原则
@@ -129,7 +148,19 @@ application:
         log-path: ./logs/xxl-job
         address: http://192.168.64.1:10999
 ```
+### Swagger 开启方式
+在 application.yml 中配置如下
+```yaml
+application:
+  components:
+    swagger:
+      enable: true
+      production: false
+```
+> 注意：生产环境建议把`application.components.swagger.production`设置为`true`
 
+## 认证相关
+默认情况下，所有方法均需要认证，如需要跳过认证，需要按跳过认证的方式进行配置
 ### 跳过认证
 #### 方式一，使用注解
 类或方法上添加 `@SkipAuth` 注解，添加在类上，表示所有的方法都会跳过认证，@SkipAuth 只在 `@Contorller` 和 `@RestController` 类生效
@@ -146,57 +177,104 @@ public class CustomSecurityRequestMatcherIgnoredUriProcessor extends AbstractSec
 }
 ```
 
-### 多数据源的使用方式
+## 多数据源的使用方式
 采用了`dynamic-datasource`的开源框架，详见：[dynamic-datasource](https://www.kancloud.cn/tracy5546/dynamic-datasource/2264611)
 ```yaml
 spring:
   datasource:
     dynamic:
-      primary: oauth
+      primary: master-db
       strict: false
       grace-destroy: true
       datasource:
-        oauth:
+        master-db:
+          type: com.zaxxer.hikari.HikariDataSource
           driver-class-name: com.mysql.cj.jdbc.Driver
-          url: jdbc:mysql://xxx:3306/xxx?characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
-          username: xxx
-          password: xxx
-        pms:
+          url: jdbc:mysql://localhost:3306/master?characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+          username: username
+          password: password
+        other-db:
+          type: com.zaxxer.hikari.HikariDataSource
           driver-class-name: com.mysql.cj.jdbc.Driver
-          url: jdbc:mysql://yyy:3306/yyy?characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
-          username: yyy
-          password: yyy
+          url: jdbc:mysql://localhost:3306/other?characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+          username: username
+          password: password
 ```
 > @DS 注解可以注解在方法上或类上，同时存在就近原则，方法上注解优先于类上注解；默认使用 primary 指定的数据源
-#### 手动切换数据源
-```
-DynamicDataSourceContextHolder.push("master"); // 切换到 master
-// 执行 SQL
-DynamicDataSourceContextHolder.clear(); // 清空切换
+### 手动切换数据源
+```java
+// 切换到 master
+DynamicDataSourceContextHolder.push("master");
+// 执行业务逻辑...
+// 清空切换
+DynamicDataSourceContextHolder.clear();
 ```
 
-### Swagger 开启方式
-在 application.yml 中配置如下
+## Agile Framework 使用
+> 具体使用详见：https://github.com/thebesteric/agile
+### Agile 数据库正向工程
+```xml
+<dependency>
+    <groupId>io.github.thebesteric.framework.agile.plugins</groupId>
+    <artifactId>database-plugin</artifactId>
+    <version>${latest.version}</version>
+</dependency>
+```
+相关配置项
 ```yaml
-application:
-  components:
-    swagger:
+sourceflag:
+  agile:
+    database:
       enable: true
-      production: false
+      show-sql: true
+      ddl-auto: update
+      format-sql: true
+      delete-column: true
 ```
-> 注意：生产环境建议把`application.components.swagger.production`设置为`true`
+```java
+@TableName("foo")
+@EntityClass(comment = "测试表")
+public class Foo extends BaseEntity {
 
-### AgileLogger 日志链路使用
+    @EntityColumn(length = 32, unique = true, nullable = false, forUpdate = "hello", defaultExpression = "'foo'")
+    private String name;
+
+    @EntityColumn(name = "t_phone", unique = true, nullable = false, defaultExpression = "18", comment = "电话", unsigned = true)
+    private Integer age;
+
+    @EntityColumn(unique = true, defaultExpression = "'test'")
+    private String address;
+
+    @EntityColumn(length = 10, precision = 3, unique = true)
+    private BigDecimal amount;
+
+    @EntityColumn(nullable = false, type = EntityColumn.Type.SMALL_INT, unsigned = true)
+    private Season season;
+
+    @EntityColumn(length = 10, precision = 2)
+    private Float state;
+
+    @EntityColumn(type = EntityColumn.Type.DATETIME, defaultExpression = "now()")
+    private Date createTime;
+
+    @TableField("update_time")
+    private Date updateTime;
+
+    @TableField("t_test")
+    @EntityColumn(length = 64, nullable = false)
+    private String test;
+}
+```
+### Agile 日志链路
 在 Spring Boot 启动类上加上`@EnableAgile`注解
 ```java
 @SpringBootApplication
-@ComponentScan(ApplicationConstants.COMPONENTS_PACKAGE_PATH)
-@ConfigurationPropertiesScan(ApplicationConstants.COMPONENTS_PACKAGE_PATH)
+@MapperScan(ApplicationConstants.MAPPER_PACKAGE_PATH)
+@ComponentScan(ApplicationConstants.COMPONENT_PACKAGE_PATH)
+@ConfigurationPropertiesScan(ApplicationConstants.COMPONENT_PACKAGE_PATH)
 @EnableAgile
 public class QuickstartServiceDemoApplication {
     public static void main(String[] args) {
-        // 注册服务名，用于 nacos 的服务发现
-        System.setProperty(ApplicationConstants.Application.APPLICATION_NAME_KEY, ApplicationConstants.Application.Service.QuickStart.APPLICATION_NAME);
         SpringApplication.run(QuickstartServiceDemoApplication.class, args);
     }
 }
@@ -211,76 +289,57 @@ public class TestController {
     @Autowired
     private TestService testService;
 
-    @GetMapping("/no-auth")
-    public R<String> noAuth() {
-        String foo = testService.foo();
-        return R.success(foo, "no-auth path");
+    @GetMapping("/foo")
+    public R<String> foo() {
+        String result = testService.foo();
+        return R.success(result);
+    }
+    
+    // @IgnoreMethod 表示忽略日志
+    @IgnoreMethod
+    @GetMapping("/bar")
+    public R<Void> bar() {
+        return R.success();
     }
 
 }
 ```
-> 具体使用详见：https://github.com/thebesteric/agile
-
-### Agile 接口幂等使用
+### Agile 接口幂等
 使用`@Idempotent`注解 Controller 方法，同时可以设置幂等校验时间，在参数或请求提上使用`@IdempotentKey`作为唯一标识
 ```java
 @Idempotent(timeout = 200, timeUnit = TimeUnit.MILLISECONDS)
-@PostMapping("/signAndSetting")
-@Operation(summary = "签署电子协议、保存集团默认分账规则配置")
-public R<Void> sign(@Validated @RequestBody StoreTypeDefaultPeriodSettingRequest request) {
+@PostMapping("/sign")
+@Operation(summary = "注册")
+public R<Void> sign(@Validated @RequestBody SignRequest request) {
     agreementService.agreementSign(request);
     return R.success();
 }
 
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class StoreTypeDefaultPeriodSettingRequest extends BaseRequest {
-
-  @Schema(description = "分账周期：1-日，2-周，3-月")
-  @NotNull(message = "请设置分账周期")
-  private Integer period;
-
-  @Schema(description = "支付手续费：1-门店承担，2-集团承担，3-各自承担")
-  @NotNull(message = "请设置支付手续费")
-  private Integer feeType;
-
-  @Schema(description = "分账种类对应分账规则列表")
-  private List<StoreTypeDefaultSettingRequest> storeTypeList;
-
-  @Schema(description = "付呗商户号")
-//    @NotNull(message = "付呗商户号不可为空")
-  private String merchantId;
-
+public class SignRequest {
   @IdempotentKey
   @Schema(description = "连锁ID")
   @NotEmpty(message = "连锁ID不可为空")
   private String allianceId;
 
-  /** 分账组ID */
-  private String groupId;
+  @IdempotentKey
+  @Schema(description = "账号")
+  @NotNull(message = "用户名不能为空")
+  private String username;
 
+  @Schema(description = "密码")
+  @NotNull(message = "密码不能为空")
+  private String password;
 }
 ```
-
-## 常见问题
-### 如何将 URI 设置为无需认证
-继承`AbstractSecurityRequestMatcherIgnoredUriProcessor`抽象类，并重写`ignoredUris`方法，并定义成 Spring Bean  
-参考：service-quickstart-demo 的 `com.xuanzhu.group.service.quickstart.demo.config.CustomSecurityRequestMatcherIgnoredUriProcessor` 配置
-> 注意：URI 的设置不需要加 context-path 前缀，同时访问的时候不能走网关，直接访问资源服务器的地址
-
-### 关于 @DS 多数据源生效问题
-@DS 注解用于切换数据源，通常注解在 ServiceImpl 的直接实现类或 Mapper 上
-
-### 关于分表事务问题
-如果相关表使用到分表，同时还需要操作事务，那么需要使用`@DSTransactional`注解
-
-### 关于分表更新数据的问题
-如果需要更新分表的数据表，请使用`update + lambda`的方式更新表，`updateById`和`updateBatchById`会失败
+### Agile 接口限流
+使用`@RateLimiter`注解 Controller 方法，同时可以设置超时时间和访问次数，即限制一段时间内访问次数
 ```java
-storeService.update(recordStore, new LambdaUpdateWrapper<BalanceRecordStore>()
-        .eq(BalanceRecordStore::getId, recordStore.getId())
-        .eq(BalanceRecordStore::getAllianceId, recordStore.getAllianceId())
-        .eq(BalanceRecordStore::getStoreId, recordStore.getStoreId())
+@PostMapping("/limit")
+@RateLimiter(timeout = 10, count = 10)
+public R<Id2Vo> limit(@RequestBody Id2Vo id2Vo) {
+  return R.success(id2Vo);
+}
 ```
 
 # 数据校验
