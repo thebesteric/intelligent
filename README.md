@@ -12,9 +12,6 @@
 - **[Require] JDK-17**
 > 注意：升级主版本的情况下，需要做全面测试，否则将会有一些未知问题
 
-## 快速入门
-参考：service-quickstart-demo 模块
-
 ## 服务依赖关系
 ```text
 intelligent                         根 
@@ -30,7 +27,46 @@ intelligent                         根
     └── ...                         微服务-...
 ```
 
-
+## Quick Start
+> 确保 MySQL、Nacos 服务都正常运行
+### 启动步骤
+1. **（必须）** 启动`intelligent-oauth-server`认证服务
+2. **（非必须）** 启动`intelligent-gateway-server`网管服务（非必须）
+3. **（非必须）** 启动`intelligent-core-api`核心 API 服务
+4. **（必须）** 启动`intelligent-modules`下对应的微服务模块服务
+> 核心 API 服务`intelligent-core-api`会提前创建项目所依赖的基础数据：如权限、用户等，如果已经创建过，可以直接跳过启动
+### 访问规则
+服务启动完成后，需要先获取认证所需要的`token`进行接口访问
+- grant_type: 固定值，表示授权模式为: 账号密码授权
+- username: 账号，详见：`intelligent-core-api.t_core_user` 表
+- password: 密码，采用 BCRYPT 加密，详见：`intelligent-core-api.t_core_user` 表
+- scope: 授权范围，可选值：profile、openid，多个之间用空格分割
+#### Token 请求示例
+> 请求头添加：`Authorization`，值为：`Basic xxx`，其中 xxx 为认证信息  
+> Basic 值，由`intelligent-oauth-server.oauth2_registered_client` 表中的`client_id`和`client_secret`提供，其中`client_secret`为`BCrypt`加密  
+> 加密规则：使用`Base64`对`client_id:client_secret`进行加密，其中`client_secret`为明文
+```curl
+curl --location --request POST 'http://localhost:6666/oauth2/token?grant_type=authorization_password&username=admin&password=123456&scope=openid%20profile' \
+--header 'Authorization: Basic dGVzdC1jbGllbnQtaWQ6c2VjcmV0'
+```
+#### Token 响应结果
+```json
+{
+    "access_token": "xxx",
+    "refresh_token": "xxx",
+    "scope": "openid profile",
+    "id_token": "xxx",
+    "token_type": "Bearer",
+    "expires_in": 28799
+}
+```
+#### API 访问示例
+> 除不认证的接口，否则必须携带 token 访问，详见[认证相关](#认证相关)  
+> 请求头添加：`Authorization`，值为：`Bearer xxx`，其中 xxx 为前面获取到的 token
+```curl
+curl --location 'http://127.0.0.1:8888/crm/api/test/index' \
+--header 'Authorization: Bearer xxx'
+```
 
 ## 数据库表设计约定
 ### 表名
