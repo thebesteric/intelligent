@@ -16,7 +16,7 @@ import java.io.Serial;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class BrandUpdateRequest extends BrandCreateRequest {
+public class ProductBrandUpdateRequest extends ProductBrandCreateRequest {
     @Serial
     private static final long serialVersionUID = 8556977168999500526L;
 

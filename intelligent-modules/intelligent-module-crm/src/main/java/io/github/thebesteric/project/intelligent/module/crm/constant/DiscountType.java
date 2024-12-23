@@ -19,7 +19,7 @@ import java.util.Arrays;
 public enum DiscountType {
 
     BRAND("B", "按品牌打折"),
-    CATEGORY("C", "按目录打折");
+    CATALOG("C", "按目录打折");
 
     @EnumValue
     @JsonValue

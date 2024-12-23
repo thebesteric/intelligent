@@ -1,7 +1,7 @@
 package io.github.thebesteric.project.intelligent.modules.common.model.domain.product.response;
 
 import io.github.thebesteric.project.intelligent.core.base.BaseResponse;
-import io.github.thebesteric.project.intelligent.modules.common.model.entity.product.Brand;
+import io.github.thebesteric.project.intelligent.modules.common.model.entity.product.ProductBrand;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -18,7 +18,7 @@ import java.util.List;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class BrandResponse extends BaseResponse<Brand> {
+public class ProductBrandResponse extends BaseResponse<ProductBrand> {
     @Serial
     private static final long serialVersionUID = -8017200219145263481L;
 

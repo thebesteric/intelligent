@@ -7,18 +7,20 @@ import io.github.thebesteric.project.intelligent.module.crm.model.domain.datum.r
 import io.github.thebesteric.project.intelligent.module.crm.model.domain.datum.request.CustomerLevelCreateRequest;
 import io.github.thebesteric.project.intelligent.module.crm.model.domain.datum.request.CustomerLevelSearchRequest;
 import io.github.thebesteric.project.intelligent.module.crm.model.domain.datum.request.CustomerLevelUpdateRequest;
+import io.github.thebesteric.project.intelligent.module.crm.model.domain.datum.response.BrandDiscountInfoResponse;
+import io.github.thebesteric.project.intelligent.module.crm.model.domain.datum.response.CatalogDiscountInfoResponse;
 import io.github.thebesteric.project.intelligent.module.crm.model.domain.datum.response.CustomerLevelResponse;
 import io.github.thebesteric.project.intelligent.module.crm.service.datum.CustomerDiscountInfoService;
 import io.github.thebesteric.project.intelligent.module.crm.service.datum.CustomerLevelService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * 客户-资料-客户等级
@@ -58,11 +60,26 @@ public class CustomerLevelController {
         return R.success();
     }
 
-    @PostMapping("/discount/settings")
+    @PostMapping("/discount/info/settings")
     @Operation(summary = "折扣设置")
-    public R<Void> discountSettings(@Validated @RequestBody CustomerDiscountInfoSettingsRequest settingsRequest) {
-        discountInfoService.discountSettings(settingsRequest);
+    public R<Void> discountInfoSettings(@Validated @RequestBody CustomerDiscountInfoSettingsRequest settingsRequest) {
+        discountInfoService.discountInfoSettings(settingsRequest);
         return R.success();
+    }
+
+    @PostMapping("/discount/info/brand")
+    @Operation(summary = "品牌折扣信息")
+    @Parameter(name = "customerLevelId", description = "会员等级 ID")
+    @Parameter(name = "keyword", description = "名称检索")
+    public R<List<BrandDiscountInfoResponse>> discountInfoBrand(@RequestParam Long customerLevelId, @RequestParam(required = false) String keyword) {
+        return R.success(discountInfoService.discountInfoBrand(customerLevelId, keyword));
+    }
+
+    @PostMapping("/discount/info/catalog")
+    @Operation(summary = "目录折扣信息")
+    @Parameter(name = "customerLevelId", description = "会员等级 ID")
+    public R<List<CatalogDiscountInfoResponse>> discountInfoCatalog(@RequestParam Long customerLevelId) {
+        return R.success(discountInfoService.discountInfoCatalog(customerLevelId));
     }
 
 }

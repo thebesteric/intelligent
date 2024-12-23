@@ -23,7 +23,7 @@ import java.io.Serial;
 @EqualsAndHashCode(callSuper = true)
 @TableName(ApplicationConstants.Application.Module.Product.TABLE_NAME_PREFIX + "tag")
 @EntityClass(comment = "商品标签", schemas = ApplicationConstants.DataSource.INTELLIGENT_MODULE_PRODUCT)
-public class Tag extends BaseTenantBizEntity {
+public class ProductTag extends BaseTenantBizEntity {
     @Serial
     private static final long serialVersionUID = 8584592594287753227L;
 

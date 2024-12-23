@@ -2,7 +2,7 @@ package io.github.thebesteric.project.intelligent.modules.common.model.domain.pr
 
 import cn.hutool.extra.pinyin.PinyinUtil;
 import io.github.thebesteric.project.intelligent.core.base.BaseRequest;
-import io.github.thebesteric.project.intelligent.modules.common.model.entity.product.Brand;
+import io.github.thebesteric.project.intelligent.modules.common.model.entity.product.ProductBrand;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -23,7 +23,7 @@ import java.util.List;
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class BrandCreateRequest extends BaseRequest<Brand> {
+public class ProductBrandCreateRequest extends BaseRequest<ProductBrand> {
     @Serial
     private static final long serialVersionUID = -8964842869295821499L;
 

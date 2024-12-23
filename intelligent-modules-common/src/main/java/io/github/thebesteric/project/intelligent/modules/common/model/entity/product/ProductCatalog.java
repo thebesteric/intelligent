@@ -25,7 +25,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @TableName(ApplicationConstants.Application.Module.Product.TABLE_NAME_PREFIX + "catalog")
 @EntityClass(comment = "商品目录", schemas = ApplicationConstants.DataSource.INTELLIGENT_MODULE_PRODUCT)
-public class Catalog extends BaseTenantBizEntity {
+public class ProductCatalog extends BaseTenantBizEntity {
     @Serial
     private static final long serialVersionUID = 2926798117431225942L;
 

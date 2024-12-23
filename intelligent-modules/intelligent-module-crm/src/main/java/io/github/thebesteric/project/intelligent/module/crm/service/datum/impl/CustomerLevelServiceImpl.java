@@ -50,9 +50,7 @@ public class CustomerLevelServiceImpl extends ServiceImpl<CustomerLevelMapper, C
         IPage<CustomerLevel> page = this.lambdaQuery()
                 .like(StringUtils.isNotBlank(searchRequest.getName()), CustomerLevel::getName, searchRequest.getName())
                 .page(searchRequest.getPage(CustomerLevel.class));
-        List<CustomerLevelResponse> records = page.getRecords().stream().map(r -> {
-            return (CustomerLevelResponse) new CustomerLevelResponse().transform(r);
-        }).toList();
+        List<CustomerLevelResponse> records = page.getRecords().stream().map(r -> (CustomerLevelResponse) new CustomerLevelResponse().transform(r)).toList();
         return PagingResponse.of(page.getCurrent(), page.getSize(), page.getTotal(), records);
     }
 

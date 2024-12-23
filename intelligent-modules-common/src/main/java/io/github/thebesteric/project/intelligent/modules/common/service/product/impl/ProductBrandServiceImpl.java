@@ -6,12 +6,12 @@ import io.github.thebesteric.framework.agile.plugins.database.core.domain.query.
 import io.github.thebesteric.framework.agile.plugins.database.core.domain.query.OrderByParam;
 import io.github.thebesteric.project.intelligent.core.constant.ApplicationConstants;
 import io.github.thebesteric.project.intelligent.core.security.util.SecurityUtils;
-import io.github.thebesteric.project.intelligent.modules.common.mapper.product.BrandMapper;
-import io.github.thebesteric.project.intelligent.modules.common.model.domain.product.request.BrandCreateRequest;
-import io.github.thebesteric.project.intelligent.modules.common.model.domain.product.request.BrandUpdateRequest;
-import io.github.thebesteric.project.intelligent.modules.common.model.domain.product.response.BrandResponse;
-import io.github.thebesteric.project.intelligent.modules.common.model.entity.product.Brand;
-import io.github.thebesteric.project.intelligent.modules.common.service.product.BrandService;
+import io.github.thebesteric.project.intelligent.modules.common.mapper.product.ProductBrandMapper;
+import io.github.thebesteric.project.intelligent.modules.common.model.domain.product.request.ProductBrandCreateRequest;
+import io.github.thebesteric.project.intelligent.modules.common.model.domain.product.request.ProductBrandUpdateRequest;
+import io.github.thebesteric.project.intelligent.modules.common.model.domain.product.response.ProductBrandResponse;
+import io.github.thebesteric.project.intelligent.modules.common.model.entity.product.ProductBrand;
+import io.github.thebesteric.project.intelligent.modules.common.service.product.ProductBrandService;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -28,7 +28,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @DS(ApplicationConstants.DataSource.INTELLIGENT_CORE_API)
-public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements BrandService {
+public class ProductBrandServiceImpl extends ServiceImpl<ProductBrandMapper, ProductBrand> implements ProductBrandService {
     /**
      * 品牌列表
      *
@@ -40,15 +40,15 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
      * @since 2024/12/19 20:51
      */
     @Override
-    public List<BrandResponse> list(String firstLetter) {
+    public List<ProductBrandResponse> list(String firstLetter) {
         String tenantId = SecurityUtils.getTenantIdWithException();
-        List<Brand> brands;
+        List<ProductBrand> brands;
         if (StringUtils.isNotBlank(firstLetter)) {
             brands = this.baseMapper.findByFirstLetter(tenantId, firstLetter);
         } else {
             brands = findByTenantId(tenantId, OrderByParam.of("keyword", OrderByOperator.ASC));
         }
-        return brands.stream().map(brand -> (BrandResponse) new BrandResponse().transform(brand)).toList();
+        return brands.stream().map(brand -> (ProductBrandResponse) new ProductBrandResponse().transform(brand)).toList();
     }
 
     /**
@@ -60,9 +60,9 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
      * @since 2024/12/20 11:50
      */
     @Override
-    public void create(BrandCreateRequest createRequest) {
+    public void create(ProductBrandCreateRequest createRequest) {
         // 转换
-        Brand brand = createRequest.transform();
+        ProductBrand brand = createRequest.transform();
         // 保存
         this.save(brand);
     }
@@ -76,8 +76,8 @@ public class BrandServiceImpl extends ServiceImpl<BrandMapper, Brand> implements
      * @since 2024/12/20 11:50
      */
     @Override
-    public void update(BrandUpdateRequest updateRequest) {
-        Brand brand = getByTenantAndId(updateRequest.getTenantId(), updateRequest.getId());
+    public void update(ProductBrandUpdateRequest updateRequest) {
+        ProductBrand brand = getByTenantAndId(updateRequest.getTenantId(), updateRequest.getId());
         // 合并
         brand = updateRequest.merge(brand);
         // 更新

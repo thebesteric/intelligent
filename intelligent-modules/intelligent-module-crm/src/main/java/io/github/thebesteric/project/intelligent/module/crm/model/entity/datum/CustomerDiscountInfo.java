@@ -23,7 +23,7 @@ import java.io.Serial;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @TableName(ApplicationConstants.Application.Module.CRM.TABLE_NAME_PREFIX + "customer_discount_info")
-@EntityClass(comment = "客户折扣信息")
+@EntityClass(comment = "客户折扣")
 public class CustomerDiscountInfo extends BaseTenantBizEntity {
     @Serial
     private static final long serialVersionUID = -1879253468771880711L;
@@ -31,7 +31,7 @@ public class CustomerDiscountInfo extends BaseTenantBizEntity {
     @EntityColumn(nullable = false, comment = "会员等级 ID")
     private Long customerLevelId;
 
-    @EntityColumn(type = EntityColumn.Type.VARCHAR, length = 32, comment = "折扣类型")
+    @EntityColumn(nullable = false, type = EntityColumn.Type.VARCHAR, length = 32, comment = "折扣类型")
     private DiscountType discountType;
 
     @EntityColumn(nullable = false, comment = "折扣对象 ID")
