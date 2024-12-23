@@ -64,7 +64,6 @@ public class CustomerLevelController {
     @Operation(summary = "折扣设置")
     public R<Void> discountInfoSettings(@Validated @RequestBody CustomerDiscountInfoSettingsRequest settingsRequest) {
         discountInfoService.discountInfoSettings(settingsRequest);
-        // int i = 1/0;
         return R.success();
     }
 
