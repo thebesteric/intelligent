@@ -1,8 +1,11 @@
 package io.github.thebesteric.project.intelligent.module.stock.controller;
 
 import io.github.thebesteric.framework.agile.core.domain.R;
+import io.github.thebesteric.framework.agile.core.domain.page.PagingResponse;
 import io.github.thebesteric.framework.agile.plugins.logger.annotation.AgileLogger;
 import io.github.thebesteric.project.intelligent.modules.common.model.domain.stock.request.WarehouseCreateRequest;
+import io.github.thebesteric.project.intelligent.modules.common.model.domain.stock.request.WarehouseSearchRequest;
+import io.github.thebesteric.project.intelligent.modules.common.model.domain.stock.response.WarehouseResponse;
 import io.github.thebesteric.project.intelligent.modules.common.service.stock.WarehouseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,6 +33,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class WarehouseController {
 
     private final WarehouseService warehouseService;
+
+    @PostMapping("/page")
+    @Operation(summary = "仓库列表")
+    public R<PagingResponse<WarehouseResponse>> page(@Validated @RequestBody WarehouseSearchRequest searchRequest) {
+        return R.success(warehouseService.page(searchRequest));
+    }
 
     @PostMapping("/create")
     @Operation(summary = "添加仓库")

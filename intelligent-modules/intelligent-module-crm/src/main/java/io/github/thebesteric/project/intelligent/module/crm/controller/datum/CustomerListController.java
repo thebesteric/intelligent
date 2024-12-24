@@ -4,6 +4,7 @@ import io.github.thebesteric.framework.agile.core.domain.R;
 import io.github.thebesteric.framework.agile.plugins.logger.annotation.AgileLogger;
 import io.github.thebesteric.project.intelligent.module.crm.model.domain.datum.request.CustomerCreateRequest;
 import io.github.thebesteric.project.intelligent.module.crm.service.datum.CustomerService;
+import io.github.thebesteric.project.intelligent.modules.common.constant.AuditStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,7 @@ public class CustomerListController {
     @PostMapping("/create")
     @Operation(summary = "创建客户")
     public R<Void> create(@Validated @RequestBody CustomerCreateRequest createRequest) {
-        customerService.create(createRequest);
+        customerService.create(createRequest, AuditStatus.AUDIT_PASS);
         return R.success();
     }
 

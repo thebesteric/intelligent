@@ -2,8 +2,10 @@ package io.github.thebesteric.project.intelligent.module.crm.service.datum.impl;
 
 import cn.hutool.extra.pinyin.PinyinUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.github.thebesteric.framework.agile.commons.util.DataValidator;
 import io.github.thebesteric.framework.agile.commons.util.MapWrapper;
 import io.github.thebesteric.project.intelligent.core.constant.SeedType;
+import io.github.thebesteric.project.intelligent.core.exception.BizException;
 import io.github.thebesteric.project.intelligent.core.exception.DataAlreadyExistsException;
 import io.github.thebesteric.project.intelligent.core.security.util.SecurityUtils;
 import io.github.thebesteric.project.intelligent.core.service.common.SeedService;
@@ -12,6 +14,7 @@ import io.github.thebesteric.project.intelligent.module.crm.mapper.datum.Custome
 import io.github.thebesteric.project.intelligent.module.crm.model.domain.datum.request.CustomerCreateRequest;
 import io.github.thebesteric.project.intelligent.module.crm.model.entity.datum.Customer;
 import io.github.thebesteric.project.intelligent.module.crm.service.datum.CustomerService;
+import io.github.thebesteric.project.intelligent.modules.common.constant.AuditStatus;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -35,24 +38,26 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
      * 创建客户
      *
      * @param createRequest 请求
+     * @param auditStatus   审核状态
      *
      * @author wangweijun
      * @since 2024/12/12 18:57
      */
     @Override
-    public void create(CustomerCreateRequest createRequest) {
+    public void create(CustomerCreateRequest createRequest, AuditStatus auditStatus) {
         String tenantId = SecurityUtils.getTenantIdWithException();
         Map<String, Object> queryParams = MapWrapper.createLambda(Customer.class)
                 .put("tenant_id", tenantId)
                 .put(Customer::getUsername, createRequest.getUsername()).build();
         Customer customer = this.getByParams(queryParams);
-        if (customer != null) {
-            throw new DataAlreadyExistsException("用户名已存在");
 
-        }
+        // 数据校验
+        DataValidator.create(BizException.class)
+                .validate(customer != null, new DataAlreadyExistsException("用户名已存在"));
+
         customer = createRequest.transform();
         customer.setPassword(BCryptUtils.encode(createRequest.getPassword()));
-        customer.setTenantId(tenantId);
+        customer.setAuditStatus(auditStatus);
 
         // 客户拼音码（关键字）
         if (StringUtils.isBlank(customer.getKeyword())) {

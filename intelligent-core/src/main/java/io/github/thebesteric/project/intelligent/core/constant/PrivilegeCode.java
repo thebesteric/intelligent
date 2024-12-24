@@ -22,7 +22,7 @@ public enum PrivilegeCode {
     CUSTOMER_DATUM_AUDIT("客户审核", "customer:datum:audit", "1.1.3", PrivilegeType.MENU, PrivilegeCode.CUSTOMER_DATUM),
     CUSTOMER_DATUM_RELATION("客勤预警", "customer:datum:relation", "1.1.4", PrivilegeType.MENU, PrivilegeCode.CUSTOMER_DATUM),
     CUSTOMER_DATUM_TAG("客户标签", "customer:datum:tag", "1.1.5", PrivilegeType.MENU, PrivilegeCode.CUSTOMER_DATUM),
-    CUSTOMER_DATUM_REGION("客户标签", "customer:datum:region", "1.1.6", PrivilegeType.MENU, PrivilegeCode.CUSTOMER_DATUM),
+    CUSTOMER_DATUM_REGION("客户区域", "customer:datum:region", "1.1.6", PrivilegeType.MENU, PrivilegeCode.CUSTOMER_DATUM),
     CUSTOMER_DATUM_LOCATED("客户分布", "customer:datum:located", "1.1.7", PrivilegeType.MENU, PrivilegeCode.CUSTOMER_DATUM),
     CUSTOMER_DATUM_LEVEL("客户等级", "customer:datum:level", "1.1.8", PrivilegeType.MENU, PrivilegeCode.CUSTOMER_DATUM),
 

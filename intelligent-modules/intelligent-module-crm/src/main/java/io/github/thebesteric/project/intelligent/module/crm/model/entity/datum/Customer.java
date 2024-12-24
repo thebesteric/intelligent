@@ -5,6 +5,7 @@ import io.github.thebesteric.framework.agile.plugins.database.core.annotation.En
 import io.github.thebesteric.framework.agile.plugins.database.core.annotation.EntityColumn;
 import io.github.thebesteric.project.intelligent.core.base.BaseTenantBizEntity;
 import io.github.thebesteric.project.intelligent.core.constant.ApplicationConstants;
+import io.github.thebesteric.project.intelligent.modules.common.constant.AuditStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -97,6 +98,9 @@ public class Customer extends BaseTenantBizEntity {
 
     @EntityColumn(type = EntityColumn.Type.JSON, comment = "法人信息")
     private Corporate corporate;
+
+    @EntityColumn(type = EntityColumn.Type.TINY_INT, comment = "审核状态")
+    private AuditStatus auditStatus = AuditStatus.WAIT_AUDIT;
 
     /**
      * 公司信息
