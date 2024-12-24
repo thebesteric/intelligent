@@ -60,6 +60,14 @@ public class CustomerLevelController {
         return R.success();
     }
 
+    @GetMapping("/delete")
+    @Operation(summary = "删除等级")
+    @Parameter(name = "id", description = "ID")
+    public R<Void> delete(@RequestParam Long id) {
+        levelService.delete(id);
+        return R.success();
+    }
+
     @PostMapping("/discount/info/settings")
     @Operation(summary = "折扣设置")
     public R<Void> discountInfoSettings(@Validated @RequestBody CustomerDiscountInfoSettingsRequest settingsRequest) {

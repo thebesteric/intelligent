@@ -23,7 +23,7 @@ import java.io.Serial;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @TableName(ApplicationConstants.Application.Server.CoreApi.TABLE_NAME_PREFIX + "seed")
-@EntityClass(comment = "种子表", schemas = ApplicationConstants.DataSource.INTELLIGENT_CORE_API)
+@EntityClass(comment = "种子表", schemas = ApplicationConstants.Application.Server.CoreApi.DATASOURCE_INTELLIGENT_CORE_API)
 public class Seed extends BaseTenantBizEntity {
     @Serial
     private static final long serialVersionUID = -70927475506029829L;

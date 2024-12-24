@@ -26,7 +26,7 @@ import java.util.List;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @TableName(value = ApplicationConstants.Application.Module.Product.TABLE_NAME_PREFIX + "brand", autoResultMap = true)
-@EntityClass(comment = "商品品牌", schemas = ApplicationConstants.DataSource.INTELLIGENT_MODULE_PRODUCT)
+@EntityClass(comment = "商品品牌", schemas = ApplicationConstants.Application.Module.Product.DATASOURCE_INTELLIGENT_MODULE_PRODUCT)
 public class ProductBrand extends BaseTenantBizEntity {
     @Serial
     private static final long serialVersionUID = 8671583095593232559L;

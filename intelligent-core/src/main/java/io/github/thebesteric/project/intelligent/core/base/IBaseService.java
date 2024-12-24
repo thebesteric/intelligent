@@ -119,7 +119,7 @@ public interface IBaseService<T extends BaseEntity> extends IService<T> {
      * @author wangweijun
      * @since 2024/12/20 10:16
      */
-    default List<T> findByTenantId(String tenantId, OrderByParam... orderByParams) {
+    default List<T> listByTenantId(String tenantId, OrderByParam... orderByParams) {
         return listByParams(Map.of("tenant_id", tenantId), orderByParams);
     }
 

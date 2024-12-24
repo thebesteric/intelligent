@@ -67,14 +67,15 @@ public class CustomerLevelServiceImpl extends ServiceImpl<CustomerLevelMapper, C
         String tenantId = SecurityUtils.getTenantIdWithException();
         DataValidator dataValidator = DataValidator.create(BizException.class);
         // 检查名称是否重复
-        Map<String, Object> queryParams = MapWrapper.createLambda(CustomerLevel.class)
-                .put("tenant_id", tenantId)
+        Map<String, Object> queryParams = MapWrapper.createLambda(CustomerLevel.class, MapWrapper.KeyStyle.SNAKE_CASE)
+                .put(CustomerLevel::getTenantId, tenantId)
                 .put(CustomerLevel::getName, createRequest.getName()).build();
         CustomerLevel customerLevel = this.getByParams(queryParams);
         dataValidator.validate(customerLevel != null, new DataAlreadyExistsException("等级名称重复"));
         // 转换
         customerLevel = createRequest.transform();
-        customerLevel.setTenantId(tenantId);
+        // 是否默认设置
+        setOthersDefaultFalseIfNecessary(tenantId, customerLevel.getIsDefault());
         // 数据校验
         dataValidator
                 // 是否开启自动升级
@@ -99,11 +100,43 @@ public class CustomerLevelServiceImpl extends ServiceImpl<CustomerLevelMapper, C
         // 检查
         CustomerLevel customerLevel = getByTenantAndId(tenantId, updateRequest.getId());
         dataValidator.validate(customerLevel == null, "客户等级不存在");
-        List<CustomerLevel> sameNameCustomerLevels = this.listByMap(MapWrapper.createLambda(CustomerLevel.class).put(CustomerLevel::getName, updateRequest.getName()).build());
-        dataValidator.validate(sameNameCustomerLevels.size() > 1, new DataAlreadyExistsException("等级名称重复"));
+        CustomerLevel sameNameCustomerLevel = this.getByParams(MapWrapper.createLambda(CustomerLevel.class).put(CustomerLevel::getName, updateRequest.getName()).build());
+        dataValidator.validate(sameNameCustomerLevel != null, new DataAlreadyExistsException("等级名称重复"));
         // 合并
         customerLevel = updateRequest.merge(customerLevel);
+        // 是否默认设置
+        setOthersDefaultFalseIfNecessary(tenantId, customerLevel.getIsDefault());
         // 更新
         this.updateById(customerLevel);
+    }
+
+    /**
+     * 删除等级
+     *
+     * @param id ID
+     *
+     * @author wangweijun
+     * @since 2024/12/23 20:10
+     */
+    @Override
+    public void delete(Long id) {
+        this.getBaseMapper().physicalDeleteById(CustomerLevel.class, id);
+    }
+
+    /**
+     * 如果是默认，则将其他默认设置为 false
+     *
+     * @param tenantId  租户 ID
+     * @param isDefault 是否默认
+     *
+     * @author wangweijun
+     * @since 2024/12/23 20:22
+     */
+    private void setOthersDefaultFalseIfNecessary(String tenantId, boolean isDefault) {
+        if (isDefault) {
+            this.lambdaUpdate().eq(CustomerLevel::getTenantId, tenantId).eq(CustomerLevel::getIsDefault, true)
+                    .set(CustomerLevel::getIsDefault, false)
+                    .update();
+        }
     }
 }

@@ -25,7 +25,7 @@ import java.util.List;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @TableName(ApplicationConstants.Application.Server.CoreApi.TABLE_NAME_PREFIX + "privilege")
-@EntityClass(comment = "权限表", schemas = ApplicationConstants.DataSource.INTELLIGENT_CORE_API)
+@EntityClass(comment = "权限表", schemas = ApplicationConstants.Application.Server.CoreApi.DATASOURCE_INTELLIGENT_CORE_API)
 public class Privilege extends BaseBizEntity {
     @Serial
     private static final long serialVersionUID = 7775807590136562571L;

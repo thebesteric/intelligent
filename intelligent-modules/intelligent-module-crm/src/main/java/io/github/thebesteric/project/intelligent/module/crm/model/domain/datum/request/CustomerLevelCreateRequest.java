@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.Range;
 
 import java.io.Serial;
@@ -28,6 +29,7 @@ public class CustomerLevelCreateRequest extends BaseRequest<CustomerLevel> {
 
     @Schema(description = "名称")
     @NotBlank(message = "名称不能为空")
+    @Length(min = 1, max = 32, message = "名称长度范围在 {min} 和 {max} 之间")
     private String name;
 
     @Schema(description = "上一个等级")
@@ -50,5 +52,6 @@ public class CustomerLevelCreateRequest extends BaseRequest<CustomerLevel> {
     private Integer upgradeScore;
 
     @Schema(description = "是否启用，0: 禁用，1: 启用")
+    @Range(min = 0, max = 1, message = "状态值范围在 {min} 和 {max} 之间")
     private Integer state = 1;
 }

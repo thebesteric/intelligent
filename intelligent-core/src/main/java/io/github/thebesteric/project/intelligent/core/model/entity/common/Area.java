@@ -33,7 +33,7 @@ import java.util.List;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @TableName(ApplicationConstants.Application.Server.CoreApi.TABLE_NAME_PREFIX + "area")
-@EntityClass(comment = "全国省市自治区表", schemas = ApplicationConstants.DataSource.INTELLIGENT_CORE_API)
+@EntityClass(comment = "全国省市自治区表", schemas = ApplicationConstants.Application.Server.CoreApi.DATASOURCE_INTELLIGENT_CORE_API)
 public class Area extends BaseEntity implements EntityClassCreateListener {
     @Serial
     private static final long serialVersionUID = -209963749862545214L;

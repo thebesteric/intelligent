@@ -25,7 +25,7 @@ import java.util.List;
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 @TableName(ApplicationConstants.Application.Server.CoreApi.TABLE_NAME_PREFIX + "role")
-@EntityClass(comment = "角色表", schemas = ApplicationConstants.DataSource.INTELLIGENT_CORE_API)
+@EntityClass(comment = "角色表", schemas = ApplicationConstants.Application.Server.CoreApi.DATASOURCE_INTELLIGENT_CORE_API)
 public class Role extends BaseTenantBizEntity {
     @Serial
     private static final long serialVersionUID = 6637738551499033827L;

@@ -18,7 +18,7 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName(ApplicationConstants.Application.Server.CoreApi.TABLE_NAME_PREFIX + "r_role_privilege")
-@EntityClass(comment = "角色权限关联表", schemas = ApplicationConstants.DataSource.INTELLIGENT_CORE_API)
+@EntityClass(comment = "角色权限关联表", schemas = ApplicationConstants.Application.Server.CoreApi.DATASOURCE_INTELLIGENT_CORE_API)
 public class RolePrivilege extends BaseTenantBizEntity {
     @Serial
     private static final long serialVersionUID = 2232543994904695027L;
