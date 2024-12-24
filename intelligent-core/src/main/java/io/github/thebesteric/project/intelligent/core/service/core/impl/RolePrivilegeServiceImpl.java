@@ -28,7 +28,7 @@ import java.util.Set;
  */
 @Service
 @RequiredArgsConstructor
-@DS(ApplicationConstants.DataSource.INTELLIGENT_CORE_API)
+@DS(ApplicationConstants.Application.Server.CoreApi.DATASOURCE_INTELLIGENT_CORE_API)
 public class RolePrivilegeServiceImpl extends ServiceImpl<RolePrivilegeMapper, RolePrivilege> implements RolePrivilegeService {
 
     private final RoleService roleService;

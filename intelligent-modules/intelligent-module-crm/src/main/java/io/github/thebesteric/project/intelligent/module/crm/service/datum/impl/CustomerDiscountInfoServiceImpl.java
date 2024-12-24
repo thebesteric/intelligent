@@ -96,7 +96,7 @@ public class CustomerDiscountInfoServiceImpl extends ServiceImpl<CustomerDiscoun
     @Override
     public List<BrandDiscountInfoResponse> discountInfoBrand(Long customerLevelId, String keyword) {
         String tenantId = SecurityUtils.getTenantIdWithException();
-        List<ProductBrand> brands = brandService.findByTenantId(tenantId, OrderByParam.of("keyword", OrderByOperator.ASC));
+        List<ProductBrand> brands = brandService.listByTenantId(tenantId, OrderByParam.of("keyword", OrderByOperator.ASC));
         List<BrandDiscountInfoResponse> responses = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(brands)) {
             responses = brands.stream().map(brand -> {

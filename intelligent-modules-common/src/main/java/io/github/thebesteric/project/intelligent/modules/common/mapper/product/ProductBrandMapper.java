@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
-@DS(ApplicationConstants.DataSource.INTELLIGENT_MODULE_PRODUCT)
+@DS(ApplicationConstants.Application.Module.Product.DATASOURCE_INTELLIGENT_MODULE_PRODUCT)
 public interface ProductBrandMapper extends IBaseMapper<ProductBrand> {
 
     /**

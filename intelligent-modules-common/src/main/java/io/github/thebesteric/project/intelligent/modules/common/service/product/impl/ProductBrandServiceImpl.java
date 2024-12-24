@@ -27,7 +27,7 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-@DS(ApplicationConstants.DataSource.INTELLIGENT_CORE_API)
+@DS(ApplicationConstants.Application.Module.Product.DATASOURCE_INTELLIGENT_MODULE_PRODUCT)
 public class ProductBrandServiceImpl extends ServiceImpl<ProductBrandMapper, ProductBrand> implements ProductBrandService {
     /**
      * 品牌列表
@@ -46,7 +46,7 @@ public class ProductBrandServiceImpl extends ServiceImpl<ProductBrandMapper, Pro
         if (StringUtils.isNotBlank(firstLetter)) {
             brands = this.baseMapper.findByFirstLetter(tenantId, firstLetter);
         } else {
-            brands = findByTenantId(tenantId, OrderByParam.of("keyword", OrderByOperator.ASC));
+            brands = this.listByTenantId(tenantId, OrderByParam.of("keyword", OrderByOperator.ASC));
         }
         return brands.stream().map(brand -> (ProductBrandResponse) new ProductBrandResponse().transform(brand)).toList();
     }

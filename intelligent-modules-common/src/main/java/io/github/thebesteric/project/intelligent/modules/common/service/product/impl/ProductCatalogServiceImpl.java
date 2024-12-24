@@ -24,7 +24,7 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-@DS(ApplicationConstants.DataSource.INTELLIGENT_CORE_API)
+@DS(ApplicationConstants.Application.Module.Product.DATASOURCE_INTELLIGENT_MODULE_PRODUCT)
 public class ProductCatalogServiceImpl extends ServiceImpl<ProductCatalogMapper, ProductCatalog> implements ProductCatalogService {
     /**
      * 根据父级目录 ID 获取目录列表

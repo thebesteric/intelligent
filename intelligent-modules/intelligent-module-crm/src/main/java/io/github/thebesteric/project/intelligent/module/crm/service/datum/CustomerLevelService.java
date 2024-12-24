@@ -47,4 +47,14 @@ public interface CustomerLevelService extends IBaseService<CustomerLevel> {
      * @since 2024/12/17 19:15
      */
     void update(CustomerLevelUpdateRequest updateRequest);
+
+    /**
+     * 删除等级
+     *
+     * @param id ID
+     *
+     * @author wangweijun
+     * @since 2024/12/23 20:10
+     */
+    void delete(Long id);
 }

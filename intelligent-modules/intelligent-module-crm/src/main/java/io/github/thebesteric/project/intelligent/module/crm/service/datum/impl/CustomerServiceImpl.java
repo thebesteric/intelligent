@@ -4,7 +4,7 @@ import cn.hutool.extra.pinyin.PinyinUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.github.thebesteric.framework.agile.commons.util.MapWrapper;
 import io.github.thebesteric.project.intelligent.core.constant.SeedType;
-import io.github.thebesteric.project.intelligent.core.exception.BizException;
+import io.github.thebesteric.project.intelligent.core.exception.DataAlreadyExistsException;
 import io.github.thebesteric.project.intelligent.core.security.util.SecurityUtils;
 import io.github.thebesteric.project.intelligent.core.service.common.SeedService;
 import io.github.thebesteric.project.intelligent.core.util.BCryptUtils;
@@ -47,7 +47,8 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                 .put(Customer::getUsername, createRequest.getUsername()).build();
         Customer customer = this.getByParams(queryParams);
         if (customer != null) {
-            throw new BizException(BizException.BizCode.DATA_ALREADY_EXISTS, "用户名已存在");
+            throw new DataAlreadyExistsException("用户名已存在");
+
         }
         customer = createRequest.transform();
         customer.setPassword(BCryptUtils.encode(createRequest.getPassword()));

@@ -12,6 +12,6 @@ import io.github.thebesteric.project.intelligent.core.base.IBaseMapper;
  * @version v1.0
  * @since 2024-12-04 16:20:25
  */
-@DS(ApplicationConstants.DataSource.INTELLIGENT_CORE_API)
+@DS(ApplicationConstants.Application.Server.CoreApi.DATASOURCE_INTELLIGENT_CORE_API)
 public interface RolePrivilegeMapper extends IBaseMapper<RolePrivilege> {
 }

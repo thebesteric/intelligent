@@ -25,7 +25,7 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-@DS(ApplicationConstants.DataSource.INTELLIGENT_CORE_API)
+@DS(ApplicationConstants.Application.Server.CoreApi.DATASOURCE_INTELLIGENT_CORE_API)
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
     /**
@@ -68,10 +68,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public void update(UserUpdateRequest updateRequest) {
         String userId = updateRequest.getId();
-        User user = getById(userId);
+        User user = this.getById(userId);
         user = updateRequest.merge(user, "password");
         user.setPassword(BCryptUtils.encode(updateRequest.getPassword()));
-
+        this.updateById(user);
     }
 
     /**

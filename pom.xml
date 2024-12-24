@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-<!--        <version>3.4.0</version>-->
+<!--        <version>3.4.1</version>-->
         <version>3.3.6</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
@@ -25,7 +25,6 @@
         <module>intelligent-oauth-server</module>
         <module>intelligent-gateway-server</module>
         <module>intelligent-modules</module>
-        <module>intelligent-modules/intelligent-module-crm</module>
         <module>intelligent-modules-common</module>
 
     </modules>
@@ -38,7 +37,7 @@
         <mybatis-plus-boot-starter.version>3.5.9</mybatis-plus-boot-starter.version>
         <dynamic-datasource.version>4.3.1</dynamic-datasource.version>
         <agile.version>1.0.17.4</agile.version>
-<!--        <spring-boot.version>>3.4.0</spring-boot.version>-->
+<!--        <spring-boot.version>>3.4.1</spring-boot.version>-->
 <!--        <spring-cloud.version>2024.0.0</spring-cloud.version>-->
 <!--        <spring-cloud-alibaba.version>2023.0.3.2</spring-cloud-alibaba.version>-->
         <spring-boot.version>>3.3.6</spring-boot.version>

@@ -12,9 +12,9 @@ import java.util.*;
 @AllArgsConstructor
 public enum PrivilegeCode {
 
-    CUSTOMER_MANAGEMENT("客户管理", "customer:management", "1", PrivilegeType.CATALOG, null),
+    // ======================= 客户管理 =======================
 
-    // =================================================
+    CUSTOMER_MANAGEMENT("客户管理", "customer:management", "1", PrivilegeType.CATALOG, null),
 
     CUSTOMER_DATUM("客户资料", "customer:datum", "1.1", PrivilegeType.CATALOG, PrivilegeCode.CUSTOMER_MANAGEMENT),
     CUSTOMER_DATUM_LIST("客户列表", "customer:datum:list", "1.1.1", PrivilegeType.MENU, PrivilegeCode.CUSTOMER_DATUM),
@@ -44,7 +44,7 @@ public enum PrivilegeCode {
     CUSTOMER_SETTING_PRIVACY("隐私协议", "customer:setting:privacy", "1.4.3", PrivilegeType.MENU, PrivilegeCode.CUSTOMER_SETTING),
     CUSTOMER_SETTING_SERVICE("服务协议", "customer:setting:service", "1.4.4", PrivilegeType.MENU, PrivilegeCode.CUSTOMER_SETTING),
 
-    // =================================================
+    // ======================= 商品管理 =======================
 
     PRODUCT_MANAGEMENT("商品管理", "product:management", "2", PrivilegeType.CATALOG, null),
 
@@ -67,7 +67,29 @@ public enum PrivilegeCode {
     PRODUCT_GIFT_LACK("缺货登记", "product:gift:lack", "2.3.2", PrivilegeType.MENU, PrivilegeCode.PRODUCT_GIFT),
     PRODUCT_GIFT_COMMENT("缺货登记", "product:gift:comment", "2.3.3", PrivilegeType.MENU, PrivilegeCode.PRODUCT_GIFT),
 
-    // =================================================
+    // ======================= 库存管理 =======================
+
+    STOCK_MANAGEMENT("库存管理", "stock:management", "3", PrivilegeType.CATALOG, null),
+
+    STOCK_BILLS("单据", "stock:bills", "3.1", PrivilegeType.CATALOG, PrivilegeCode.STOCK_MANAGEMENT),
+    STOCK_BILLS_INBOUND("其他入库单", "stock:bills:inbound", "3.1.1", PrivilegeType.MENU, PrivilegeCode.STOCK_BILLS),
+    STOCK_BILLS_OUTBOUND("其他出库单", "stock:bills:outbound", "3.1.2", PrivilegeType.MENU, PrivilegeCode.STOCK_BILLS),
+    STOCK_BILLS_TRANSFER("调拨单", "stock:bills:transfer", "3.1.3", PrivilegeType.MENU, PrivilegeCode.STOCK_BILLS),
+
+    STOCK_WAREHOUSE("仓库", "stock:warehouse", "3.2", PrivilegeType.CATALOG, PrivilegeCode.STOCK_MANAGEMENT),
+    STOCK_WAREHOUSE_STATUS("库存状态", "stock:warehouse:status", "3.2.1", PrivilegeType.MENU, PrivilegeCode.STOCK_WAREHOUSE),
+    STOCK_WAREHOUSE_DISTRIBUTION("库存分布", "stock:warehouse:distribution", "3.2.2", PrivilegeType.MENU, PrivilegeCode.STOCK_WAREHOUSE),
+    STOCK_WAREHOUSE_WARNING("库存预警", "stock:warehouse:warning", "3.2.3", PrivilegeType.MENU, PrivilegeCode.STOCK_WAREHOUSE),
+    STOCK_WAREHOUSE_INBOUND("入库单", "stock:warehouse:inbound", "3.2.4", PrivilegeType.MENU, PrivilegeCode.STOCK_WAREHOUSE),
+    STOCK_WAREHOUSE_OUTBOUND("出库单", "stock:warehouse:outbound", "3.2.5", PrivilegeType.MENU, PrivilegeCode.STOCK_WAREHOUSE),
+    STOCK_WAREHOUSE_MANAGEMENT("仓库管理", "stock:warehouse:management", "3.2.6", PrivilegeType.MENU, PrivilegeCode.STOCK_WAREHOUSE),
+
+    STOCK_STOCKTAKING("盘点", "stock:stocktaking", "3.3", PrivilegeType.CATALOG, PrivilegeCode.STOCK_MANAGEMENT),
+    STOCK_STOCKTAKING_BILLS("盘点单", "stock:stocktaking:bills", "3.3.1", PrivilegeType.MENU, PrivilegeCode.STOCK_STOCKTAKING),
+    STOCK_STOCKTAKING_LOSE("报溢单", "stock:stocktaking:lose", "3.3.2", PrivilegeType.MENU, PrivilegeCode.STOCK_STOCKTAKING),
+    STOCK_STOCKTAKING_GAIN("报损单", "stock:stocktaking:gain", "3.3.3", PrivilegeType.MENU, PrivilegeCode.STOCK_STOCKTAKING),
+
+    // ======================= xx管理 =======================
     ;
 
     private final String name;
