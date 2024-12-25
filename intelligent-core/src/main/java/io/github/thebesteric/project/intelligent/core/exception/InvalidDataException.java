@@ -9,15 +9,15 @@ import java.io.Serial;
  * @version v1.0
  * @since 2024-12-19 11:48:14
  */
-public class DataValidErrorException extends BizException {
+public class InvalidDataException extends BizException {
     @Serial
     private static final long serialVersionUID = -8270405734924285317L;
 
-    public DataValidErrorException() {
+    public InvalidDataException() {
         this("数据校验异常");
     }
 
-    public DataValidErrorException(String message) {
+    public InvalidDataException(String message) {
         super(BizCode.DATA_VALID_ERROR, message);
     }
 }
