@@ -8,7 +8,7 @@ import io.github.thebesteric.framework.agile.core.domain.page.PagingResponse;
 import io.github.thebesteric.project.intelligent.core.exception.BizException;
 import io.github.thebesteric.project.intelligent.core.exception.DataAlreadyExistsException;
 import io.github.thebesteric.project.intelligent.core.exception.DataNotFoundException;
-import io.github.thebesteric.project.intelligent.core.exception.DataValidErrorException;
+import io.github.thebesteric.project.intelligent.core.exception.InvalidDataException;
 import io.github.thebesteric.project.intelligent.core.security.util.SecurityUtils;
 import io.github.thebesteric.project.intelligent.module.crm.mapper.datum.CustomerLevelMapper;
 import io.github.thebesteric.project.intelligent.module.crm.model.domain.datum.request.CustomerLevelCreateRequest;
@@ -79,7 +79,7 @@ public class CustomerLevelServiceImpl extends ServiceImpl<CustomerLevelMapper, C
         // 数据校验
         dataValidator
                 // 是否开启自动升级
-                .validate(customerLevel.getAutoUpgrade() && customerLevel.getUpgradeScore() == null, new DataValidErrorException("升级积分不能为空"))
+                .validate(customerLevel.getAutoUpgrade() && customerLevel.getUpgradeScore() == null, new InvalidDataException("升级积分不能为空"))
                 .throwException();
         // 保存
         this.save(customerLevel);
