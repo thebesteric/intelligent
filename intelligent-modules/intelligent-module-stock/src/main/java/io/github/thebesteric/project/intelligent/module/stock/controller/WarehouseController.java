@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/warehouse")
 @RequiredArgsConstructor
 @Tag(name = "库存-仓库-仓库管理")
-@PreAuthorize("@auth.hasAuthority('stock:warehouse:management')")
+@PreAuthorize("@auth.hasAuthority('stock:management:warehouse:management')")
 public class WarehouseController {
 
     private final WarehouseService warehouseService;

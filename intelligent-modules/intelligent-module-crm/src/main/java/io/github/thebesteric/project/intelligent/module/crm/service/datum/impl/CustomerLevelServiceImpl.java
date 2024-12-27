@@ -2,14 +2,11 @@ package io.github.thebesteric.project.intelligent.module.crm.service.datum.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import io.github.thebesteric.framework.agile.commons.util.DataValidator;
 import io.github.thebesteric.framework.agile.commons.util.MapWrapper;
+import io.github.thebesteric.framework.agile.commons.util.Processor;
 import io.github.thebesteric.framework.agile.core.domain.page.PagingResponse;
-import io.github.thebesteric.project.intelligent.core.exception.BizException;
 import io.github.thebesteric.project.intelligent.core.exception.DataAlreadyExistsException;
-import io.github.thebesteric.project.intelligent.core.exception.DataNotFoundException;
 import io.github.thebesteric.project.intelligent.core.exception.InvalidDataException;
-import io.github.thebesteric.project.intelligent.core.security.util.SecurityUtils;
 import io.github.thebesteric.project.intelligent.module.crm.mapper.datum.CustomerLevelMapper;
 import io.github.thebesteric.project.intelligent.module.crm.model.domain.datum.request.CustomerLevelCreateRequest;
 import io.github.thebesteric.project.intelligent.module.crm.model.domain.datum.request.CustomerLevelSearchRequest;
@@ -64,25 +61,26 @@ public class CustomerLevelServiceImpl extends ServiceImpl<CustomerLevelMapper, C
      */
     @Override
     public void create(CustomerLevelCreateRequest createRequest) {
-        String tenantId = SecurityUtils.getTenantIdWithException();
-        DataValidator dataValidator = DataValidator.create(BizException.class);
-        // 检查名称是否重复
-        Map<String, Object> queryParams = MapWrapper.createLambda(CustomerLevel.class, MapWrapper.KeyStyle.SNAKE_CASE)
-                .put(CustomerLevel::getTenantId, tenantId)
-                .put(CustomerLevel::getName, createRequest.getName()).build();
-        CustomerLevel customerLevel = this.getByParams(queryParams);
-        dataValidator.validate(customerLevel != null, new DataAlreadyExistsException("等级名称重复"));
-        // 转换
-        customerLevel = createRequest.transform();
-        // 是否默认设置
-        setOthersDefaultFalseIfNecessary(tenantId, customerLevel.getIsDefault());
-        // 数据校验
-        dataValidator
-                // 是否开启自动升级
-                .validate(customerLevel.getAutoUpgrade() && customerLevel.getUpgradeScore() == null, new InvalidDataException("升级积分不能为空"))
-                .throwException();
-        // 保存
-        this.save(customerLevel);
+        String tenantId = createRequest.getTenantId();
+        Processor.prepare(CustomerLevel.class)
+                .start(() -> {
+                    Map<String, Object> queryParams = MapWrapper.createLambda(CustomerLevel.class, MapWrapper.KeyStyle.SNAKE_CASE)
+                            .put(CustomerLevel::getTenantId, tenantId)
+                            .put(CustomerLevel::getName, createRequest.getName()).build();
+                    return this.getByParams(queryParams);
+                })
+                // 名称校验
+                .validate(customerLevel -> customerLevel != null ? new DataAlreadyExistsException("等级名称重复") : null)
+                // 请求转换为实体类
+                .next(customerLevel -> {
+                    customerLevel = createRequest.transform();
+                    setOthersDefaultFalseIfNecessary(tenantId, customerLevel.getIsDefault());
+                    return customerLevel;
+                })
+                // 校验是否开启自动升级
+                .validate(customerLevel -> Boolean.TRUE.equals(customerLevel.getAutoUpgrade()) && customerLevel.getUpgradeScore() == null ? new InvalidDataException("升级积分不能为空") : null)
+                // 保存
+                .complete(this::save);
     }
 
     /**
@@ -95,19 +93,27 @@ public class CustomerLevelServiceImpl extends ServiceImpl<CustomerLevelMapper, C
      */
     @Override
     public void update(CustomerLevelUpdateRequest updateRequest) {
-        String tenantId = SecurityUtils.getTenantIdWithException();
-        DataValidator dataValidator = DataValidator.create(DataNotFoundException.class);
-        // 检查
-        CustomerLevel customerLevel = getByTenantAndId(tenantId, updateRequest.getId());
-        dataValidator.validate(customerLevel == null, "客户等级不存在");
-        CustomerLevel sameNameCustomerLevel = this.getByParams(MapWrapper.createLambda(CustomerLevel.class).put(CustomerLevel::getName, updateRequest.getName()).build());
-        dataValidator.validate(sameNameCustomerLevel != null, new DataAlreadyExistsException("等级名称重复"));
-        // 合并
-        customerLevel = updateRequest.merge(customerLevel);
-        // 是否默认设置
-        setOthersDefaultFalseIfNecessary(tenantId, customerLevel.getIsDefault());
-        // 更新
-        this.updateById(customerLevel);
+        String tenantId = updateRequest.getTenantId();
+        Processor.prepare(List.class)
+                .start(() -> this.findByName(tenantId, updateRequest.getName()))
+                .validate(sameNameCustomerLevels -> {
+                    if (sameNameCustomerLevels.size() == 1) {
+                        CustomerLevel maybeSelf = (CustomerLevel) sameNameCustomerLevels.get(0);
+                        if (maybeSelf.getId().equals(updateRequest.getId())) {
+                            return null;
+                        }
+                    }
+                    return new DataAlreadyExistsException("等级名称重复");
+                })
+                .next(sameNameCustomerLevels -> {
+                    CustomerLevel customerLevel = (CustomerLevel) sameNameCustomerLevels.get(0);
+                    updateRequest.merge(customerLevel);
+                    setOthersDefaultFalseIfNecessary(tenantId, customerLevel.getIsDefault());
+                    return customerLevel;
+                })
+                // 校验是否开启自动升级
+                .validate(customerLevel -> Boolean.TRUE.equals(customerLevel.getAutoUpgrade()) && customerLevel.getUpgradeScore() == null ? new InvalidDataException("升级积分不能为空") : null)
+                .complete(this::updateById);
     }
 
     /**
@@ -138,5 +144,22 @@ public class CustomerLevelServiceImpl extends ServiceImpl<CustomerLevelMapper, C
                     .set(CustomerLevel::getIsDefault, false)
                     .update();
         }
+    }
+
+    /**
+     * 根据名称获取客勤预警
+     *
+     * @param tenantId 租户 ID
+     * @param name     名称
+     *
+     * @return List<CustomerRelationAlarm>
+     *
+     * @author wangweijun
+     * @since 2024/12/26 13:38
+     */
+    private List<CustomerLevel> findByName(String tenantId, String name) {
+        return this.lambdaQuery().eq(CustomerLevel::getTenantId, tenantId)
+                .eq(CustomerLevel::getName, name)
+                .list();
     }
 }

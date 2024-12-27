@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * CatalogPurchaseAuthInfoResponse
+ * 目录采购授权信息响应
  *
  * @author wangweijun
  * @version v1.0

@@ -34,7 +34,7 @@ import java.util.List;
 @RequestMapping("/datum/level")
 @RequiredArgsConstructor
 @Tag(name = "客户-资料-客户等级")
-@PreAuthorize("@auth.hasAuthority('customer:datum:level')")
+@PreAuthorize("@auth.hasAuthority('customer:management:datum:level')")
 public class CustomerLevelController {
 
     private final CustomerLevelService levelService;

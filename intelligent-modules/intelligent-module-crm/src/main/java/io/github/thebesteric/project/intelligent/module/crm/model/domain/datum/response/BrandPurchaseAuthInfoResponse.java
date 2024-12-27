@@ -8,7 +8,7 @@ import java.io.Serial;
 import java.io.Serializable;
 
 /**
- * 品牌采购授权信息
+ * 品牌采购授权信息响应
  *
  * @author wangweijun
  * @version v1.0

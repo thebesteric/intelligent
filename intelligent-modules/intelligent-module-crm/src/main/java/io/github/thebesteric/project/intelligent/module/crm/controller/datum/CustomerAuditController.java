@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/datum/audit")
 @RequiredArgsConstructor
 @Tag(name = "客户-资料-客户审核")
-@PreAuthorize("@auth.hasAuthority('customer:datum:audit')")
+@PreAuthorize("@auth.hasAuthority('customer:management:datum:audit')")
 public class CustomerAuditController {
 
     private final CustomerService customerService;

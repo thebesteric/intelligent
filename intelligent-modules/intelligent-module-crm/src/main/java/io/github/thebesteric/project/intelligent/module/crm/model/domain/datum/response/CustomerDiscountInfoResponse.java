@@ -11,7 +11,7 @@ import lombok.EqualsAndHashCode;
 import java.io.Serial;
 
 /**
- * BrandDiscountInfo
+ * 客户折扣信息响应
  *
  * @author wangweijun
  * @version v1.0
