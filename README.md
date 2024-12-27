@@ -378,3 +378,44 @@ public R<Id2Vo> limit(@RequestBody Id2Vo id2Vo) {
   return R.success(id2Vo);
 }
 ```
+
+## 开发效率与技巧
+### 请求基类 BaseRequest
+通过 Controller 层的请求，可以继承`BaseRequest`，继承后的请求类可以有以下特性
+- 自带租户 ID：包含`tenantId`属性，无需从代码中再次获取
+- 提供请求类直接转换为实体类的方法：`transform()`
+- 提供请求类与实体类合并的方法：`merge()`
+```java
+// 从数据库中获取实体类
+CustomerLevel customerLevel = getByTenantAndId(tenantId, updateRequest.getId());
+// 与请求合并
+customerLevel = updateRequest.merge(customerLevel);
+```
+### 响应基类 BaseResponse
+通过 Service 层的响应，可以继承`BaseResponse`，继承后的响应类可以有以下特性
+- 自带 ID 属性：继承`BaseResponse`的类，默认自带 ID 属性
+- 提供实体类转换为响应类的方法：`transform()`
+- 提供实体类转换为 JSON 的方法：`toJson()`
+- 提供对象或 JSON 格式字符串转换为 Map 的方法：`toMap()`
+```java
+// 从数据库中获取实体类
+CustomerDiscountInfo discountInfo = this.getUnique(tenantId, customerLevelId, DiscountType.BRAND, brand.getId());
+// 转换为响应类
+CustomerDiscountInfoResponse discountInfoResponse = (CustomerDiscountInfoResponse) new CustomerDiscountInfoResponse().transform(discountInfo);
+```
+### 数据校验 DataValidator
+通过`DataValidator`可以快速实现数据校验，并支持链式编程
+```java
+DataValidator.create(BizException.class)
+        .validate(customer == null, new DataNotFoundException("客户不存在"))
+        .validate(Objects.requireNonNull(customer).getAuditStatus() != AuditStatus.WAIT_AUDIT, new InvalidDataException("客户已完成审核"));
+```
+### 参数快速封装 MapWrapper
+通过`MapWrapper`可以快速实现参数封装，并支持 lambda 表达式和自定义 key 的格式，同时支持链式编程，通常查询条件
+```java
+ Map<String, Object> params = MapWrapper.createLambda(CustomerDiscountInfo.class, MapWrapper.KeyStyle.SNAKE_CASE)
+                .put(CustomerDiscountInfo::getTenantId, tenantId)
+                .put(CustomerDiscountInfo::getCustomerLevelId, customerLevelId)
+                .put(CustomerDiscountInfo::getDiscountType, settingsRequest.getDiscountType())
+                .build();
+```

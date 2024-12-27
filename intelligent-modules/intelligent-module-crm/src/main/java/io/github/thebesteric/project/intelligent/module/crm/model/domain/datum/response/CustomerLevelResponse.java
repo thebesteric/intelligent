@@ -9,7 +9,7 @@ import lombok.EqualsAndHashCode;
 import java.io.Serial;
 
 /**
- * CustomerLevelResponse
+ * 客户等级响应
  *
  * @author wangweijun
  * @version v1.0

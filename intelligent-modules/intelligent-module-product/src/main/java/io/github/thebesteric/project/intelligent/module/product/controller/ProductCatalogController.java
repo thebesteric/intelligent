@@ -26,7 +26,7 @@ import java.util.List;
 @RequestMapping("/catalog")
 @RequiredArgsConstructor
 @Tag(name = "商品-属性-目录管理")
-@PreAuthorize("@auth.hasAuthority('product:attrs:catalog')")
+@PreAuthorize("@auth.hasAuthority('product:management:attrs:catalog')")
 public class ProductCatalogController {
 
     private final ProductCatalogService catalogService;

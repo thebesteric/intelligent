@@ -16,7 +16,7 @@ import java.io.Serial;
 import java.util.List;
 
 /**
- * PurchaseAuthorization
+ * 客户类型采购授权
  *
  * @author wangweijun
  * @version v1.0

@@ -8,7 +8,7 @@ import java.io.Serial;
 import java.io.Serializable;
 
 /**
- * TagPurchaseAuthInfoResponse
+ * 标签采购授权信息响应
  *
  * @author wangweijun
  * @version v1.0

@@ -32,7 +32,7 @@ import java.util.List;
 @RequestMapping("/datum/list")
 @RequiredArgsConstructor
 @Tag(name = "客户-资料-客户列表")
-@PreAuthorize("@auth.hasAuthority('customer:datum:list')")
+@PreAuthorize("@auth.hasAuthority('customer:management:datum:relation-alarm')")
 public class CustomerListController {
 
     private final CustomerService customerService;

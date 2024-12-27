@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * CustomerResponse
+ * 客户
  *
  * @author wangweijun
  * @version v1.0

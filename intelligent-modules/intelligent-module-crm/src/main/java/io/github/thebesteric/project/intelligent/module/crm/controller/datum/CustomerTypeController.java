@@ -31,7 +31,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/datum/type")
 @RequiredArgsConstructor
 @Tag(name = "客户-资料-客户类型")
-@PreAuthorize("@auth.hasAuthority('customer:datum:type')")
+@PreAuthorize("@auth.hasAuthority('customer:management:datum:type')")
 public class CustomerTypeController {
 
     private final CustomerTypeService customerTypeService;

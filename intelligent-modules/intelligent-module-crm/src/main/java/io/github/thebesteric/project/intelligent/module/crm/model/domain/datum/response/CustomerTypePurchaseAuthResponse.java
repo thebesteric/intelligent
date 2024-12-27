@@ -10,7 +10,7 @@ import java.io.Serial;
 import java.util.List;
 
 /**
- * CustomerTypePurchaseAuthResponse
+ * 客户类型采购授权响应
  *
  * @author wangweijun
  * @version v1.0
