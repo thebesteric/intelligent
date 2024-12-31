@@ -58,19 +58,18 @@ public class CustomerRelationAlarmServiceImpl extends ServiceImpl<CustomerRelati
      */
     @Override
     public void create(CustomerRelationAlarmCreateRequest createRequest) {
-        Processor.prepare(List.class).start(() -> {
+        Processor.prepare()
+                .start(() -> {
                     String tenantId = SecurityUtils.getTenantIdWithException();
                     return this.findByName(tenantId, createRequest.getName());
                 })
                 .validate(relationAlarm -> {
-                    if (relationAlarm != null) {
+                    if (!relationAlarm.isEmpty()) {
                         throw new DataAlreadyExistsException("预警名称重复");
                     }
-                    return null;
-                }).complete(relationAlarm -> {
-                    CustomerRelationAlarm transform = createRequest.transform();
-                    this.save(transform);
-                });
+                })
+                .next(() -> createRequest.transform())
+                .complete(this::save);
     }
 
     /**
@@ -84,19 +83,26 @@ public class CustomerRelationAlarmServiceImpl extends ServiceImpl<CustomerRelati
     @SuppressWarnings("unchecked")
     @Override
     public void update(CustomerRelationAlarmUpdateRequest updateRequest) {
-        Processor.prepare(List.class)
+        Processor.prepare()
                 .start(() -> this.findByName(updateRequest.getTenantId(), updateRequest.getName()))
-                .validate(sameNameCustomerRelationAlarms -> {
-                    if (sameNameCustomerRelationAlarms.size() == 1) {
-                        CustomerRelationAlarm maybeSelf = (CustomerRelationAlarm) sameNameCustomerRelationAlarms.get(0);
+                .validate(sameNames -> {
+                    if (sameNames.isEmpty()) {
+                        return;
+                    }
+                    if (sameNames.size() == 1) {
+                        CustomerRelationAlarm maybeSelf = sameNames.get(0);
                         if (maybeSelf.getId().equals(updateRequest.getId())) {
-                            return null;
+                            return;
                         }
                     }
-                    return new DataAlreadyExistsException("预警名称重复");
+                    throw new DataAlreadyExistsException("预警名称重复");
                 })
-                .next(customerRelationAlarms -> getByTenantAndId(updateRequest.getTenantId(), updateRequest.getId()))
-                .validate(relationAlarm -> relationAlarm == null ? new DataNotFoundException("预警不存在") : null)
+                .next(() -> getByTenantAndId(updateRequest.getTenantId(), updateRequest.getId()))
+                .validate(relationAlarm -> {
+                    if (relationAlarm == null) {
+                        throw new DataNotFoundException("预警不存在");
+                    }
+                })
                 .next(updateRequest::merge)
                 .complete(this::updateById);
     }

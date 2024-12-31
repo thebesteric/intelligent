@@ -12,30 +12,25 @@ import lombok.ToString;
 import java.io.Serial;
 
 /**
- * 客户所属区域
+ * 客户标签
  *
  * @author wangweijun
  * @version v1.0
- * @since 2024-12-11 14:52:27
+ * @since 2024-12-27 11:49:37
  */
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@TableName(ApplicationConstants.Application.Module.CRM.TABLE_NAME_PREFIX + "customer_region")
-@EntityClass(comment = "客户所属区域")
-public class CustomerRegion extends BaseTenantBizEntity {
+@TableName(value = ApplicationConstants.Application.Module.CRM.TABLE_NAME_PREFIX + "customer_tag", autoResultMap = true)
+@EntityClass(comment = "客户标签")
+public class CustomerTag extends BaseTenantBizEntity {
     @Serial
-    private static final long serialVersionUID = 7515290645173126386L;
+    private static final long serialVersionUID = -2586229806559650283L;
 
-    @EntityColumn(length = 64, nullable = false, comment = "区域名称")
+    @EntityColumn(length = 64, nullable = false, comment = "标签名称")
     private String name;
 
-    @EntityColumn(length = 64, nullable = false, comment = "区域编码")
-    private String code;
+    @EntityColumn(nullable = false, comment = "标签组 ID")
+    private Long groupId;
 
-    @EntityColumn(comment = "排序")
-    private Integer seq = 0;
-
-    @EntityColumn(length = 64, comment = "父级 ID")
-    private Long parentId;
 }

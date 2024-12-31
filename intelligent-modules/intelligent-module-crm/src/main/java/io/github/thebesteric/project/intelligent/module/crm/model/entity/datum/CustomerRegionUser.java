@@ -12,7 +12,7 @@ import lombok.ToString;
 import java.io.Serial;
 
 /**
- * 客户所属区域
+ * 客户所属区域-关联用户
  *
  * @author wangweijun
  * @version v1.0
@@ -21,21 +21,16 @@ import java.io.Serial;
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@TableName(ApplicationConstants.Application.Module.CRM.TABLE_NAME_PREFIX + "customer_region")
-@EntityClass(comment = "客户所属区域")
-public class CustomerRegion extends BaseTenantBizEntity {
+@TableName(ApplicationConstants.Application.Module.CRM.TABLE_NAME_PREFIX + "customer_region_user")
+@EntityClass(comment = "客户所属区域-关联用户")
+public class CustomerRegionUser extends BaseTenantBizEntity {
     @Serial
-    private static final long serialVersionUID = 7515290645173126386L;
+    private static final long serialVersionUID = -8839172611095052564L;
 
-    @EntityColumn(length = 64, nullable = false, comment = "区域名称")
-    private String name;
+    @EntityColumn(nullable = false, comment = "区域 ID")
+    private Long regionId;
 
-    @EntityColumn(length = 64, nullable = false, comment = "区域编码")
-    private String code;
+    @EntityColumn(nullable = false, comment = "客户 ID")
+    private Long customerId;
 
-    @EntityColumn(comment = "排序")
-    private Integer seq = 0;
-
-    @EntityColumn(length = 64, comment = "父级 ID")
-    private Long parentId;
 }

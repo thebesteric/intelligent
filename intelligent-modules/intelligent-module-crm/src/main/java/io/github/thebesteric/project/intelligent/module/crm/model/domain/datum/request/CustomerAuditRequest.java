@@ -33,7 +33,7 @@ public class CustomerAuditRequest implements Serializable {
     private String auditComment;
 
     @Schema(description = "关联业务员 IDs")
-    private List<String> clerkUserIds;
+    private List<String> salesUserIds;
 
     @Schema(description = "推荐人 ID")
     private Long referrerUserId;

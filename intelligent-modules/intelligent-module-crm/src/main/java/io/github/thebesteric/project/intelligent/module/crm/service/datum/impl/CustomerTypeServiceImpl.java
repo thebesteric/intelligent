@@ -2,12 +2,9 @@ package io.github.thebesteric.project.intelligent.module.crm.service.datum.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import io.github.thebesteric.framework.agile.commons.util.DataValidator;
-import io.github.thebesteric.framework.agile.commons.util.MapWrapper;
+import io.github.thebesteric.framework.agile.commons.util.Processor;
 import io.github.thebesteric.framework.agile.core.domain.page.PagingResponse;
 import io.github.thebesteric.project.intelligent.core.exception.DataAlreadyExistsException;
-import io.github.thebesteric.project.intelligent.core.exception.DataNotFoundException;
-import io.github.thebesteric.project.intelligent.core.security.util.SecurityUtils;
 import io.github.thebesteric.project.intelligent.module.crm.mapper.datum.CustomerTypeMapper;
 import io.github.thebesteric.project.intelligent.module.crm.model.domain.datum.request.CustomerTypeCreateRequest;
 import io.github.thebesteric.project.intelligent.module.crm.model.domain.datum.request.CustomerTypeSearchRequest;
@@ -91,19 +88,27 @@ public class CustomerTypeServiceImpl extends ServiceImpl<CustomerTypeMapper, Cus
      */
     @Override
     public void update(CustomerTypeUpdateRequest updateRequest) {
-        String tenantId = SecurityUtils.getTenantIdWithException();
-        DataValidator dataValidator = DataValidator.create(DataNotFoundException.class);
-        // 检查
-        CustomerType customerType = getByTenantAndId(tenantId, updateRequest.getId());
-        dataValidator.validate(customerType == null, "客户类型不存在");
-        CustomerType sameNameCustomerType = this.getByParams(MapWrapper.createLambda(CustomerType.class).put(CustomerType::getName, updateRequest.getName()).build());
-        dataValidator.validate(sameNameCustomerType != null, new DataAlreadyExistsException("等级名称重复"));
-        // 合并
-        customerType = updateRequest.merge(customerType);
-        // 是否默认设置
-        setOthersDefaultFalseIfNecessary(tenantId, customerType.getIsDefault());
-        // 更新
-        this.updateById(customerType);
+        Processor.prepare()
+                .start(() -> this.findByName(updateRequest.getTenantId(), updateRequest.getName()))
+                .validate(sameNames -> {
+                    if (sameNames.isEmpty()) {
+                        return;
+                    }
+                    if (sameNames.size() == 1) {
+                        CustomerType maybeSelf = sameNames.get(0);
+                        if (maybeSelf.getId().equals(updateRequest.getId())) {
+                            return;
+                        }
+                    }
+                    throw new DataAlreadyExistsException("类型名称重复");
+                })
+                .next(sameNames -> {
+                    CustomerType customerType = sameNames.get(0);
+                    updateRequest.merge(customerType);
+                    setOthersDefaultFalseIfNecessary(customerType.getTenantId(), customerType.getIsDefault());
+                    return customerType;
+                })
+                .complete(this::updateById);
     }
 
     /**
@@ -117,6 +122,23 @@ public class CustomerTypeServiceImpl extends ServiceImpl<CustomerTypeMapper, Cus
     @Override
     public void delete(Long id) {
         this.getBaseMapper().physicalDeleteById(CustomerType.class, id);
+    }
+
+    /**
+     * 根据名称获取客户类型
+     *
+     * @param tenantId 租户 ID
+     * @param name     名称
+     *
+     * @return List<CustomerRelationAlarm>
+     *
+     * @author wangweijun
+     * @since 2024/12/26 13:38
+     */
+    private List<CustomerType> findByName(String tenantId, String name) {
+        return this.lambdaQuery().eq(CustomerType::getTenantId, tenantId)
+                .eq(CustomerType::getName, name)
+                .list();
     }
 
     /**

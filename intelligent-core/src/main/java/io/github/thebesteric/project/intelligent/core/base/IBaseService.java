@@ -135,7 +135,7 @@ public interface IBaseService<T extends BaseEntity> extends IService<T> {
      * @since 2024/12/20 14:43
      */
     default boolean deleteByTenantAndId(String tenantId, Long id) {
-        return remove(new QueryWrapper<T>().eq("tenant_id", tenantId).eq("id", id));
+        return this.remove(new QueryWrapper<T>().eq("tenant_id", tenantId).eq("id", id));
     }
 
 }

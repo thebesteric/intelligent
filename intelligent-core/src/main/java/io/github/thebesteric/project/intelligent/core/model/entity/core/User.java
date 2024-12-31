@@ -5,6 +5,7 @@ import io.github.thebesteric.framework.agile.plugins.database.core.annotation.En
 import io.github.thebesteric.framework.agile.plugins.database.core.annotation.EntityColumn;
 import io.github.thebesteric.project.intelligent.core.base.BaseTenantBizEntity;
 import io.github.thebesteric.project.intelligent.core.constant.ApplicationConstants;
+import io.github.thebesteric.project.intelligent.core.constant.IdentityType;
 import io.github.thebesteric.project.intelligent.core.constant.UserType;
 import io.github.thebesteric.project.intelligent.core.util.BCryptUtils;
 import lombok.Data;
@@ -45,6 +46,9 @@ public class User extends BaseTenantBizEntity {
 
     @EntityColumn(type = EntityColumn.Type.VARCHAR, length = 32, nullable = false, comment = "用户类型")
     private UserType userType;
+
+    @EntityColumn(type = EntityColumn.Type.VARCHAR, length = 32, nullable = false, comment = "身份类型")
+    private IdentityType identityType;
 
     @EntityColumn(type = EntityColumn.Type.DATETIME, comment = "失效日期")
     private Date expiresAt;

@@ -1,6 +1,7 @@
 package io.github.thebesteric.project.intelligent.core.model.domain.core.request;
 
 import io.github.thebesteric.project.intelligent.core.base.BaseRequest;
+import io.github.thebesteric.project.intelligent.core.constant.IdentityType;
 import io.github.thebesteric.project.intelligent.core.constant.UserType;
 import io.github.thebesteric.project.intelligent.core.model.entity.core.User;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -51,5 +52,8 @@ public class UserCreateRequest extends BaseRequest<User> {
 
     @Schema(description = "用户类型")
     private UserType userType = UserType.MEMBER;
+
+    @Schema(description = "用户类型")
+    private IdentityType identityType = IdentityType.OPERATOR;
 
 }

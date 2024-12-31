@@ -9,18 +9,18 @@ import java.util.Arrays;
 
 @Getter
 @AllArgsConstructor
-public enum UserType {
+public enum IdentityType {
 
-    SUPER_ADMIN("SUPER", "超级管理员"),
-    ADMIN("ADMIN", "管理员"),
-    MEMBER("MEMBER", "普通用户");
+    MANAGER("MANAGER", "管理人员"),
+    OPERATOR("OPERATOR", "操作人员"),
+    SALES("SALES", "业务员");
 
     @EnumValue
     @JsonValue
     private final String code;
     private final String desc;
 
-    public static UserType of(String code) {
+    public static IdentityType of(String code) {
         return Arrays.stream(values()).filter(i -> i.code.equalsIgnoreCase(code)).findFirst().orElse(null);
     }
 

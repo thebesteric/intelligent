@@ -117,7 +117,7 @@ public class Customer extends BaseTenantBizEntity {
 
     @EntityColumn(type = EntityColumn.Type.TEXT, comment = "关联业务员 IDs")
     @TableField(jdbcType = JdbcType.VARCHAR, typeHandler = CommaStringToListTypeHandler.class)
-    private List<String> clerkUserIds;
+    private List<String> salesUserIds;
 
     @EntityColumn(comment = "推荐人 ID")
     private Long referrerUserId;
@@ -129,7 +129,7 @@ public class Customer extends BaseTenantBizEntity {
     public void setCustomerAuditInfo(CustomerAuditRequest auditRequest) {
         this.auditStatus = auditRequest.getAuditStatus();
         this.auditComment = auditRequest.getAuditComment();
-        this.clerkUserIds = auditRequest.getClerkUserIds();
+        this.salesUserIds = auditRequest.getSalesUserIds();
         this.referrerUserId = auditRequest.getReferrerUserId();
     }
 

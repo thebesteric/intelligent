@@ -35,7 +35,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mybatis-plus-boot-starter.version>3.5.9</mybatis-plus-boot-starter.version>
         <dynamic-datasource.version>4.3.1</dynamic-datasource.version>
-        <agile.version>1.0.18.2</agile.version>
+        <agile.version>1.0.18.7</agile.version>
         <spring-boot.version>>3.4.1</spring-boot.version>
         <spring-cloud.version>2024.0.0</spring-cloud.version>
         <spring-cloud-alibaba.version>2023.0.3.2</spring-cloud-alibaba.version>

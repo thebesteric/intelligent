@@ -2,6 +2,8 @@ package io.github.thebesteric.project.intelligent.core.mapper.handler;
 
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
+import org.apache.ibatis.type.MappedJdbcTypes;
+import org.apache.ibatis.type.MappedTypes;
 
 import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
@@ -18,6 +20,8 @@ import java.util.List;
  * @version v1.0
  * @since 2024-12-20 11:19:59
  */
+@MappedJdbcTypes(JdbcType.VARCHAR)
+@MappedTypes(List.class)
 public class CommaStringToListTypeHandler extends BaseTypeHandler<List<String>> {
     @Override
     public void setNonNullParameter(PreparedStatement ps, int i, List<String> parameter, JdbcType jdbcType) throws SQLException {
