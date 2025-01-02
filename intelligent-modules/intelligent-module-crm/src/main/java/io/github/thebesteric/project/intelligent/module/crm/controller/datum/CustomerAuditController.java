@@ -16,7 +16,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * CustomerAuditController
+ * 客户-资料-客户审核
  *
  * @author wangweijun
  * @version v1.0

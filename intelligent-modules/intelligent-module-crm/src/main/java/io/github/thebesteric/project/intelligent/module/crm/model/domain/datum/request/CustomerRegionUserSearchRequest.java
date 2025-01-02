@@ -2,6 +2,7 @@ package io.github.thebesteric.project.intelligent.module.crm.model.domain.datum.
 
 import io.github.thebesteric.framework.agile.core.domain.page.PagingRequest;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -19,6 +20,10 @@ import java.io.Serial;
 public class CustomerRegionUserSearchRequest extends PagingRequest {
     @Serial
     private static final long serialVersionUID = -2351394997599280988L;
+
+    @Schema(description = "区域 ID")
+    @NotNull(message = "区域 ID 不能为空")
+    private Long regionId;
 
     @Schema(description = "编号/名称")
     private String keyword;

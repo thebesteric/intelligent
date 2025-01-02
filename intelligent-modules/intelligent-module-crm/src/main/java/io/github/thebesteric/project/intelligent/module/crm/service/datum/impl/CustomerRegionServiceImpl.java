@@ -14,8 +14,8 @@ import io.github.thebesteric.project.intelligent.module.crm.mapper.datum.Custome
 import io.github.thebesteric.project.intelligent.module.crm.model.domain.datum.request.CustomerRegionCreateRequest;
 import io.github.thebesteric.project.intelligent.module.crm.model.domain.datum.request.CustomerRegionUpdateRequest;
 import io.github.thebesteric.project.intelligent.module.crm.model.domain.datum.response.CustomerRegionResponse;
+import io.github.thebesteric.project.intelligent.module.crm.model.entity.datum.Customer;
 import io.github.thebesteric.project.intelligent.module.crm.model.entity.datum.CustomerRegion;
-import io.github.thebesteric.project.intelligent.module.crm.model.entity.datum.CustomerRegionUser;
 import io.github.thebesteric.project.intelligent.module.crm.service.datum.CustomerRegionService;
 import io.github.thebesteric.project.intelligent.module.crm.service.datum.CustomerRegionUserService;
 import lombok.RequiredArgsConstructor;
@@ -188,8 +188,8 @@ public class CustomerRegionServiceImpl extends ServiceImpl<CustomerRegionMapper,
                         throw new DataAlreadyExistsException("该区域下存在下级区域，无法删除");
                     }
                 })
-                .validate((children) -> {
-                    List<CustomerRegionUser> regionUsers = regionUserService.findByRegionId(tenantId, regionId);
+                .validate(() -> {
+                    List<Customer> regionUsers = regionUserService.findByRegionId(tenantId, regionId);
                     if (!regionUsers.isEmpty()) {
                         throw new DataAlreadyExistsException("该区域下存在客户，无法删除");
                     }

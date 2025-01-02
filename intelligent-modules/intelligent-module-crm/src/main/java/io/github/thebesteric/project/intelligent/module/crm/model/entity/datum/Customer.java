@@ -1,5 +1,6 @@
 package io.github.thebesteric.project.intelligent.module.crm.model.entity.datum;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
@@ -80,6 +81,7 @@ public class Customer extends BaseTenantBizEntity {
     private Long customerRelationId;
 
     @EntityColumn(comment = "区域 ID")
+    @TableField(updateStrategy = FieldStrategy.ALWAYS)
     private Long regionId;
 
     @EntityColumn(comment = "省市区 ID")

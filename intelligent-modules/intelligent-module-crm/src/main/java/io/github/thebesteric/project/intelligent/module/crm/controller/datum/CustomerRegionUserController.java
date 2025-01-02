@@ -4,6 +4,7 @@ import io.github.thebesteric.framework.agile.core.domain.R;
 import io.github.thebesteric.framework.agile.core.domain.page.PagingResponse;
 import io.github.thebesteric.framework.agile.plugins.logger.annotation.AgileLogger;
 import io.github.thebesteric.project.intelligent.module.crm.model.domain.datum.request.CustomerRegionUserSearchRequest;
+import io.github.thebesteric.project.intelligent.module.crm.model.domain.datum.request.CustomerRegionUserUpsertRequest;
 import io.github.thebesteric.project.intelligent.module.crm.model.domain.datum.response.CustomerRegionUserResponse;
 import io.github.thebesteric.project.intelligent.module.crm.service.datum.CustomerRegionUserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * CustomerRegionController
+ * 客户-资料-客户区域-关联用户
  *
  * @author wangweijun
  * @version v1.0
@@ -38,4 +39,20 @@ public class CustomerRegionUserController {
     public R<PagingResponse<CustomerRegionUserResponse>> page(@Validated @RequestBody CustomerRegionUserSearchRequest searchRequest) {
         return R.success(regionUserService.page(searchRequest));
     }
+
+    @PostMapping("/add")
+    @Operation(summary = "客户区域-添加关联用户")
+    public R<Void> addCustomers(@Validated @RequestBody CustomerRegionUserUpsertRequest addRequest) {
+        regionUserService.addCustomers(addRequest);
+        return R.success();
+    }
+
+
+    @PostMapping("/remove")
+    @Operation(summary = "客户区域-移除关联用户")
+    public R<Void> removeCustomers(@Validated @RequestBody CustomerRegionUserUpsertRequest removeRequest) {
+        regionUserService.removeCustomers(removeRequest);
+        return R.success();
+    }
+
 }

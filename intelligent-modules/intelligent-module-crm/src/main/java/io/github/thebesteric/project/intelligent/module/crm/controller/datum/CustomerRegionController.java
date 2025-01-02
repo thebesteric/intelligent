@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * CustomerRegionController
+ * 客户-资料-客户区域
  *
  * @author wangweijun
  * @version v1.0

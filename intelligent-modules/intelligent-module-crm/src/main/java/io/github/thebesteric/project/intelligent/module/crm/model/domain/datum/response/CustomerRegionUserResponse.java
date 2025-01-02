@@ -22,9 +22,6 @@ public class CustomerRegionUserResponse implements Serializable {
     @Serial
     private static final long serialVersionUID = 5495866274398436993L;
 
-    @Schema(description = "客户区域-关联用户 ID")
-    private Long id;
-
     @Schema(description = "客户信息")
     private CustomerSimpleResponse customer;
 
@@ -44,6 +41,9 @@ public class CustomerRegionUserResponse implements Serializable {
 
         @Schema(description = "客户编号")
         private String serialNo;
+
+        @Schema(description = "客户地址")
+        private String address;
 
         @Schema(description = "客户等级")
         private CustomerLevelInfo customerLevel;
