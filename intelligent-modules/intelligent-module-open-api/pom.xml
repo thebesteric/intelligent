@@ -12,7 +12,7 @@
     <artifactId>intelligent-module-open-api</artifactId>
     <packaging>jar</packaging>
 
-    <name>intelligent-module-open-api Maven Webapp</name>
+    <name>intelligent-module-open-api</name>
 
     <dependencies>
 

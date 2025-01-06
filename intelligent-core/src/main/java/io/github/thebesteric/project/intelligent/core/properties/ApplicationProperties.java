@@ -228,7 +228,7 @@ public class ApplicationProperties {
     @Data
     public static class OpenApis {
         /** Open API 访问地址 */
-        private String openApi = "http://localhost:8000/open/api";
+        private String openApi = "http://localhost:8000/module/open/api";
     }
 
 }
