@@ -17,15 +17,13 @@ import io.github.thebesteric.project.intelligent.core.model.domain.security.requ
 import io.github.thebesteric.project.intelligent.core.properties.ApplicationProperties;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -73,13 +71,14 @@ public class SecurityAuthenticationController {
     @Parameter(name = "auth_type", description = "认证模式")
     @Parameter(name = "auth_source", description = "认证源")
     @Parameter(name = "scope", description = "授权范围")
+    @Parameter(name = "Authorization", in = ParameterIn.HEADER, description = "授权范围")
     public R<OAuth2Token> accessToken(@RequestParam String username,
                                       @RequestParam String password,
                                       @RequestParam(value = "grant_type", defaultValue = "authorization_password") String grantType,
                                       @RequestParam(value = "auth_type", defaultValue = "password") String authType,
-                                      @RequestParam(value = "auth_source", defaultValue = "intelligent-core-api") String authSource,
+                                      @RequestParam(value = "auth_source", defaultValue = "master") String authSource,
                                       @RequestParam(value = "scope", defaultValue = "profile") String scope,
-                                      @NotBlank(message = "请求认证头不能为空") @RequestParam(value = SecurityConstants.REQUEST_HEADER_AUTHORIZATION, required = false) String authorization) {
+                                      @RequestHeader(value = SecurityConstants.REQUEST_HEADER_AUTHORIZATION, required = false) @NotBlank(message = "请求认证头不能为空") String authorization) {
         OAuth2TokenRequest tokenRequest = OAuth2TokenRequest.of(username, password, GrantType.ofType(grantType), AuthType.ofType(authType), AuthSource.ofSource(authSource), Scope.to(scope));
         ApplicationProperties.OAuth2 oAuth2 = applicationProperties.getOauth2();
         String tokenUri = oAuth2.getAccessTokenUri(tokenRequest);
@@ -101,7 +100,7 @@ public class SecurityAuthenticationController {
     @Operation(summary = "刷新令牌")
     @Parameter(name = "refreshToken", description = "刷新令牌", required = true)
     public R<OAuth2Token> refreshToken(@RequestParam String refreshToken,
-                                       @RequestParam(value = SecurityConstants.REQUEST_HEADER_AUTHORIZATION, required = false) String authorization) {
+                                       @RequestHeader(value = SecurityConstants.REQUEST_HEADER_AUTHORIZATION, required = false) @NotBlank(message = "请求认证头不能为空") String authorization) {
         ApplicationProperties.OAuth2 oAuth2 = applicationProperties.getOauth2();
         String refreshTokenUri = oAuth2.getRefreshTokenUri();
         Map<String, Object> formParams = Map.of(
