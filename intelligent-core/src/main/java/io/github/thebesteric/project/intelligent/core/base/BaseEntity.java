@@ -1,13 +1,14 @@
 package io.github.thebesteric.project.intelligent.core.base;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.*;
+import io.github.thebesteric.framework.agile.plugins.database.core.annotation.EntityClass;
 import io.github.thebesteric.framework.agile.plugins.database.core.annotation.EntityColumn;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
 
+import java.beans.Introspector;
+import java.beans.Transient;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
@@ -41,4 +42,17 @@ public abstract class BaseEntity implements Serializable {
     @TableField(value = "`desc`")
     @EntityColumn(type = EntityColumn.Type.VARCHAR, length = 255, comment = "描述")
     protected String desc;
+
+    @Transient
+    public String getTableName() {
+        String tableName = null;
+        Class<? extends BaseEntity> entityClass = this.getClass();
+        if (entityClass.isAnnotationPresent(EntityClass.class)) {
+            tableName = entityClass.getAnnotation(EntityClass.class).value();
+        }
+        if (StringUtils.isBlank(tableName) && entityClass.isAnnotationPresent(TableName.class)) {
+            tableName = entityClass.getAnnotation(TableName.class).value();
+        }
+        return StringUtils.isNotBlank(tableName) ? tableName : Introspector.decapitalize(this.getClass().getSimpleName());
+    }
 }

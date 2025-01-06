@@ -22,8 +22,8 @@ import java.io.Serial;
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@TableName(ApplicationConstants.Application.Server.CoreApi.TABLE_NAME_PREFIX + "seed")
-@EntityClass(comment = "种子表", schemas = ApplicationConstants.Application.Server.CoreApi.DATASOURCE_INTELLIGENT_CORE_API)
+@TableName(ApplicationConstants.Application.Module.OpenApi.TABLE_NAME_PREFIX + "seed")
+@EntityClass(comment = "种子表", schemas = ApplicationConstants.Application.Module.OpenApi.DATASOURCE_INTELLIGENT_MODULE_OPEN_API)
 public class Seed extends BaseTenantBizEntity {
     @Serial
     private static final long serialVersionUID = -70927475506029829L;

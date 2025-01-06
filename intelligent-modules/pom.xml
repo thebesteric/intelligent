@@ -19,6 +19,7 @@
         <module>intelligent-module-crm</module>
         <module>intelligent-module-product</module>
         <module>intelligent-module-stock</module>
+        <module>intelligent-module-open-api</module>
     </modules>
 
     <dependencies>

@@ -1,12 +1,13 @@
 package io.github.thebesteric.project.intelligent.core.constant.security;
 
-import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
 import java.util.Arrays;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * 授权类型
@@ -32,8 +33,13 @@ public enum GrantType {
         this.desc = desc;
     }
 
+    public static String getTypesStr(GrantType... grantTypes) {
+        grantTypes = grantTypes == null ? values() : grantTypes;
+        return Arrays.stream(grantTypes).map(GrantType::getType).collect(Collectors.joining(","));
+    }
+
     @JsonCreator
     public static GrantType ofType(String type) {
-        return Arrays.stream(GrantType.values()).filter(i -> ObjectUtil.equals(i.getType(), type)).findFirst().orElse(null);
+        return Arrays.stream(GrantType.values()).filter(i -> Objects.equals(i.getType(), type)).findFirst().orElse(null);
     }
 }

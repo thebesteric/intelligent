@@ -94,7 +94,7 @@ public class ProductBrandServiceImpl extends ServiceImpl<ProductBrandMapper, Pro
      */
     @Override
     public void delete(Long id) {
-        String tenantId = SecurityUtils.getTenantId();
+        String tenantId = SecurityUtils.getTenantIdWithException();
         this.deleteByTenantAndId(tenantId, id);
     }
 }

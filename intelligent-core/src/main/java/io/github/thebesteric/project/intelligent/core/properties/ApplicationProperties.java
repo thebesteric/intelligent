@@ -1,5 +1,7 @@
 package io.github.thebesteric.project.intelligent.core.properties;
 
+import io.github.thebesteric.project.intelligent.core.constant.security.AuthSource;
+import io.github.thebesteric.project.intelligent.core.constant.security.AuthType;
 import io.github.thebesteric.project.intelligent.core.constant.security.GrantType;
 import io.github.thebesteric.project.intelligent.core.constant.security.Scope;
 import io.github.thebesteric.project.intelligent.core.model.domain.security.request.OAuth2TokenRequest;
@@ -28,6 +30,10 @@ public class ApplicationProperties {
     /** 认证相关 */
     @NestedConfigurationProperty
     private OAuth2 oauth2 = new OAuth2();
+
+    /** API 接口地址相关 */
+    @NestedConfigurationProperty
+    private OpenApis openApis = new OpenApis();
 
     /** 应用组件 */
     @Data
@@ -170,28 +176,34 @@ public class ApplicationProperties {
         private List<Scope> scopes = List.of(Scope.PROFILE, Scope.OPENID);
         /** 认证客户端 */
         private ClientInfo clientInfo;
+        /** 认证源 */
+        private AuthSource authSource = AuthSource.MASTER;
+        /** 认证类型 */
+        private AuthType authType = AuthType.PASSWORD;
 
-        public String getTokenUri(String username, String password) {
-            OAuth2TokenRequest oAuth2TokenRequest = OAuth2TokenRequest.of(username, password, grantType, scopes);
-            return getTokenUri(oAuth2TokenRequest);
+        public String getAccessTokenUri(String username, String password) {
+            OAuth2TokenRequest oAuth2TokenRequest = OAuth2TokenRequest.of(username, password, grantType, authType, authSource, scopes);
+            return getAccessTokenUri(oAuth2TokenRequest);
         }
 
-        public String getTokenUri(OAuth2TokenRequest tokenRequest) {
+        public String getAccessTokenUri(OAuth2TokenRequest tokenRequest) {
             Map<String, Object> params = new HashMap<>();
             params.put("username", tokenRequest.getUsername());
             params.put("password", tokenRequest.getPassword());
             params.put("grant_type", tokenRequest.getGrantType());
             params.put("scope", tokenRequest.getScope());
+            params.put("auth_source", tokenRequest.getAuthSource());
+            params.put("auth_type", tokenRequest.getAuthType());
             String queryString = toQueryString(params);
-            return issuerUri + "/oauth2/token?" + queryString;
+            return getTokenUri() + "?" + queryString;
         }
 
-        public String getRefreshTokenUri(String refreshToken) {
-            Map<String, Object> params = new HashMap<>();
-            params.put("grant_type", GrantType.GRANT_TYPE_REFRESH_TOKEN.getType());
-            params.put("refresh_token", refreshToken);
-            String queryString = toQueryString(params);
-            return issuerUri + "/oauth2/token?" + queryString;
+        public String getRefreshTokenUri() {
+            return getTokenUri();
+        }
+
+        private String getTokenUri() {
+            return issuerUri + "/oauth2/token";
         }
 
         private String toQueryString(Map<String, Object> params) {
@@ -210,6 +222,13 @@ public class ApplicationProperties {
             private String clientId;
             private String clientSecret;
         }
+    }
+
+    /** API 接口地址相关 */
+    @Data
+    public static class OpenApis {
+        /** Open API 访问地址 */
+        private String openApi = "http://localhost:8000/open/api";
     }
 
 }

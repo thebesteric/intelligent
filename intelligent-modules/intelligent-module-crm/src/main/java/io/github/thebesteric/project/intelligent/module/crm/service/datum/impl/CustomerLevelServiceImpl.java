@@ -62,7 +62,7 @@ public class CustomerLevelServiceImpl extends ServiceImpl<CustomerLevelMapper, C
     @Override
     public void create(CustomerLevelCreateRequest createRequest) {
         String tenantId = createRequest.getTenantId();
-        Processor.prepare(CustomerLevel.class)
+        Processor.prepare()
                 .start(() -> {
                     Map<String, Object> queryParams = MapWrapper.createLambda(CustomerLevel.class, MapWrapper.KeyStyle.SNAKE_CASE)
                             .put(CustomerLevel::getTenantId, tenantId)
@@ -70,7 +70,11 @@ public class CustomerLevelServiceImpl extends ServiceImpl<CustomerLevelMapper, C
                     return this.getByParams(queryParams);
                 })
                 // 名称校验
-                .validate(customerLevel -> customerLevel != null ? new DataAlreadyExistsException("等级名称重复") : null)
+                .validate(customerLevel -> {
+                    if (customerLevel != null) {
+                        throw new DataAlreadyExistsException("等级名称重复");
+                    }
+                })
                 // 请求转换为实体类
                 .next(customerLevel -> {
                     customerLevel = createRequest.transform();
@@ -78,7 +82,11 @@ public class CustomerLevelServiceImpl extends ServiceImpl<CustomerLevelMapper, C
                     return customerLevel;
                 })
                 // 校验是否开启自动升级
-                .validate(customerLevel -> Boolean.TRUE.equals(customerLevel.getAutoUpgrade()) && customerLevel.getUpgradeScore() == null ? new InvalidDataException("升级积分不能为空") : null)
+                .validate(customerLevel -> {
+                    if (Boolean.TRUE.equals(customerLevel.getAutoUpgrade()) && customerLevel.getUpgradeScore() == null) {
+                        throw new InvalidDataException("升级积分不能为空");
+                    }
+                })
                 // 保存
                 .complete(this::save);
     }
@@ -94,25 +102,32 @@ public class CustomerLevelServiceImpl extends ServiceImpl<CustomerLevelMapper, C
     @Override
     public void update(CustomerLevelUpdateRequest updateRequest) {
         String tenantId = updateRequest.getTenantId();
-        Processor.prepare(List.class)
+        Processor.prepare()
                 .start(() -> this.findByName(tenantId, updateRequest.getName()))
-                .validate(sameNameCustomerLevels -> {
-                    if (sameNameCustomerLevels.size() == 1) {
-                        CustomerLevel maybeSelf = (CustomerLevel) sameNameCustomerLevels.get(0);
+                .validate(sameNames -> {
+                    if (sameNames.isEmpty()) {
+                        return;
+                    }
+                    if (sameNames.size() == 1) {
+                        CustomerLevel maybeSelf = sameNames.get(0);
                         if (maybeSelf.getId().equals(updateRequest.getId())) {
-                            return null;
+                            return;
                         }
                     }
-                    return new DataAlreadyExistsException("等级名称重复");
+                    throw new DataAlreadyExistsException("等级名称重复");
                 })
-                .next(sameNameCustomerLevels -> {
-                    CustomerLevel customerLevel = (CustomerLevel) sameNameCustomerLevels.get(0);
+                .next(sameNames -> {
+                    CustomerLevel customerLevel = sameNames.get(0);
                     updateRequest.merge(customerLevel);
                     setOthersDefaultFalseIfNecessary(tenantId, customerLevel.getIsDefault());
                     return customerLevel;
                 })
                 // 校验是否开启自动升级
-                .validate(customerLevel -> Boolean.TRUE.equals(customerLevel.getAutoUpgrade()) && customerLevel.getUpgradeScore() == null ? new InvalidDataException("升级积分不能为空") : null)
+                .validate(customerLevel -> {
+                    if (Boolean.TRUE.equals(customerLevel.getAutoUpgrade()) && customerLevel.getUpgradeScore() == null) {
+                        throw new InvalidDataException("升级积分不能为空");
+                    }
+                })
                 .complete(this::updateById);
     }
 

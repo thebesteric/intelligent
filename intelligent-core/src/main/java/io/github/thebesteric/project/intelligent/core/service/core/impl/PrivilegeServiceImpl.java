@@ -3,8 +3,8 @@ package io.github.thebesteric.project.intelligent.core.service.core.impl;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.github.thebesteric.project.intelligent.core.constant.ApplicationConstants;
-import io.github.thebesteric.project.intelligent.core.constant.PrivilegeCode;
-import io.github.thebesteric.project.intelligent.core.constant.PrivilegeType;
+import io.github.thebesteric.project.intelligent.core.constant.core.PrivilegeCode;
+import io.github.thebesteric.project.intelligent.core.constant.core.PrivilegeType;
 import io.github.thebesteric.project.intelligent.core.mapper.core.PrivilegeMapper;
 import io.github.thebesteric.project.intelligent.core.model.entity.core.Privilege;
 import io.github.thebesteric.project.intelligent.core.service.core.PrivilegeService;
@@ -25,7 +25,7 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-@DS(ApplicationConstants.Application.Server.CoreApi.DATASOURCE_INTELLIGENT_CORE_API)
+@DS(ApplicationConstants.Application.Module.OpenApi.DATASOURCE_INTELLIGENT_MODULE_OPEN_API)
 public class PrivilegeServiceImpl extends ServiceImpl<PrivilegeMapper, Privilege> implements PrivilegeService {
 
     /**

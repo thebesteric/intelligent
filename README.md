@@ -308,6 +308,7 @@ public class Foo extends BaseEntity {
 @SpringBootApplication
 @MapperScan(ApplicationConstants.MAPPER_PACKAGE_PATH)
 @ComponentScan(ApplicationConstants.COMPONENT_PACKAGE_PATH)
+@EnableAspectJAutoProxy(exposeProxy = true)
 @ConfigurationPropertiesScan(ApplicationConstants.COMPONENT_PACKAGE_PATH)
 @EnableAgile
 public class QuickstartServiceDemoApplication {

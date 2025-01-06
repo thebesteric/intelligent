@@ -1,21 +1,23 @@
 package io.github.thebesteric.project.intelligent.oauth.config;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTParser;
+import io.github.thebesteric.project.intelligent.core.constant.security.GrantType;
 import io.github.thebesteric.project.intelligent.core.constant.security.SecurityConstants;
-import io.github.thebesteric.project.intelligent.core.model.entity.core.Role;
 import io.github.thebesteric.project.intelligent.core.properties.OAuth2Properties;
-import io.github.thebesteric.project.intelligent.core.security.SecurityAccessDeniedHandler;
-import io.github.thebesteric.project.intelligent.core.security.SecurityAuthenticationEntryPoint;
-import io.github.thebesteric.project.intelligent.core.security.SecurityAuthenticationFailureHandler;
-import io.github.thebesteric.project.intelligent.core.security.SecurityExceptionTranslationFilter;
+import io.github.thebesteric.project.intelligent.core.security.*;
 import io.github.thebesteric.project.intelligent.oauth.config.convert.PasswordGrantAuthenticationConverter;
 import io.github.thebesteric.project.intelligent.oauth.config.convert.PasswordGrantAuthenticationProvider;
-import io.github.thebesteric.project.intelligent.oauth.model.domain.UserDomain;
+import io.github.thebesteric.project.intelligent.oauth.detail.UserDetailsFactory;
+import io.github.thebesteric.project.intelligent.oauth.model.domain.CustomUserDetails;
 import io.github.thebesteric.project.intelligent.oauth.service.UserDetailsManager;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.catalina.util.StandardSessionIdGenerator;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.context.annotation.Bean;
@@ -29,7 +31,6 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -52,6 +53,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -62,10 +65,7 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.text.ParseException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * SpringSecurityConfig
@@ -106,7 +106,8 @@ public class WebSecurityConfig {
                                     // 开启 OpenID Connect 1.0
                                     .oidc(Customizer.withDefaults());
                         }
-                );
+                )
+                .authorizeHttpRequests(authorize -> authorize.anyRequest().authenticated());
 
         // For Spring Boot 3.3.x
         // 将默认的 OAuth2 security configuration 应用到 HttpSecurity
@@ -206,14 +207,14 @@ public class WebSecurityConfig {
      * 基于数据库的用户信息
      */
     @Bean
-    public UserDetailsService userDetailsService() {
-        return new UserDetailsManager();
+    public UserDetailsService userDetailsService(UserDetailsFactory userDetailsFactory) {
+        return new UserDetailsManager(userDetailsFactory);
     }
 
     /**
      * 客户端信息
      * 对应表：oauth2-registered-client-schema.sql
-     * spring-security-oauth2-authorization-server-1.3.1.jar!/org/springframework/security/oauth2/server/authorization/client/oauth2-registered-client-schema.sql
+     * spring-security-oauth2-authorization-server-1.4.1.jar!/org/springframework/security/oauth2/server/authorization/client/oauth2-registered-client-schema.sql
      */
     @Bean
     public RegisteredClientRepository registeredClientRepository(JdbcTemplate jdbcTemplate) {
@@ -223,17 +224,21 @@ public class WebSecurityConfig {
     /**
      * 授权信息
      * 对应表：oauth2_authorization
-     * spring-security-oauth2-authorization-server/1.3.1/spring-security-oauth2-authorization-server-1.3.1.jar!/org/springframework/security/oauth2/server/authorization/oauth2-authorization-schema.sql
+     * spring-security-oauth2-authorization-server-1.4.1.jar!/org/springframework/security/oauth2/server/authorization/oauth2-authorization-schema.sql
      */
     @Bean
     public OAuth2AuthorizationService authorizationService(JdbcTemplate jdbcTemplate, RegisteredClientRepository registeredClientRepository) {
         return new JdbcOAuth2AuthorizationService(jdbcTemplate, registeredClientRepository);
     }
 
+    @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+    public abstract static class SynchronizedSetMixin {
+    }
+
     /**
      * 授权确认
      * 对应表：oauth2_authorization_consent
-     * spring-security-oauth2-authorization-server/1.3.1/spring-security-oauth2-authorization-server-1.3.1.jar!/org/springframework/security/oauth2/server/authorization/oauth2-authorization-consent-schema.sql
+     * spring-security-oauth2-authorization-server-1.4.1.jar!/org/springframework/security/oauth2/server/authorization/oauth2-authorization-consent-schema.sql
      */
     @Bean
     public OAuth2AuthorizationConsentService authorizationConsentService(JdbcTemplate jdbcTemplate, RegisteredClientRepository registeredClientRepository) {
@@ -250,7 +255,7 @@ public class WebSecurityConfig {
 
     /**
      * 配置 JWK，为 JWT(id_token) 提供加密密钥，用于加密/解密或签名/验签
-     * JWK 详细见：https://datatracker.ietf.org/doc/html/draft-ietf-jose-json-web-key-41
+     * JWK 详见：https://datatracker.ietf.org/doc/html/draft-ietf-jose-json-web-key-41
      */
     @Bean
     public JWKSource<SecurityContext> jwkSource(StringRedisTemplate redisTemplate) throws ParseException {
@@ -287,15 +292,22 @@ public class WebSecurityConfig {
         return keyPair;
     }
 
+    /**
+     * 用于解码签名访问令牌
+     */
     @Bean
     public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
         return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
     }
 
+    /**
+     * 用于配置 Spring Authorization Server
+     */
     @Bean
-    public AuthorizationServerSettings authorizationServerSettings() {
+    public AuthorizationServerSettings authorizationServerSettings(JdbcTemplate jdbcTemplate) {
         // 什么都不配置，则使用默认地址，即请求的 token 的地址就是 iss 的地址
         return AuthorizationServerSettings.builder().build();
+
     }
 
     /**
@@ -312,14 +324,35 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public OAuth2TokenCustomizer<JwtEncodingContext> jwtCustomizer() {
+    public OAuth2TokenCustomizer<JwtEncodingContext> jwtCustomizer(OAuth2AuthorizationService authorizationService) {
         return context -> {
             OAuth2TokenType tokenType = context.getTokenType();
-            Authentication authentication = context.getPrincipal();
-            UserDomain userDomain = (UserDomain) authentication.getPrincipal();
+            // Authentication authentication = context.getPrincipal();
+            // User userDetails = (User) authentication.getPrincipal();
+            CustomUserDetails userDetails = (CustomUserDetails) SecurityContextHolder.getUserDetails();
+
+
+            // Get userDetails from refresh_token
+            if (userDetails == null) {
+                ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+                assert attr != null;
+                HttpServletRequest request = attr.getRequest();
+                String refreshToken = request.getParameter(GrantType.GRANT_TYPE_REFRESH_TOKEN.getType());
+                OAuth2Authorization token = authorizationService.findByToken(refreshToken, OAuth2TokenType.REFRESH_TOKEN);
+                if (token == null) {
+                    throw new SecurityAuthenticationException("Get refreshToken error");
+                }
+                try {
+                    JWT jwt = JWTParser.parse(token.getAccessToken().getToken().getTokenValue());
+                    userDetails = CustomUserDetails.fromJwt(jwt);
+                } catch (Exception e) {
+                    throw new SecurityAuthenticationException(e);
+                }
+            }
+
             if (tokenType.equals(OAuth2TokenType.ACCESS_TOKEN) || tokenType.getValue().equals(OidcParameterNames.ID_TOKEN)) {
-                List<GrantedAuthority> authorities = userDomain.getAuthorities();
-                List<String> roleCodes = userDomain.getRoles().stream().map(Role::getCode).toList();
+                Collection<? extends GrantedAuthority> authorities = userDetails.getAuthorities();
+                List<String> roleCodes = userDetails.getRoles();
 
                 // Customize headers/claims for access_token
                 JwsHeader.Builder headers = context.getJwsHeader();
@@ -328,9 +361,9 @@ public class WebSecurityConfig {
                 JwtClaimsSet.Builder claims = context.getClaims();
                 // Customize headers/claims for id_token
                 claims.claim(IdTokenClaimNames.AUTH_TIME, Date.from(Instant.now()));
-                claims.claim(SecurityConstants.CLAIM_IDENTITY, userDomain.getId());
-                claims.claim(SecurityConstants.CLAIM_USERNAME, userDomain.getUsername());
-                claims.claim(SecurityConstants.CLAIM_TENANT_ID, userDomain.getTenantId());
+                claims.claim(SecurityConstants.CLAIM_IDENTITY, userDetails.getId());
+                claims.claim(SecurityConstants.CLAIM_USERNAME, userDetails.getUsername());
+                claims.claim(SecurityConstants.CLAIM_TENANT_ID, userDetails.getTenantId());
                 claims.claim(SecurityConstants.CLAIM_SID, new StandardSessionIdGenerator().generateSessionId());
                 claims.claim(SecurityConstants.CLAIM_ROLES, clone(roleCodes));
                 claims.claim(SecurityConstants.CLAIM_AUTHORITIES, clone(authorities.stream().map(GrantedAuthority::getAuthority).toList()));

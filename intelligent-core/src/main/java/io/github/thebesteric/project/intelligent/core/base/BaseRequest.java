@@ -1,12 +1,14 @@
 package io.github.thebesteric.project.intelligent.core.base;
 
 import io.github.thebesteric.project.intelligent.core.exception.BizException;
+import io.github.thebesteric.project.intelligent.core.security.util.SecurityUtils;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.vavr.control.Try;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.BeanUtils;
 
+import java.beans.Transient;
 import java.io.Serial;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
@@ -61,4 +63,9 @@ public abstract class BaseRequest<T extends BaseEntity> implements Serializable 
         return null;
     }
 
+    @Transient
+    @Schema(hidden = true)
+    public String getTenantIdWithException() {
+        return SecurityUtils.getTenantIdWithException();
+    }
 }

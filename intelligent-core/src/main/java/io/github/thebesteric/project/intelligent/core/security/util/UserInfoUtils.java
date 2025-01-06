@@ -1,8 +1,8 @@
 package io.github.thebesteric.project.intelligent.core.security.util;
 
 import io.github.thebesteric.framework.agile.commons.util.AbstractUtils;
-import io.github.thebesteric.project.intelligent.core.constant.PrivilegeCode;
-import io.github.thebesteric.project.intelligent.core.constant.RoleCode;
+import io.github.thebesteric.project.intelligent.core.constant.core.PrivilegeCode;
+import io.github.thebesteric.project.intelligent.core.constant.core.RoleCode;
 
 import java.util.List;
 

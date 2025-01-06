@@ -2,7 +2,7 @@ package io.github.thebesteric.project.intelligent.core.security.util;
 
 import io.github.thebesteric.framework.agile.commons.util.AbstractUtils;
 import io.github.thebesteric.project.intelligent.core.constant.security.SecurityConstants;
-import io.github.thebesteric.project.intelligent.core.exception.BizException;
+import io.github.thebesteric.project.intelligent.core.exception.DataNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -52,7 +52,7 @@ public class SecurityUtils extends AbstractUtils {
     public static String getTenantIdWithException() {
         String tenantId = getTenantId();
         if (tenantId == null) {
-            throw new BizException(BizException.BizCode.DATA_NOT_FOUND, "tenantId can not be null");
+            throw new DataNotFoundException("tenantId can not be null");
         }
         return tenantId;
     }

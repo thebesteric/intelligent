@@ -12,7 +12,7 @@ import lombok.ToString;
 import java.io.Serial;
 
 /**
- * Region
+ * 客户所属区域
  *
  * @author wangweijun
  * @version v1.0

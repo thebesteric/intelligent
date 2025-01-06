@@ -1,6 +1,6 @@
 package io.github.thebesteric.project.intelligent.oauth.config.convert;
 
-import io.github.thebesteric.project.intelligent.oauth.config.OAuth2Constant;
+import io.github.thebesteric.project.intelligent.core.constant.security.GrantType;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,7 +27,7 @@ public class PasswordGrantAuthenticationConverter implements AuthenticationConve
     public Authentication convert(HttpServletRequest request) {
         // grant_type (REQUIRED)
         String grantType = request.getParameter(OAuth2ParameterNames.GRANT_TYPE);
-        if (!OAuth2Constant.GRANT_TYPE_PASSWORD.equals(grantType)) {
+        if (!GrantType.GRANT_TYPE_PASSWORD.getType().equals(grantType)) {
             return null;
         }
         Authentication clientPrincipal = SecurityContextHolder.getContext().getAuthentication();

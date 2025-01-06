@@ -12,6 +12,6 @@ import io.github.thebesteric.project.intelligent.core.model.entity.core.User;
  * @version v1.0
  * @since 2024-12-04 16:20:25
  */
-@DS(ApplicationConstants.Application.Server.CoreApi.DATASOURCE_INTELLIGENT_CORE_API)
+@DS(ApplicationConstants.Application.Module.OpenApi.DATASOURCE_INTELLIGENT_MODULE_OPEN_API)
 public interface UserMapper extends IBaseMapper<User> {
 }

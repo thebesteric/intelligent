@@ -1,7 +1,7 @@
 package io.github.thebesteric.project.intelligent.core.service.core;
 
 import io.github.thebesteric.project.intelligent.core.base.IBaseService;
-import io.github.thebesteric.project.intelligent.core.constant.RoleType;
+import io.github.thebesteric.project.intelligent.core.constant.core.RoleType;
 import io.github.thebesteric.project.intelligent.core.model.entity.core.Role;
 
 import java.util.List;

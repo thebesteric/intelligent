@@ -22,8 +22,9 @@ public enum Scope {
         this.name = name;
     }
 
-    public static String getScopesStr() {
-        return Arrays.stream(Scope.values()).map(Scope::getName).collect(Collectors.joining(" "));
+    public static String getScopesStr(Scope... scopes) {
+        scopes = scopes == null ? values() : scopes;
+        return Arrays.stream(scopes).map(Scope::getName).collect(Collectors.joining(" "));
     }
 
     public static Scope of(String name) {

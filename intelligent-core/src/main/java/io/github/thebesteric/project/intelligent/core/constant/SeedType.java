@@ -18,7 +18,9 @@ import java.util.Arrays;
 @AllArgsConstructor
 public enum SeedType {
 
-    CUSTOMER_SERIAL_NO("CUSTOMER_SERIAL_NO", "CSN", 11, "客户编号");
+    CUSTOMER_SERIAL_NO("CUSTOMER_SERIAL_NO", "CSN", 11, "客户编号"),
+    CUSTOMER_REGION_CODE("CUSTOMER_REGION_CODE", "RGN", 5, "客户区域")
+    ;
 
     @EnumValue
     @JsonValue

@@ -81,6 +81,7 @@ import static org.springdoc.core.utils.SpringDocAnnotationsUtils.*;
 
 /**
  * The type Generic response builder.
+ * 修复：Knife4J 不支持 SpringBoot 3.4.x 版本的问题，详见：702 行
  *
  * @author bnasslahsen
  */

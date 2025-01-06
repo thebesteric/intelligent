@@ -1,7 +1,7 @@
 server:
   port: 8002
   servlet:
-    context-path: /product/api
+    context-path: /module/product/api
 
 spring:
   application:
