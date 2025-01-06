@@ -20,8 +20,8 @@ import java.util.List;
  */
 @Data
 @EqualsAndHashCode(callSuper = true)
-@TableName(ApplicationConstants.Application.Server.CoreApi.TABLE_NAME_PREFIX + "r_user_role")
-@EntityClass(comment = "用户角色关联表", schemas = ApplicationConstants.Application.Server.CoreApi.DATASOURCE_INTELLIGENT_CORE_API)
+@TableName(ApplicationConstants.Application.Module.OpenApi.TABLE_NAME_PREFIX + "r_user_role")
+@EntityClass(comment = "用户角色关联表", schemas = ApplicationConstants.Application.Module.OpenApi.DATASOURCE_INTELLIGENT_MODULE_OPEN_API)
 public class UserRole extends BaseTenantBizEntity {
     @Serial
     private static final long serialVersionUID = -6891742786257676698L;

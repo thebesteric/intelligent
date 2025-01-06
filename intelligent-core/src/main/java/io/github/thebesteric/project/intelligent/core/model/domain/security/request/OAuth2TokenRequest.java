@@ -1,5 +1,7 @@
 package io.github.thebesteric.project.intelligent.core.model.domain.security.request;
 
+import io.github.thebesteric.project.intelligent.core.constant.security.AuthSource;
+import io.github.thebesteric.project.intelligent.core.constant.security.AuthType;
 import io.github.thebesteric.project.intelligent.core.constant.security.GrantType;
 import io.github.thebesteric.project.intelligent.core.constant.security.Scope;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -24,16 +26,27 @@ public class OAuth2TokenRequest implements Serializable {
     @Serial
     private static final long serialVersionUID = 3991971598766442171L;
 
+    @Schema(description = "用户名")
     @NotBlank(message = "用户名不能为空")
     private String username;
 
+    @Schema(description = "密码")
     @NotBlank(message = "密码不能为空")
     private String password;
 
-    @NotNull(message = "授权类型不能为空")
     @Schema(name = "grant_type", description = "授权类型", enumAsRef = true)
+    @NotNull(message = "授权类型不能为空")
     private String grantType = GrantType.GRANT_TYPE_PASSWORD.getType();
 
+    @Schema(name = "auth_type", description = "认证模式", enumAsRef = true)
+    @NotNull(message = "认证模式不能为空")
+    private String authType = AuthType.PASSWORD.getType();
+
+    @Schema(name = "auth_source", description = "认证源", enumAsRef = true)
+    @NotNull(message = "认证源不能为空")
+    private String authSource = AuthSource.MASTER.getSource();
+
+    @Schema(description = "授权范围")
     @NotBlank(message = "授权范围不能为空")
     private String scope = "profile openid";
 
@@ -44,9 +57,11 @@ public class OAuth2TokenRequest implements Serializable {
         return tokenRequest;
     }
 
-    public static OAuth2TokenRequest of(String username, String password, GrantType grantType, List<Scope> scopes) {
+    public static OAuth2TokenRequest of(String username, String password, GrantType grantType, AuthType authType, AuthSource authSource, List<Scope> scopes) {
         OAuth2TokenRequest tokenRequest = of(username, password);
         tokenRequest.grantType = grantType.getType();
+        tokenRequest.authType = authType.getType();
+        tokenRequest.authSource = authSource.getSource();
         tokenRequest.scope = scopes.stream().map(Scope::getName).collect(Collectors.joining(" "));
         return tokenRequest;
     }

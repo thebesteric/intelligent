@@ -3,8 +3,8 @@ package io.github.thebesteric.project.intelligent.core.service.core.impl;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.github.thebesteric.project.intelligent.core.constant.ApplicationConstants;
-import io.github.thebesteric.project.intelligent.core.constant.RoleCode;
-import io.github.thebesteric.project.intelligent.core.constant.RoleType;
+import io.github.thebesteric.project.intelligent.core.constant.core.RoleCode;
+import io.github.thebesteric.project.intelligent.core.constant.core.RoleType;
 import io.github.thebesteric.project.intelligent.core.generator.SimpleDictShortCodeGenerator;
 import io.github.thebesteric.project.intelligent.core.mapper.core.RoleMapper;
 import io.github.thebesteric.project.intelligent.core.model.entity.core.Role;
@@ -24,7 +24,7 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-@DS(ApplicationConstants.Application.Server.CoreApi.DATASOURCE_INTELLIGENT_CORE_API)
+@DS(ApplicationConstants.Application.Module.OpenApi.DATASOURCE_INTELLIGENT_MODULE_OPEN_API)
 public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements RoleService {
 
     private final SimpleDictShortCodeGenerator codeGenerator;

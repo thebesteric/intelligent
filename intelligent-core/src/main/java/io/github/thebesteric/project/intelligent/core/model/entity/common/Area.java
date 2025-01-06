@@ -32,8 +32,8 @@ import java.util.List;
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@TableName(ApplicationConstants.Application.Server.CoreApi.TABLE_NAME_PREFIX + "area")
-@EntityClass(comment = "全国省市自治区表", schemas = ApplicationConstants.Application.Server.CoreApi.DATASOURCE_INTELLIGENT_CORE_API)
+@TableName(ApplicationConstants.Application.Module.OpenApi.TABLE_NAME_PREFIX + "area")
+@EntityClass(comment = "全国省市自治区表", schemas = ApplicationConstants.Application.Module.OpenApi.DATASOURCE_INTELLIGENT_MODULE_OPEN_API)
 public class Area extends BaseEntity implements EntityClassCreateListener {
     @Serial
     private static final long serialVersionUID = -209963749862545214L;
@@ -59,10 +59,11 @@ public class Area extends BaseEntity implements EntityClassCreateListener {
     @Override
     public void postCreateTable(JdbcTemplateHelper jdbcTemplateHelper) {
         Try.run(() -> {
+            String tableName = getTableName();
             JdbcTemplate jdbcTemplate = jdbcTemplateHelper.getJdbcTemplate();
-            Long count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM t_core_area", Long.class);
+            Long count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM " + tableName, Long.class);
             if (count == null || count == 0) {
-                ClassPathResource resource = new ClassPathResource("assets/t_core_area.sql");
+                ClassPathResource resource = new ClassPathResource("assets/t_open_area.sql");
                 File file = resource.getFile();
                 FileReader fileReader = new FileReader(file);
                 BufferedReader reader = new BufferedReader(fileReader);

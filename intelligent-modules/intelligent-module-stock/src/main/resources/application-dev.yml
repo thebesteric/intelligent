@@ -33,3 +33,7 @@ spring:
       host: 127.0.0.1
       port: 6379
       database: 0
+
+application:
+  open-apis:
+    open-api: http://localhost:8000/module/open/api

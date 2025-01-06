@@ -14,9 +14,9 @@ import io.github.thebesteric.project.intelligent.module.crm.mapper.datum.Custome
 import io.github.thebesteric.project.intelligent.module.crm.model.domain.datum.request.CustomerRegionUserSearchRequest;
 import io.github.thebesteric.project.intelligent.module.crm.model.domain.datum.request.CustomerRegionUserUpsertRequest;
 import io.github.thebesteric.project.intelligent.module.crm.model.domain.datum.response.CustomerRegionUserResponse;
-import io.github.thebesteric.project.intelligent.module.crm.model.entity.datum.Customer;
+import io.github.thebesteric.project.intelligent.core.model.entity.crm.Customer;
 import io.github.thebesteric.project.intelligent.module.crm.service.datum.CustomerRegionUserService;
-import io.github.thebesteric.project.intelligent.module.crm.service.datum.CustomerService;
+import io.github.thebesteric.project.intelligent.core.service.crm.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

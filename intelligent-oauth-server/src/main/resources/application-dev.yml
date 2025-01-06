@@ -21,10 +21,16 @@ spring:
           url: jdbc:mysql://localhost:3306/intelligent-oauth-server?useUnicode=true&characterEncoding=UTF-8&useSSL=false&autoReconnect=true&failOverReadOnly=false&serverTimezone=Asia/Shanghai&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull&allowPublicKeyRetrieval=true
           username: root
           password: root
-        intelligent-core-api:
+        intelligent-module-open-api:
           type: com.zaxxer.hikari.HikariDataSource
           driver-class-name: com.mysql.cj.jdbc.Driver
-          url: jdbc:mysql://localhost:3306/intelligent-core-api?useUnicode=true&characterEncoding=UTF-8&useSSL=false&autoReconnect=true&failOverReadOnly=false&serverTimezone=Asia/Shanghai&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull&allowPublicKeyRetrieval=true
+          url: jdbc:mysql://localhost:3306/intelligent-module-open-api?useUnicode=true&characterEncoding=UTF-8&useSSL=false&autoReconnect=true&failOverReadOnly=false&serverTimezone=Asia/Shanghai&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull&allowPublicKeyRetrieval=true
+          username: root
+          password: root
+        intelligent-module-crm:
+          type: com.zaxxer.hikari.HikariDataSource
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://localhost:3306/intelligent-module-crm?useUnicode=true&characterEncoding=UTF-8&useSSL=false&autoReconnect=true&failOverReadOnly=false&serverTimezone=Asia/Shanghai&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull&allowPublicKeyRetrieval=true
           username: root
           password: root
 
@@ -33,3 +39,8 @@ spring:
       host: localhost
       port: 6379
       database: 0
+
+oauth2:
+  issuer-uri: http://localhost:${server.port}
+  cors:
+    allowed-origins: "*"

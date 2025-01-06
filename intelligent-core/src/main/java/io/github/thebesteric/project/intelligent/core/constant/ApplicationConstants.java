@@ -38,17 +38,17 @@ public final class ApplicationConstants extends AbstractUtils {
             public static final class Gateway extends AbstractUtils {
 
             }
-
-            /** 核心服务 */
-            public static final class CoreApi extends AbstractUtils {
-                /** 数据库 */
-                public static final String DATASOURCE_INTELLIGENT_CORE_API = "intelligent-core-api";
-                public static final String TABLE_NAME_PREFIX = "t_core_";
-            }
         }
 
         /** 模块 */
         public static final class Module extends AbstractUtils {
+
+            /** 核心服务 */
+            public static final class OpenApi extends AbstractUtils {
+                /** 数据库 */
+                public static final String DATASOURCE_INTELLIGENT_MODULE_OPEN_API = "intelligent-module-open-api";
+                public static final String TABLE_NAME_PREFIX = "t_open_";
+            }
 
             /** 客户管理 */
             public static final class CRM extends AbstractUtils {

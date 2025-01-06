@@ -3,7 +3,7 @@ package io.github.thebesteric.project.intelligent.core.service.core.impl;
 import com.baomidou.dynamic.datasource.annotation.DS;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.github.thebesteric.project.intelligent.core.constant.ApplicationConstants;
-import io.github.thebesteric.project.intelligent.core.constant.RoleType;
+import io.github.thebesteric.project.intelligent.core.constant.core.RoleType;
 import io.github.thebesteric.project.intelligent.core.mapper.core.RolePrivilegeMapper;
 import io.github.thebesteric.project.intelligent.core.model.entity.core.Privilege;
 import io.github.thebesteric.project.intelligent.core.model.entity.core.Role;
@@ -28,7 +28,7 @@ import java.util.Set;
  */
 @Service
 @RequiredArgsConstructor
-@DS(ApplicationConstants.Application.Server.CoreApi.DATASOURCE_INTELLIGENT_CORE_API)
+@DS(ApplicationConstants.Application.Module.OpenApi.DATASOURCE_INTELLIGENT_MODULE_OPEN_API)
 public class RolePrivilegeServiceImpl extends ServiceImpl<RolePrivilegeMapper, RolePrivilege> implements RolePrivilegeService {
 
     private final RoleService roleService;

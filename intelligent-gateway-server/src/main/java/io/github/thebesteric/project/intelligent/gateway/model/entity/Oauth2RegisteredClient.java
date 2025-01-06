@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import io.github.thebesteric.framework.agile.commons.util.JsonUtils;
 import io.github.thebesteric.framework.agile.plugins.database.core.annotation.EntityClass;
 import io.github.thebesteric.framework.agile.plugins.database.core.annotation.EntityColumn;
+import io.github.thebesteric.project.intelligent.core.constant.security.GrantType;
 import io.github.thebesteric.project.intelligent.core.util.BCryptUtils;
 import io.github.thebesteric.project.intelligent.core.util.IdentityUtils;
 import lombok.Data;
@@ -25,7 +26,7 @@ import java.util.*;
 public class Oauth2RegisteredClient {
 
     /** 密码模式 */
-    public static final String GRANT_TYPE_PASSWORD = "authorization_password";
+    public static final String GRANT_TYPE_PASSWORD = GrantType.GRANT_TYPE_PASSWORD.getType();
 
     /** 密码模式不支持 openid */
     public static final String SCOPE_OPENID = "openid";
@@ -75,7 +76,7 @@ public class Oauth2RegisteredClient {
     }
 
     public String defaultAuthorizationGrantTypes() {
-        return "refresh_token,authorization_code";
+        return GrantType.getTypesStr(GrantType.GRANT_TYPE_PASSWORD, GrantType.GRANT_TYPE_REFRESH_TOKEN);
     }
 
     public void setIdentity(IdentityUtils.Identity identity) {

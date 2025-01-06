@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * @Author guidy
@@ -24,7 +25,7 @@ public enum DeviceType {
 
     @JsonCreator
     public static DeviceType ofDevice(String device) {
-        return Arrays.stream(DeviceType.values()).filter(i -> ObjectUtil.equals(i.getDevice(), device)).findFirst().orElse(null);
+        return Arrays.stream(DeviceType.values()).filter(i -> Objects.equals(i.getDevice(), device)).findFirst().orElse(null);
     }
 
 }

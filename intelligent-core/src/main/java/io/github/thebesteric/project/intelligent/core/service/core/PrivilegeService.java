@@ -1,6 +1,6 @@
 package io.github.thebesteric.project.intelligent.core.service.core;
 
-import io.github.thebesteric.project.intelligent.core.constant.PrivilegeType;
+import io.github.thebesteric.project.intelligent.core.constant.core.PrivilegeType;
 import io.github.thebesteric.project.intelligent.core.model.entity.core.Privilege;
 import io.github.thebesteric.project.intelligent.core.base.IBaseService;
 

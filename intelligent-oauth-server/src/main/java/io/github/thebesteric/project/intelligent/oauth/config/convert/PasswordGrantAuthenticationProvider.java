@@ -1,6 +1,12 @@
 package io.github.thebesteric.project.intelligent.oauth.config.convert;
 
+import io.github.thebesteric.project.intelligent.core.constant.security.AuthSource;
+import io.github.thebesteric.project.intelligent.core.constant.security.AuthType;
+import io.github.thebesteric.project.intelligent.core.constant.security.DeviceType;
+import io.github.thebesteric.project.intelligent.core.constant.security.SecurityConstants;
+import io.github.thebesteric.project.intelligent.oauth.config.SecurityContextHolder;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -81,12 +87,33 @@ public class PasswordGrantAuthenticationProvider implements AuthenticationProvid
         String username = (String) additionalParameters.get(OAuth2ParameterNames.USERNAME);
         // 密码
         String password = (String) additionalParameters.get(OAuth2ParameterNames.PASSWORD);
+        // 认证模式
+        AuthType authType = AuthType.PASSWORD;
+        String type = (String) additionalParameters.get(SecurityConstants.AUTH_TYPE);
+        if (type != null && !type.trim().isEmpty()) {
+            authType = AuthType.ofType(type);
+        }
+        // 设置认证模式
+        SecurityContextHolder.setAuthType(authType);
+        // 认证源
+        AuthSource authSource = AuthSource.MASTER;
+        String source = (String) additionalParameters.get(SecurityConstants.AUTH_SOURCE);
+        if (source != null && !source.trim().isEmpty()) {
+            authSource = AuthSource.ofSource(source);
+        }
+        // 设置认证源
+        SecurityContextHolder.setAuthSource(authSource);
+        // 设置认证端
+        String deviceType = (String) additionalParameters.get(SecurityConstants.DEVICE_TYPE);
+        if (StringUtils.isNotBlank(deviceType)) {
+            SecurityContextHolder.setDeviceType(DeviceType.ofDevice(deviceType));
+        }
         // 请求参数权限范围
         String requestScopesStr = (String) additionalParameters.get(OAuth2ParameterNames.SCOPE);
         // 请求参数权限范围专场集合
         Set<String> requestScopeSet = Stream.of(requestScopesStr.split(" ")).collect(Collectors.toSet());
 
-        // Ensure the client is authenticated
+        // 确保客户端已经过身份验证
         OAuth2ClientAuthenticationToken clientPrincipal = getAuthenticatedClientElseThrowInvalidClient(passwordGrantAuthenticationToken);
         RegisteredClient registeredClient = clientPrincipal.getRegisteredClient();
 

@@ -5,6 +5,6 @@ import io.github.thebesteric.project.intelligent.core.base.IBaseMapper;
 import io.github.thebesteric.project.intelligent.core.constant.ApplicationConstants;
 import io.github.thebesteric.project.intelligent.core.model.entity.common.Area;
 
-@DS(ApplicationConstants.Application.Server.CoreApi.DATASOURCE_INTELLIGENT_CORE_API)
+@DS(ApplicationConstants.Application.Module.OpenApi.DATASOURCE_INTELLIGENT_MODULE_OPEN_API)
 public interface AreaMapper extends IBaseMapper<Area> {
 }

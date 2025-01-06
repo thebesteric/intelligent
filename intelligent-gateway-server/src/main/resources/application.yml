@@ -12,22 +12,22 @@ spring:
         - TokenRelay=
         - DedupeResponseHeader=Access-Control-Allow-Origin
       routes:
-        - id: intelligent-core-api-route
-          uri: lb://intelligent-core-api
+        - id: intelligent-module-open-api-route
+          uri: lb://intelligent-module-open-api
           predicates:
-            - Path=/core/api/**
+            - Path=/module/open/api/**
 
         - id: intelligent-module-crm-route
           uri: lb://intelligent-module-crm
           predicates:
-            - Path=/crm/api/**
+            - Path=/module/crm/api/**
 
         - id: intelligent-module-product-route
           uri: lb://intelligent-module-product
           predicates:
-            - Path=/product/api/**
+            - Path=/module/product/api/**
 
         - id: intelligent-module-stock-route
           uri: lb://intelligent-module-stock
           predicates:
-            - Path=/stock/api/**
+            - Path=/module/stock/api/**

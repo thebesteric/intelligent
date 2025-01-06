@@ -1,0 +1,47 @@
+spring:
+  cloud:
+    nacos:
+      # 注册中心
+      discovery:
+        namespace: 7fb21b9b-d47b-4592-80ef-637fabc5ae6a
+      # 配置中心
+      config:
+        namespace: 7fb21b9b-d47b-4592-80ef-637fabc5ae6a
+        file-extension: yml
+
+  datasource:
+    dynamic:
+      primary: master
+      strict: false
+      grace-destroy: true
+      datasource:
+        master:
+          type: com.zaxxer.hikari.HikariDataSource
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://localhost:3306/intelligent-module-open-api?useUnicode=true&characterEncoding=UTF-8&useSSL=false&autoReconnect=true&failOverReadOnly=false&serverTimezone=Asia/Shanghai&allowMultiQueries=true&zeroDateTimeBehavior=convertToNull&allowPublicKeyRetrieval=true
+          username: root
+          password: root
+
+  security:
+    oauth2:
+      resource-server:
+        jwt:
+          issuer-uri: http://localhost:6666
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+
+application:
+  open-apis:
+    open-api: http://localhost:8000/module/open/api
+  oauth2:
+    issuer-uri: ${spring.security.oauth2.resource-server.jwt.issuer-uri}
+    client-info:
+      client-id: test-client-id
+      client-secret: secret
+    scopes:
+      - profile
+      - openid

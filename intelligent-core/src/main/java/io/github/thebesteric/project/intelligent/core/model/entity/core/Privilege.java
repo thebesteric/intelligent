@@ -5,8 +5,8 @@ import io.github.thebesteric.framework.agile.plugins.database.core.annotation.En
 import io.github.thebesteric.framework.agile.plugins.database.core.annotation.EntityColumn;
 import io.github.thebesteric.project.intelligent.core.base.BaseBizEntity;
 import io.github.thebesteric.project.intelligent.core.constant.ApplicationConstants;
-import io.github.thebesteric.project.intelligent.core.constant.PrivilegeCode;
-import io.github.thebesteric.project.intelligent.core.constant.PrivilegeType;
+import io.github.thebesteric.project.intelligent.core.constant.core.PrivilegeCode;
+import io.github.thebesteric.project.intelligent.core.constant.core.PrivilegeType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -24,8 +24,8 @@ import java.util.List;
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@TableName(ApplicationConstants.Application.Server.CoreApi.TABLE_NAME_PREFIX + "privilege")
-@EntityClass(comment = "权限表", schemas = ApplicationConstants.Application.Server.CoreApi.DATASOURCE_INTELLIGENT_CORE_API)
+@TableName(ApplicationConstants.Application.Module.OpenApi.TABLE_NAME_PREFIX + "privilege")
+@EntityClass(comment = "权限表", schemas = ApplicationConstants.Application.Module.OpenApi.DATASOURCE_INTELLIGENT_MODULE_OPEN_API)
 public class Privilege extends BaseBizEntity {
     @Serial
     private static final long serialVersionUID = 7775807590136562571L;

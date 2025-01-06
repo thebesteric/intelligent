@@ -14,7 +14,7 @@ import io.github.thebesteric.project.intelligent.module.crm.mapper.datum.Custome
 import io.github.thebesteric.project.intelligent.module.crm.model.domain.datum.request.CustomerRegionCreateRequest;
 import io.github.thebesteric.project.intelligent.module.crm.model.domain.datum.request.CustomerRegionUpdateRequest;
 import io.github.thebesteric.project.intelligent.module.crm.model.domain.datum.response.CustomerRegionResponse;
-import io.github.thebesteric.project.intelligent.module.crm.model.entity.datum.Customer;
+import io.github.thebesteric.project.intelligent.core.model.entity.crm.Customer;
 import io.github.thebesteric.project.intelligent.module.crm.model.entity.datum.CustomerRegion;
 import io.github.thebesteric.project.intelligent.module.crm.service.datum.CustomerRegionService;
 import io.github.thebesteric.project.intelligent.module.crm.service.datum.CustomerRegionUserService;

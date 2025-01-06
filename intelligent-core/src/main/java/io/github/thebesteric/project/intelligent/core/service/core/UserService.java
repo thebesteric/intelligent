@@ -1,7 +1,7 @@
 package io.github.thebesteric.project.intelligent.core.service.core;
 
 import io.github.thebesteric.project.intelligent.core.base.IBaseService;
-import io.github.thebesteric.project.intelligent.core.constant.UserType;
+import io.github.thebesteric.project.intelligent.core.constant.core.UserType;
 import io.github.thebesteric.project.intelligent.core.model.domain.core.request.UserCreateRequest;
 import io.github.thebesteric.project.intelligent.core.model.domain.core.request.UserUpdateRequest;
 import io.github.thebesteric.project.intelligent.core.model.entity.core.User;

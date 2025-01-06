@@ -1,7 +1,7 @@
 package io.github.thebesteric.project.intelligent.module.crm.model.domain.datum.request;
 
 import io.github.thebesteric.project.intelligent.core.base.BaseRequest;
-import io.github.thebesteric.project.intelligent.module.crm.model.entity.datum.Customer;
+import io.github.thebesteric.project.intelligent.core.model.entity.crm.Customer;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

@@ -5,7 +5,7 @@ import io.github.thebesteric.project.intelligent.core.base.IBaseService;
 import io.github.thebesteric.project.intelligent.module.crm.model.domain.datum.request.CustomerRegionUserSearchRequest;
 import io.github.thebesteric.project.intelligent.module.crm.model.domain.datum.request.CustomerRegionUserUpsertRequest;
 import io.github.thebesteric.project.intelligent.module.crm.model.domain.datum.response.CustomerRegionUserResponse;
-import io.github.thebesteric.project.intelligent.module.crm.model.entity.datum.Customer;
+import io.github.thebesteric.project.intelligent.core.model.entity.crm.Customer;
 
 import java.util.List;
 

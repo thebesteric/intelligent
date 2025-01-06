@@ -15,10 +15,12 @@ import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.support.WebExchangeBindException;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.sql.SQLException;
@@ -26,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * GlobalExceptionHandler
@@ -61,7 +64,24 @@ public class GlobalExceptionHandler {
         if (log.isTraceEnabled()) {
             log.trace(ex.getMessage(), ex);
         }
-        return R.error(HttpStatus.BAD_REQUEST.value(), message);
+        return R.error(HttpStatus.BAD_REQUEST, message);
+    }
+
+    @ExceptionHandler(value = HandlerMethodValidationException.class)
+    public R<String> handleException(HandlerMethodValidationException ex) {
+        Object[] detailMessageArguments = ex.getDetailMessageArguments();
+        List<String> allErrors = detailMessageArguments == null ? List.of() : Stream.of(detailMessageArguments).map(Object::toString).toList();
+        String message = allErrors.isEmpty() ? "Validation failed" : allErrors.get(0);
+        if (log.isTraceEnabled()) {
+            log.trace(ex.getMessage(), ex);
+        }
+        return R.error(HttpStatus.BAD_REQUEST, message);
+    }
+
+    @ExceptionHandler(value = MissingRequestHeaderException.class)
+    public R<String> handleException(MissingRequestHeaderException ex) {
+        String message = ex.getMessage();
+        return R.error(HttpStatus.BAD_REQUEST, message);
     }
 
     @ExceptionHandler(value = MissingServletRequestParameterException.class)
@@ -72,7 +92,7 @@ public class GlobalExceptionHandler {
             log.trace(ex.getMessage(), ex);
         }
         String message = String.format("缺少类型为 %s 的参数: %s", parameterType, parameterName);
-        return R.error(HttpStatus.BAD_REQUEST.value(), message);
+        return R.error(HttpStatus.BAD_REQUEST, message);
     }
 
     @ExceptionHandler(value = BizException.class)

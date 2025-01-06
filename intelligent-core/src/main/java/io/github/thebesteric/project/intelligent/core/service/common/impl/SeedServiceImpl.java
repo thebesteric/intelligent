@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 @Service
 @RequiredArgsConstructor
-@DS(ApplicationConstants.Application.Server.CoreApi.DATASOURCE_INTELLIGENT_CORE_API)
+@DS(ApplicationConstants.Application.Module.OpenApi.DATASOURCE_INTELLIGENT_MODULE_OPEN_API)
 public class SeedServiceImpl extends ServiceImpl<SeedMapper, Seed> implements SeedService {
 
 

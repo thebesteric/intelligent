@@ -5,7 +5,7 @@ import io.github.thebesteric.project.intelligent.core.base.IBaseMapper;
 import io.github.thebesteric.project.intelligent.core.mapper.handler.CommaStringToListTypeHandler;
 import io.github.thebesteric.project.intelligent.module.crm.model.domain.datum.request.CustomerRegionUserSearchRequest;
 import io.github.thebesteric.project.intelligent.module.crm.model.domain.datum.response.CustomerRegionUserResponse;
-import io.github.thebesteric.project.intelligent.module.crm.model.entity.datum.Customer;
+import io.github.thebesteric.project.intelligent.core.model.entity.crm.Customer;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Select;

@@ -5,8 +5,8 @@ import io.github.thebesteric.framework.agile.plugins.database.core.annotation.En
 import io.github.thebesteric.framework.agile.plugins.database.core.annotation.EntityColumn;
 import io.github.thebesteric.project.intelligent.core.base.BaseTenantBizEntity;
 import io.github.thebesteric.project.intelligent.core.constant.ApplicationConstants;
-import io.github.thebesteric.project.intelligent.core.constant.RoleCode;
-import io.github.thebesteric.project.intelligent.core.constant.RoleType;
+import io.github.thebesteric.project.intelligent.core.constant.core.RoleCode;
+import io.github.thebesteric.project.intelligent.core.constant.core.RoleType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -24,8 +24,8 @@ import java.util.List;
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@TableName(ApplicationConstants.Application.Server.CoreApi.TABLE_NAME_PREFIX + "role")
-@EntityClass(comment = "角色表", schemas = ApplicationConstants.Application.Server.CoreApi.DATASOURCE_INTELLIGENT_CORE_API)
+@TableName(ApplicationConstants.Application.Module.OpenApi.TABLE_NAME_PREFIX + "role")
+@EntityClass(comment = "角色表", schemas = ApplicationConstants.Application.Module.OpenApi.DATASOURCE_INTELLIGENT_MODULE_OPEN_API)
 public class Role extends BaseTenantBizEntity {
     @Serial
     private static final long serialVersionUID = 6637738551499033827L;

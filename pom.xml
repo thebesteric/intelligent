@@ -20,7 +20,6 @@
     <url/>
     <modules>
         <module>intelligent-core</module>
-        <module>intelligent-core-api</module>
         <module>intelligent-oauth-server</module>
         <module>intelligent-gateway-server</module>
         <module>intelligent-modules</module>

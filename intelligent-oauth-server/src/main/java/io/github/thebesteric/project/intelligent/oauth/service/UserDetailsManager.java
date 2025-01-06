@@ -1,21 +1,21 @@
 package io.github.thebesteric.project.intelligent.oauth.service;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import io.github.thebesteric.project.intelligent.core.exception.BizException;
-import io.github.thebesteric.project.intelligent.core.model.entity.core.*;
-import io.github.thebesteric.project.intelligent.core.service.core.*;
-import io.github.thebesteric.project.intelligent.oauth.model.domain.UserDomain;
-import jakarta.annotation.Resource;
+import io.github.thebesteric.framework.agile.commons.util.DataValidator;
+import io.github.thebesteric.project.intelligent.core.constant.security.AuthSource;
+import io.github.thebesteric.project.intelligent.core.constant.security.AuthType;
+import io.github.thebesteric.project.intelligent.core.exception.InvalidDataException;
+import io.github.thebesteric.project.intelligent.oauth.config.SecurityContextHolder;
+import io.github.thebesteric.project.intelligent.oauth.detail.UserDetailsFactory;
+import io.github.thebesteric.project.intelligent.oauth.model.domain.CustomUserDetails;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.authority.AuthorityUtils;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 /**
  * InDBUserDetailsManager
@@ -24,67 +24,65 @@ import java.util.stream.Collectors;
  * @version v1.0
  * @since 2024-11-25 13:33:29
  */
+@Slf4j
 @RequiredArgsConstructor
 public class UserDetailsManager implements UserDetailsService {
 
-    @Resource
-    private UserService userService;
-    @Resource
-    private PrivilegeService privilegeService;
-    @Resource
-    private RoleService roleService;
-    @Resource
-    private UserRoleService userRoleService;
-    @Resource
-    private RolePrivilegeService rolePrivilegeService;
+    private final UserDetailsFactory userDetailsFactory;
 
+    /**
+     * 主入口
+     * 返回用户信息，不能返回 CustomUserDetails，否则会报 CustomUserDetails is not in the allowlist
+     * 详见：https://github.com/spring-projects/spring-security/issues/4370
+     *
+     * @param identity 身份凭证
+     *
+     * @return UserDetails
+     *
+     * @author wangweijun
+     * @since 2025/1/3 15:13
+     */
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // 获取用户
-        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<User>()
-                .eq(User::getState, 1)
-                .eq(User::getUsername, username);
-        User user = userService.getOne(queryWrapper);
-        UserDomain userDomain = checkUser(user);
-
-        // 查找权限
-        List<UserRole> userRoles = userRoleService.listByUserId(user.getId());
-        List<Long> roleIds = userRoles.stream().map(UserRole::getRoleId).toList();
-        List<Role> roles = roleService.listByIds(roleIds);
-        List<RolePrivilege> rolePrivileges = rolePrivilegeService.listByRoleIds(roles.stream().map(Role::getId).toList().toArray(new Long[0]));
-        Set<Long> privilegeIds = rolePrivileges.stream().map(RolePrivilege::getPrivilegeId).collect(Collectors.toSet());
-        List<Privilege> privileges = privilegeService.listByIds(privilegeIds);
-
-        // 数据封装
-        userDomain.setRoles(roles);
-        userDomain.setPrivileges(privileges);
-        userDomain.setAuthorities((AuthorityUtils.createAuthorityList(privileges.stream().map(Privilege::getCode).toList())));
-
-        return userDomain;
+    public UserDetails loadUserByUsername(String identity) throws UsernameNotFoundException {
+        // 根据认证源查找对应的用户信息
+        CustomUserDetails userDetails = loadUserByIdentity(identity);
+        SecurityContextHolder.setUserDetails(userDetails);
+        return new User(identity, userDetails.getPassword(), userDetails.getAuthorities());
     }
 
     /**
-     * 校验用户
+     * 获取用户信息
      *
-     * @param user user
+     * @param identity 身份凭证
      *
-     * @return UserDomain
+     * @return CustomUserDetails
      *
      * @author wangweijun
-     * @since 2024/12/16 14:12
+     * @since 2024/4/3 14:45
      */
-    private UserDomain checkUser(User user) {
-        if (user == null) {
-            throw new UsernameNotFoundException("用户或密码错误");
-        }
-        if (user.getState() == 0) {
-            throw new BizException(BizException.BizCode.DATA_VALID_ERROR, "用户已禁用");
-        }
-        Date currentDate = new Date();
-        Date expiresAt = user.getExpiresAt();
-        if (expiresAt != null && expiresAt.before(currentDate)) {
-            throw new BizException(BizException.BizCode.DATA_VALID_ERROR, "用户已过期");
-        }
-        return UserDomain.of(user);
+    public synchronized CustomUserDetails loadUserByIdentity(String identity) {
+        AuthSource authSource = SecurityContextHolder.getAuthSource();
+        AuthType authType = SecurityContextHolder.getAuthType();
+        DataValidator.create()
+                .validate(authSource == null, new InvalidDataException("认证源不能为空"))
+                .validate(authType == null, new InvalidDataException("认证类型不能为空"));
+        return this.loadUserByIdentity(identity, Objects.requireNonNull(authSource), Objects.requireNonNull(authType));
+    }
+
+    /**
+     * 获取用户信息
+     *
+     * @param identity   身份凭证
+     * @param authSource 认证源
+     * @param authType   认证类型
+     *
+     * @return CustomUserDetails
+     *
+     * @author wangweijun
+     * @since 2024/6/15 19:48
+     */
+    public synchronized CustomUserDetails loadUserByIdentity(String identity, @NotNull AuthSource authSource, @NotNull AuthType authType) {
+        log.info("认证用户信息: identity={}, authSource={}, authType={}", identity, authSource.getSource(), authType.getType());
+        return userDetailsFactory.loadUserByIdentity(identity, authSource, authType);
     }
 }
