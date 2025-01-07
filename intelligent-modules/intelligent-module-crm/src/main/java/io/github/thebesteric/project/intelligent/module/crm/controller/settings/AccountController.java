@@ -8,14 +8,12 @@ import io.github.thebesteric.project.intelligent.core.model.domain.crm.response.
 import io.github.thebesteric.project.intelligent.core.service.crm.CustomerService;
 import io.github.thebesteric.project.intelligent.core.constant.AuditStatus;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -40,6 +38,22 @@ public class AccountController {
     @Operation(summary = "账号列表")
     public R<PagingResponse<CustomerResponse>> page(@Validated @RequestBody CustomerSearchRequest searchRequest) {
         return R.success(customerService.page(searchRequest, null, List.of(AuditStatus.AUDIT_PASS)));
+    }
+
+    @GetMapping("/lock")
+    @Operation(summary = "账号锁定")
+    @Parameter(name = "customerId", description = "客户 ID")
+    public R<Void> lock(Long customerId) {
+        customerService.lock(customerId);
+        return R.success();
+    }
+
+    @GetMapping("/unlock")
+    @Operation(summary = "账号解锁")
+    @Parameter(name = "customerId", description = "客户 ID")
+    public R<Void> unlock(Long customerId) {
+        customerService.unlock(customerId);
+        return R.success();
     }
 
 }

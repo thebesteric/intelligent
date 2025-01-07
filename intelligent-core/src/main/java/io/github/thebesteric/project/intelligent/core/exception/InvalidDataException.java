@@ -14,10 +14,14 @@ public class InvalidDataException extends BizException {
     private static final long serialVersionUID = -8270405734924285317L;
 
     public InvalidDataException() {
-        this("数据校验异常");
+        this(BizCode.INVALID_DATA_ERROR.getMessage());
     }
 
     public InvalidDataException(String message) {
-        super(BizCode.DATA_VALID_ERROR, message);
+        super(BizCode.INVALID_DATA_ERROR, message);
+    }
+
+    public InvalidDataException(String message, Object... args) {
+        super(BizCode.INVALID_DATA_ERROR, message, args);
     }
 }

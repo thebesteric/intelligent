@@ -1,5 +1,6 @@
 package io.github.thebesteric.project.intelligent.core.exception;
 
+import io.github.thebesteric.framework.agile.commons.util.MessageUtils;
 import lombok.Getter;
 
 import java.io.Serial;
@@ -37,7 +38,7 @@ public class BizException extends RuntimeException {
     }
 
     public BizException(String message, Object... args) {
-        this(message.formatted(args));
+        this(MessageUtils.replacePlaceholders(message, args));
     }
 
     public BizException(BizCode bizCode) {
@@ -61,7 +62,7 @@ public class BizException extends RuntimeException {
     }
 
     public BizException(BizCode bizCode, String message, Object... args) {
-        this(bizCode, message.formatted(args));
+        this(bizCode, MessageUtils.replacePlaceholders(message, args));
     }
 
     @Getter
@@ -71,10 +72,10 @@ public class BizException extends RuntimeException {
 
         // 数据校验相关
         BAD_REQUEST("40", "000", "错误的请求"),
-        INVALID_PARAMETER_ERROR("40", "001", "参数校验异常"),
-        DATA_ALREADY_EXISTS("40", "002", "数据已存在，请核实"),
-        DATA_NOT_FOUND("40", "003", "数据不存在，请核实"),
-        DATA_VALID_ERROR("40", "004", "数据校验异常"),
+        DATA_ALREADY_EXISTS("40", "001", "数据已存在，请核实"),
+        DATA_NOT_FOUND("40", "002", "数据不存在，请核实"),
+        INVALID_PARAM_ERROR("40", "003", "参数校验异常"),
+        INVALID_DATA_ERROR("40", "004", "数据校验异常"),
         ILLEGAL_REQUEST("40", "999", "非法的请求"),
 
         // 未知异常

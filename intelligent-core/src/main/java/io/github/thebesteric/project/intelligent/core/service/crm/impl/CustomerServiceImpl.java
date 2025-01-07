@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.github.thebesteric.framework.agile.commons.util.DataValidator;
 import io.github.thebesteric.framework.agile.commons.util.MapWrapper;
+import io.github.thebesteric.framework.agile.commons.util.Processor;
 import io.github.thebesteric.framework.agile.core.domain.page.PagingResponse;
 import io.github.thebesteric.project.intelligent.core.constant.ApplicationConstants;
 import io.github.thebesteric.project.intelligent.core.constant.AuditStatus;
@@ -173,5 +174,61 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         return this.lambdaQuery().eq(Customer::getTenantId, tenantId)
                 .eq(Customer::getUsername, username)
                 .one();
+    }
+
+    /**
+     * 锁定用户
+     *
+     * @param customerId 客户 ID
+     *
+     * @author wangweijun
+     * @since 2025/1/7 13:33
+     */
+    @Override
+    public void lock(Long customerId) {
+        Processor.prepare()
+                .start(() -> {
+                    String tenantId = SecurityUtils.getTenantIdWithException();
+                    return getByTenantAndId(tenantId, customerId);
+                })
+                .validate(customer -> {
+                    if (customer == null) {
+                        throw new DataNotFoundException("客户不存在");
+                    }
+                })
+                .complete(customer -> {
+                    if (!customer.isLock()) {
+                        customer.setLock(true);
+                        this.updateById(customer);
+                    }
+                });
+    }
+
+    /**
+     * 解锁用户
+     *
+     * @param customerId 客户 ID
+     *
+     * @author wangweijun
+     * @since 2025/1/7 13:34
+     */
+    @Override
+    public void unlock(Long customerId) {
+        Processor.prepare()
+                .start(() -> {
+                    String tenantId = SecurityUtils.getTenantIdWithException();
+                    return getByTenantAndId(tenantId, customerId);
+                })
+                .validate(customer -> {
+                    if (customer == null) {
+                        throw new DataNotFoundException("客户不存在");
+                    }
+                })
+                .complete(customer -> {
+                    if (customer.isLock()) {
+                        customer.setLock(false);
+                        this.updateById(customer);
+                    }
+                });
     }
 }

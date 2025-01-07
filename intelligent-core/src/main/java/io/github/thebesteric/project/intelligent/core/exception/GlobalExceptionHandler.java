@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.security.authorization.ExpressionAuthorizationDecision;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -93,6 +95,17 @@ public class GlobalExceptionHandler {
         }
         String message = String.format("缺少类型为 %s 的参数: %s", parameterType, parameterName);
         return R.error(HttpStatus.BAD_REQUEST, message);
+    }
+
+    @ExceptionHandler(value = AuthorizationDeniedException.class)
+    public R<Map<String, Object>> handleException(AuthorizationDeniedException ex) {
+        String errorMessage = ex.getMessage();
+        Map<String, Object> data = new HashMap<>();
+        if (ex.getAuthorizationResult() instanceof ExpressionAuthorizationDecision decision) {
+            String expressionString = decision.getExpression().getExpressionString();
+            data.put("expression", expressionString);
+        }
+        return R.error(HttpStatus.FORBIDDEN, errorMessage, data);
     }
 
     @ExceptionHandler(value = BizException.class)

@@ -80,4 +80,24 @@ public interface CustomerService extends IBaseService<Customer> {
      * @since 2025/1/6 11:28
      */
     Customer getByUsername(String tenantId, String username);
+
+    /**
+     * 锁定用户
+     *
+     * @param customerId 客户 ID
+     *
+     * @author wangweijun
+     * @since 2025/1/7 13:33
+     */
+    void lock(Long customerId);
+
+    /**
+     * 解锁用户
+     *
+     * @param customerId 客户 ID
+     *
+     * @author wangweijun
+     * @since 2025/1/7 13:34
+     */
+    void unlock(Long customerId);
 }

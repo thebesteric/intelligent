@@ -44,7 +44,7 @@ public class CrmUserDetailService implements CustomUserDetailsService {
                 .address(customer.getAddress())
                 .enabled(true)
                 .accountExpired(false)
-                .accountLocked(false)
+                .accountLocked(customer.isLock())
                 .credentialsExpired(false)
                 .authSource(getAuthSource().getSource())
                 .authType(getAuthType().getType())
@@ -75,6 +75,6 @@ public class CrmUserDetailService implements CustomUserDetailsService {
     private void checkUser(Customer customer) {
         DataValidator.create()
                 .validate(customer == null, new UsernameNotFoundException("用户或密码错误"))
-                .validate(Objects.requireNonNull(customer).getState() == 0, new BizException(BizException.BizCode.DATA_VALID_ERROR, "用户已禁用"));
+                .validate(Objects.requireNonNull(customer).getState() == 0, new BizException(BizException.BizCode.INVALID_DATA_ERROR, "用户已禁用"));
     }
 }

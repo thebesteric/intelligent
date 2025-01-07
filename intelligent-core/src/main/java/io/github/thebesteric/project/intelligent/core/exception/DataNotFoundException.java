@@ -14,10 +14,14 @@ public class DataNotFoundException extends BizException {
     private static final long serialVersionUID = 6225586610980929742L;
 
     public DataNotFoundException() {
-        this("数据不存在");
+        this(BizCode.DATA_NOT_FOUND.getMessage());
     }
 
     public DataNotFoundException(String message) {
         super(BizCode.DATA_NOT_FOUND, message);
+    }
+
+    public DataNotFoundException(String message, Object... args) {
+        super(BizCode.DATA_NOT_FOUND, message, args);
     }
 }

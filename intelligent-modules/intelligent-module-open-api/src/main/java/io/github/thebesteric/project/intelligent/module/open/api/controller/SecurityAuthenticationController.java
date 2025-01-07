@@ -133,7 +133,7 @@ public class SecurityAuthenticationController {
             }
         }
 
-        HttpRequest httpRequest = HttpUtil.createPost(tokenUri).setConnectionTimeout(5000).setReadTimeout(5000);
+        HttpRequest httpRequest = HttpUtil.createPost(tokenUri).setConnectionTimeout(10000).setReadTimeout(15000);
         if (formParams != null) {
             httpRequest.form(formParams);
         }

@@ -44,6 +44,9 @@ public class Customer extends BaseTenantBizEntity {
     @Serial
     private static final long serialVersionUID = 1712056308739028043L;
 
+    /** 总共允许登录失败的的次数 */
+    public static final int TOTAL_ALLOW_LOGIN_FAILED_COUNT = 5;
+
     @EntityColumn(length = 32, nullable = false, comment = "登录账号")
     private String username;
 
@@ -96,20 +99,25 @@ public class Customer extends BaseTenantBizEntity {
     @EntityColumn(comment = "省市区 ID")
     private Long areaId;
 
-    @EntityColumn(comment = "是否开票")
-    private Boolean isInvoice = false;
+    @TableField(value = "is_invoice")
+    @EntityColumn(comment = "是否开票", nullable = false, defaultExpression = "false")
+    private boolean isInvoice = false;
 
-    @EntityColumn(comment = "是否免运费")
-    private Boolean isFreeFreight = false;
+    @TableField(value = "is_free_freight")
+    @EntityColumn(comment = "是否免运费", nullable = false, defaultExpression = "false")
+    private boolean freeFreight = false;
 
-    @EntityColumn(comment = "是否启用积分")
-    private Boolean isEnableIntegral = false;
+    @TableField(value = "is_enable_integral")
+    @EntityColumn(comment = "是否启用积分", nullable = false, defaultExpression = "false")
+    private boolean enableIntegral = false;
 
-    @EntityColumn(comment = "是否启用子账户")
-    private Boolean isEnableSubAccount = false;
+    @TableField(value = "is_lock")
+    @EntityColumn(comment = "是否启用子账户", nullable = false, defaultExpression = "false")
+    private boolean enableSubAccount = false;
 
-    @EntityColumn(comment = "子账号提交订单是否需要审核")
-    private Boolean requiresSubAccountOrderApproval = false;
+    @TableField(value = "is_requires_sub_account_order_approval")
+    @EntityColumn(comment = "子账号提交订单是否需要审核", nullable = false, defaultExpression = "false")
+    private boolean requiresSubAccountOrderApproval = false;
 
     @EntityColumn(type = EntityColumn.Type.TEXT, comment = "店面图片")
     @TableField(jdbcType = JdbcType.VARCHAR, typeHandler = CommaStringToListTypeHandler.class)
@@ -147,6 +155,13 @@ public class Customer extends BaseTenantBizEntity {
 
     @EntityColumn(comment = "登录连续错误次数", nullable = false, defaultExpression = "0")
     private Integer loginContinueErrorTimes;
+
+    @EntityColumn(type = EntityColumn.Type.DATETIME, comment = "最后一次登录日期")
+    private Date lastLoginTime;
+
+    @TableField(value = "is_lock")
+    @EntityColumn(comment = "账户是否锁定", nullable = false, defaultExpression = "false")
+    private boolean lock = false;
 
     /**
      * 设置客户审核信息
@@ -190,11 +205,11 @@ public class Customer extends BaseTenantBizEntity {
     public void setErrorLoginInfo(HttpServletRequest request) {
         this.loginTimes = this.loginTimes == null ? 1 : ++this.loginTimes;
         this.loginContinueErrorTimes = this.loginContinueErrorTimes == null ? 1 : ++this.loginContinueErrorTimes;
-        this.setLoginInfo(IpUtils.getClientIP(request), this.loginTimes, ++this.loginContinueErrorTimes);
+        this.setLoginInfo(IpUtils.getClientIP(request), this.loginTimes, this.loginContinueErrorTimes);
     }
 
     /**
-     * v
+     * 设置登录信息
      *
      * @param loginIp                 登录 IP
      * @param loginTimes              登录次数
@@ -208,6 +223,34 @@ public class Customer extends BaseTenantBizEntity {
         this.loginIp = loginIp;
         this.loginTimes = loginTimes;
         this.loginContinueErrorTimes = loginContinueErrorTimes;
+        this.lastLoginTime = new Date();
+    }
+
+    /**
+     * 获取登录失败后剩余登录次数
+     *
+     * @return int
+     *
+     * @author wangweijun
+     * @since 2025/1/7 14:32
+     */
+    @Transient
+    public int getLoginFailedRemainTimes() {
+        int loginRemainTimes = TOTAL_ALLOW_LOGIN_FAILED_COUNT - this.loginContinueErrorTimes;
+        return Math.max(loginRemainTimes, 0);
+    }
+
+    /**
+     * 是否需要被锁定
+     *
+     * @return boolean
+     *
+     * @author wangweijun
+     * @since 2025/1/7 14:36
+     */
+    @Transient
+    public boolean shouldBeLock() {
+        return this.loginContinueErrorTimes >= Customer.TOTAL_ALLOW_LOGIN_FAILED_COUNT;
     }
 
     /**
