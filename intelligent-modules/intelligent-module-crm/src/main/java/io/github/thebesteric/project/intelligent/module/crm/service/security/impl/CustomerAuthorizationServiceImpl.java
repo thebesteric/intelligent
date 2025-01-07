@@ -5,12 +5,20 @@ import io.github.thebesteric.project.intelligent.core.constant.security.AuthSour
 import io.github.thebesteric.project.intelligent.core.constant.security.AuthType;
 import io.github.thebesteric.project.intelligent.core.constant.security.GrantType;
 import io.github.thebesteric.project.intelligent.core.constant.security.Scope;
+import io.github.thebesteric.project.intelligent.core.exception.DataNotFoundException;
 import io.github.thebesteric.project.intelligent.core.model.domain.security.OAuth2Token;
+import io.github.thebesteric.project.intelligent.core.model.entity.crm.Customer;
+import io.github.thebesteric.project.intelligent.core.service.crm.CustomerService;
 import io.github.thebesteric.project.intelligent.module.crm.model.domain.security.request.CustomerLoginRequest;
 import io.github.thebesteric.project.intelligent.module.crm.service.security.CustomerAuthorizationService;
 import io.github.thebesteric.project.intelligent.modules.common.feign.SecurityAuthenticationOpenApi;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+
+import java.util.Objects;
 
 /**
  * CustomerAuthorizationServiceImpl
@@ -23,6 +31,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CustomerAuthorizationServiceImpl implements CustomerAuthorizationService {
 
+    private final CustomerService customerService;
     private final SecurityAuthenticationOpenApi securityAuthenticationOpenApi;
 
     /**
@@ -37,11 +46,30 @@ public class CustomerAuthorizationServiceImpl implements CustomerAuthorizationSe
      */
     @Override
     public R<OAuth2Token> login(CustomerLoginRequest loginRequest, String authorization) {
-
-        return securityAuthenticationOpenApi.accessToken(loginRequest.getUsername(), loginRequest.getPassword(),
+        String tenantId = loginRequest.getTenantId();
+        String username = loginRequest.getUsername();
+        // 获取用户
+        Customer customer = customerService.getByUsername(tenantId, username);
+        if (customer == null) {
+            throw new DataNotFoundException("未授权的访问");
+        }
+        // 获取 HttpServletRequest
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = Objects.requireNonNull(attributes).getRequest();
+        // 获取认证信息
+        R<OAuth2Token> response = securityAuthenticationOpenApi.accessToken(username, loginRequest.getPassword(),
                 GrantType.GRANT_TYPE_PASSWORD.getType(),
                 AuthType.PASSWORD.getType(), AuthSource.MODULE_CRM.getSource(),
                 Scope.getScopesStr(Scope.PROFILE), authorization);
+        // 设置登录信息
+        if (response.isSucceed()) {
+            customer.setSuccessLoginInfo(request);
+        } else {
+            customer.setErrorLoginInfo(request);
+        }
+        // 更新用户信息
+        customerService.updateById(customer);
+        return response;
     }
 
     /**

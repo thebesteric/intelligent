@@ -156,4 +156,22 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                 .validate(customer == null, new DataNotFoundException("客户不存在"));
         return (CustomerResponse) new CustomerResponse().transform(customer);
     }
+
+    /**
+     * 根据用户名获取用户
+     *
+     * @param tenantId 租户 ID
+     * @param username 用户名
+     *
+     * @return Customer
+     *
+     * @author wangweijun
+     * @since 2025/1/6 11:28
+     */
+    @Override
+    public Customer getByUsername(String tenantId, String username) {
+        return this.lambdaQuery().eq(Customer::getTenantId, tenantId)
+                .eq(Customer::getUsername, username)
+                .one();
+    }
 }

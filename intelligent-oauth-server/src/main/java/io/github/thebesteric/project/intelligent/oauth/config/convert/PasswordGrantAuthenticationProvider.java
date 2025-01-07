@@ -121,13 +121,13 @@ public class PasswordGrantAuthenticationProvider implements AuthenticationProvid
         // 判断当前授权模式是否包含 authorization_password
         assert registeredClient != null;
         if (!registeredClient.getAuthorizationGrantTypes().contains(authorizationGrantType)) {
-            throw new OAuth2AuthenticationException(OAuth2ErrorCodes.UNAUTHORIZED_CLIENT);
+            throw new OAuth2AuthenticationException(new OAuth2Error(OAuth2ErrorCodes.UNAUTHORIZED_CLIENT), "认证方式未授权");
         }
 
         // 校验用户名信息
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         if (!passwordEncoder.matches(password, userDetails.getPassword())) {
-            throw new OAuth2AuthenticationException("密码不正确！");
+            throw new OAuth2AuthenticationException(new OAuth2Error(OAuth2ErrorCodes.UNAUTHORIZED_CLIENT), "密码不正确");
         }
 
         // 由于在上面已验证过用户名、密码，现在构建一个已认证的对象 UsernamePasswordAuthenticationToken
@@ -260,7 +260,7 @@ public class PasswordGrantAuthenticationProvider implements AuthenticationProvid
         if (clientPrincipal != null && clientPrincipal.isAuthenticated()) {
             return clientPrincipal;
         }
-        throw new OAuth2AuthenticationException(OAuth2ErrorCodes.INVALID_CLIENT);
+        throw new OAuth2AuthenticationException(new OAuth2Error(OAuth2ErrorCodes.INVALID_CLIENT), "身份未授权");
     }
 
     /**

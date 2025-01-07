@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
+import io.github.thebesteric.framework.agile.commons.util.IpUtils;
 import io.github.thebesteric.framework.agile.plugins.database.core.annotation.EntityClass;
 import io.github.thebesteric.framework.agile.plugins.database.core.annotation.EntityColumn;
 import io.github.thebesteric.project.intelligent.core.base.BaseTenantBizEntity;
@@ -14,6 +15,7 @@ import io.github.thebesteric.project.intelligent.core.constant.crm.RegisterSourc
 import io.github.thebesteric.project.intelligent.core.mapper.handler.CommaStringToListTypeHandler;
 import io.github.thebesteric.project.intelligent.core.model.domain.crm.request.CustomerAuditRequest;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -140,12 +142,20 @@ public class Customer extends BaseTenantBizEntity {
     @EntityColumn(length = 64, comment = "登录 IP")
     private String loginIp;
 
-    @EntityColumn(comment = "登录次数")
+    @EntityColumn(comment = "登录次数", nullable = false, defaultExpression = "0")
     private Integer loginTimes;
 
-    @EntityColumn(comment = "登录错误次数")
+    @EntityColumn(comment = "登录连续错误次数", nullable = false, defaultExpression = "0")
     private Integer loginContinueErrorTimes;
 
+    /**
+     * 设置客户审核信息
+     *
+     * @param auditRequest 请求
+     *
+     * @author wangweijun
+     * @since 2025/1/6 13:54
+     */
     @Transient
     public void setCustomerAuditInfo(CustomerAuditRequest auditRequest) {
         this.auditStatus = auditRequest.getAuditStatus();
@@ -154,16 +164,45 @@ public class Customer extends BaseTenantBizEntity {
         this.referrerUserId = auditRequest.getReferrerUserId();
     }
 
+    /**
+     * 设置成功登录信息
+     *
+     * @param request Http 请求
+     *
+     * @author wangweijun
+     * @since 2025/1/6 13:55
+     */
     @Transient
-    public void setSuccessLoginInfo(String loginIp) {
-        this.setLoginInfo(loginIp, this.loginTimes++, 0);
+    public void setSuccessLoginInfo(HttpServletRequest request) {
+        this.loginTimes = this.loginTimes == null ? 1 : ++this.loginTimes;
+        this.setLoginInfo(IpUtils.getClientIP(request), this.loginTimes, 0);
     }
 
+    /**
+     * 设置失败登录信息
+     *
+     * @param request Http 请求
+     *
+     * @author wangweijun
+     * @since 2025/1/6 18:36
+     */
     @Transient
-    public void setErrorLoginInfo(String loginIp) {
-        this.setLoginInfo(loginIp, this.loginTimes++, this.loginContinueErrorTimes++);
+    public void setErrorLoginInfo(HttpServletRequest request) {
+        this.loginTimes = this.loginTimes == null ? 1 : ++this.loginTimes;
+        this.loginContinueErrorTimes = this.loginContinueErrorTimes == null ? 1 : ++this.loginContinueErrorTimes;
+        this.setLoginInfo(IpUtils.getClientIP(request), this.loginTimes, ++this.loginContinueErrorTimes);
     }
 
+    /**
+     * v
+     *
+     * @param loginIp                 登录 IP
+     * @param loginTimes              登录次数
+     * @param loginContinueErrorTimes 登录连续错误次数
+     *
+     * @author wangweijun
+     * @since 2025/1/6 18:37
+     */
     @Transient
     private void setLoginInfo(String loginIp, Integer loginTimes, Integer loginContinueErrorTimes) {
         this.loginIp = loginIp;

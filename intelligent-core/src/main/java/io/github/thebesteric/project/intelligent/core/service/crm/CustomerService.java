@@ -67,4 +67,17 @@ public interface CustomerService extends IBaseService<Customer> {
      * @since 2024/12/25 11:10
      */
     CustomerResponse detail(Long id);
+
+    /**
+     * 根据用户名获取用户
+     *
+     * @param tenantId 租户 ID
+     * @param username 用户名
+     *
+     * @return Customer
+     *
+     * @author wangweijun
+     * @since 2025/1/6 11:28
+     */
+    Customer getByUsername(String tenantId, String username);
 }
