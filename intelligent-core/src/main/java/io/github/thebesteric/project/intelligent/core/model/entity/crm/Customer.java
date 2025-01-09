@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import io.github.thebesteric.framework.agile.commons.util.IpUtils;
 import io.github.thebesteric.framework.agile.plugins.database.core.annotation.EntityClass;
 import io.github.thebesteric.framework.agile.plugins.database.core.annotation.EntityColumn;
+import io.github.thebesteric.project.intelligent.core.base.BaseBizEntity;
 import io.github.thebesteric.project.intelligent.core.base.BaseTenantBizEntity;
 import io.github.thebesteric.project.intelligent.core.constant.ApplicationConstants;
 import io.github.thebesteric.project.intelligent.core.constant.AuditStatus;
@@ -16,10 +17,12 @@ import io.github.thebesteric.project.intelligent.core.mapper.handler.CommaString
 import io.github.thebesteric.project.intelligent.core.model.domain.crm.request.CustomerAuditRequest;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.apache.ibatis.type.JdbcType;
+import org.springframework.beans.BeanUtils;
 
 import java.beans.Transient;
 import java.io.Serial;
@@ -27,6 +30,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 客户
@@ -111,13 +115,17 @@ public class Customer extends BaseTenantBizEntity {
     @EntityColumn(comment = "是否启用积分", nullable = false, defaultExpression = "false")
     private boolean enableIntegral = false;
 
-    @TableField(value = "is_lock")
+    @TableField(value = "is_enable_sub_account")
     @EntityColumn(comment = "是否启用子账户", nullable = false, defaultExpression = "false")
     private boolean enableSubAccount = false;
 
-    @TableField(value = "is_requires_sub_account_order_approval")
+    @TableField(value = "is_enable_order_approval")
     @EntityColumn(comment = "子账号提交订单是否需要审核", nullable = false, defaultExpression = "false")
-    private boolean requiresSubAccountOrderApproval = false;
+    private boolean enableOrderApproval = false;
+
+    @TableField(value = "is_enable_submit_order")
+    @EntityColumn(comment = "是否允许提交订单", nullable = false, defaultExpression = "true")
+    private boolean enableSubmitOrder = true;
 
     @EntityColumn(type = EntityColumn.Type.TEXT, comment = "店面图片")
     @TableField(jdbcType = JdbcType.VARCHAR, typeHandler = CommaStringToListTypeHandler.class)
@@ -151,10 +159,10 @@ public class Customer extends BaseTenantBizEntity {
     private String loginIp;
 
     @EntityColumn(comment = "登录次数", nullable = false, defaultExpression = "0")
-    private Integer loginTimes;
+    private Integer loginTimes = 0;
 
     @EntityColumn(comment = "登录连续错误次数", nullable = false, defaultExpression = "0")
-    private Integer loginContinueErrorTimes;
+    private Integer loginContinueErrorTimes = 0;
 
     @EntityColumn(type = EntityColumn.Type.DATETIME, comment = "最后一次登录日期")
     private Date lastLoginTime;
@@ -251,6 +259,32 @@ public class Customer extends BaseTenantBizEntity {
     @Transient
     public boolean shouldBeLock() {
         return this.loginContinueErrorTimes >= Customer.TOTAL_ALLOW_LOGIN_FAILED_COUNT;
+    }
+
+    /**
+     * 创建子账户
+     *
+     * @param username 子账户-用户名
+     * @param password 子账户-密码
+     * @param name     子账户-名称
+     *
+     * @return Customer
+     *
+     * @author wangweijun
+     * @since 2025/1/7 20:20
+     */
+    @Transient
+    public Customer createSubAccount(@NotNull String username, @NotNull String password, @NotNull String name) {
+        Customer subAccount = new Customer();
+        String[] ignoreProperties = getProperties(BaseBizEntity.class,
+                "loginIp", "loginTimes", "loginContinueErrorTimes", "lastLoginTime", "lock");
+        BeanUtils.copyProperties(this, subAccount, ignoreProperties);
+        subAccount.setAccountType(AccountType.SLAVE);
+        subAccount.setUsername(username);
+        subAccount.setPassword(password);
+        subAccount.setName(name);
+        subAccount.setOwnerId(Objects.requireNonNull(this.id));
+        return subAccount;
     }
 
     /**

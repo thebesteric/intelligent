@@ -36,6 +36,7 @@ public class CustomerCreateRequest extends BaseRequest<Customer> {
 
     @Schema(description = "客户名称")
     @NotBlank(message = "客户名称不能为空")
+    @Length(min = 6, max = 20, message = "名称长度在 {min}-{max} 位之间")
     private String name;
 
     @Schema(description = "关键字")

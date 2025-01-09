@@ -1,5 +1,6 @@
 package io.github.thebesteric.project.intelligent.core.base;
 
+import io.github.thebesteric.framework.agile.plugins.idempotent.annotation.IdempotentKey;
 import io.github.thebesteric.project.intelligent.core.exception.BizException;
 import io.github.thebesteric.project.intelligent.core.security.util.SecurityUtils;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -27,6 +28,7 @@ public abstract class BaseRequest<T extends BaseEntity> implements Serializable 
     @Serial
     private static final long serialVersionUID = -5167786334495406870L;
 
+    @IdempotentKey
     @Schema(description = "租户 ID", hidden = true)
     private String tenantId;
 

@@ -38,7 +38,7 @@ public class BizException extends RuntimeException {
     }
 
     public BizException(String message, Object... args) {
-        this(MessageUtils.replacePlaceholders(message, args));
+        this(MessageUtils.format(message, args));
     }
 
     public BizException(BizCode bizCode) {
@@ -62,7 +62,7 @@ public class BizException extends RuntimeException {
     }
 
     public BizException(BizCode bizCode, String message, Object... args) {
-        this(bizCode, MessageUtils.replacePlaceholders(message, args));
+        this(bizCode, MessageUtils.format(message, args));
     }
 
     @Getter

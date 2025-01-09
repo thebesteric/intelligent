@@ -4,6 +4,7 @@ import io.github.thebesteric.framework.agile.core.domain.R;
 import io.github.thebesteric.framework.agile.distributed.locks.exeption.DistributedLocksException;
 import io.github.thebesteric.framework.agile.plugins.idempotent.exception.IdempotentException;
 import io.github.thebesteric.framework.agile.plugins.limiter.exception.RateLimitException;
+import io.github.thebesteric.framework.agile.plugins.sensitive.filter.exception.SensitiveException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -180,6 +181,12 @@ public class GlobalExceptionHandler {
     public R<String> handleException(DistributedLocksException e) {
         log.error(e.getMessage(), e);
         return R.error(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+    }
+
+    @ExceptionHandler(value = SensitiveException.class)
+    public R<List<String>> handleException(SensitiveException e) {
+        log.error(e.getMessage(), e);
+        return R.error(HttpStatus.BAD_REQUEST.value(), "包含未经允许的敏感词", e.getSensitiveWords());
     }
 
     @ExceptionHandler(value = AccessDeniedException.class)

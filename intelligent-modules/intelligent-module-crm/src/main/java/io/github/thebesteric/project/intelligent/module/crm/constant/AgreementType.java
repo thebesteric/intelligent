@@ -8,7 +8,7 @@ import lombok.Getter;
 import java.util.Arrays;
 
 /**
- * 折扣类型
+ * 协议类型
  *
  * @author wangweijun
  * @version v1.0
@@ -16,17 +16,17 @@ import java.util.Arrays;
  */
 @Getter
 @AllArgsConstructor
-public enum DiscountType {
+public enum AgreementType {
 
-    BRAND("B", "按品牌打折"),
-    CATALOG("C", "按目录打折");
+    PRIVACY("PRIVACY", "隐私协议"),
+    SERVICE("SERVICE", "服务协议");
 
     @EnumValue
     @JsonValue
     private final String code;
     private final String desc;
 
-    public static DiscountType of(String code) {
+    public static AgreementType of(String code) {
         return Arrays.stream(values()).filter(i -> i.code.equals(code)).findFirst().orElse(null);
     }
 

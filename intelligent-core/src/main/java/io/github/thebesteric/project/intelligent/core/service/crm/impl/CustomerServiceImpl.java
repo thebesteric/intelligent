@@ -11,15 +11,16 @@ import io.github.thebesteric.framework.agile.core.domain.page.PagingResponse;
 import io.github.thebesteric.project.intelligent.core.constant.ApplicationConstants;
 import io.github.thebesteric.project.intelligent.core.constant.AuditStatus;
 import io.github.thebesteric.project.intelligent.core.constant.SeedType;
+import io.github.thebesteric.project.intelligent.core.constant.crm.AccountType;
 import io.github.thebesteric.project.intelligent.core.constant.crm.RegisterSource;
 import io.github.thebesteric.project.intelligent.core.exception.BizException;
-import io.github.thebesteric.project.intelligent.core.exception.DataAlreadyExistsException;
 import io.github.thebesteric.project.intelligent.core.exception.DataNotFoundException;
 import io.github.thebesteric.project.intelligent.core.exception.InvalidDataException;
 import io.github.thebesteric.project.intelligent.core.mapper.crm.CustomerMapper;
 import io.github.thebesteric.project.intelligent.core.model.domain.crm.request.CustomerAuditRequest;
 import io.github.thebesteric.project.intelligent.core.model.domain.crm.request.CustomerCreateRequest;
 import io.github.thebesteric.project.intelligent.core.model.domain.crm.request.CustomerSearchRequest;
+import io.github.thebesteric.project.intelligent.core.model.domain.crm.request.CustomerSubAccountCreateRequest;
 import io.github.thebesteric.project.intelligent.core.model.domain.crm.response.CustomerResponse;
 import io.github.thebesteric.project.intelligent.core.model.entity.crm.Customer;
 import io.github.thebesteric.project.intelligent.core.security.util.SecurityUtils;
@@ -34,6 +35,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * CustomerServiceImpl
@@ -48,6 +50,8 @@ import java.util.Objects;
 public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> implements CustomerService {
 
     private final SeedService seedService;
+
+    private final DataNotFoundException customerNotFoundException = new DataNotFoundException("客户不存在");
 
     /**
      * 分页列表
@@ -66,6 +70,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         IPage<Customer> page = this.lambdaQuery()
                 .eq(registerSource != null, Customer::getRegisterSource, registerSource)
                 .in(CollectionUtils.isNotEmpty(auditStatuses), Customer::getAuditStatus, auditStatuses)
+                .eq(searchRequest.isShowSubAccountOnly(), Customer::getAccountType, AccountType.SLAVE)
                 .and(StringUtils.isNotBlank(searchRequest.getKeyword()), query ->
                         query.like(Customer::getName, searchRequest.getKeyword())
                                 .or()
@@ -76,6 +81,8 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                                 .like(Customer::getPhone, searchRequest.getKeyword())
                                 .or()
                                 .like(Customer::getUsername, searchRequest.getKeyword()))
+                .orderByDesc(Customer::getSerialNo)
+                .orderByAsc(Customer::getCreatedAt)
                 .page(searchRequest.getPage(Customer.class));
         List<CustomerResponse> records = page.getRecords().stream().map(r -> (CustomerResponse) new CustomerResponse().transform(r)).toList();
         return PagingResponse.of(page.getCurrent(), page.getSize(), page.getTotal(), records);
@@ -100,7 +107,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
 
         // 数据校验
         DataValidator.create(BizException.class)
-                .validate(customer != null, new DataAlreadyExistsException("用户名已存在"));
+                .validate(customer != null, customerNotFoundException);
 
         customer = createRequest.transform();
         customer.setPassword(BCryptUtils.encode(createRequest.getPassword()));
@@ -132,7 +139,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         String tenantId = SecurityUtils.getTenantIdWithException();
         Customer customer = this.getByTenantAndId(tenantId, auditRequest.getCustomerId());
         DataValidator.create(BizException.class)
-                .validate(customer == null, new DataNotFoundException("客户不存在"))
+                .validate(customer == null, customerNotFoundException)
                 .validate(Objects.requireNonNull(customer).getAuditStatus() != AuditStatus.WAIT_AUDIT, new InvalidDataException("客户已完成审核"));
         // 保存审核信息
         customer.setCustomerAuditInfo(auditRequest);
@@ -154,7 +161,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         String tenantId = SecurityUtils.getTenantIdWithException();
         Customer customer = this.getByTenantAndId(tenantId, id);
         DataValidator.create(BizException.class)
-                .validate(customer == null, new DataNotFoundException("客户不存在"));
+                .validate(customer == null, customerNotFoundException);
         return (CustomerResponse) new CustomerResponse().transform(customer);
     }
 
@@ -186,22 +193,12 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
      */
     @Override
     public void lock(Long customerId) {
-        Processor.prepare()
-                .start(() -> {
-                    String tenantId = SecurityUtils.getTenantIdWithException();
-                    return getByTenantAndId(tenantId, customerId);
-                })
-                .validate(customer -> {
-                    if (customer == null) {
-                        throw new DataNotFoundException("客户不存在");
-                    }
-                })
-                .complete(customer -> {
-                    if (!customer.isLock()) {
-                        customer.setLock(true);
-                        this.updateById(customer);
-                    }
-                });
+        switchCustomerStatus(customerId, customer -> {
+            if (!customer.isLock()) {
+                customer.setLock(true);
+                this.updateById(customer);
+            }
+        });
     }
 
     /**
@@ -214,6 +211,60 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
      */
     @Override
     public void unlock(Long customerId) {
+        switchCustomerStatus(customerId, customer -> {
+            if (customer.isLock()) {
+                customer.setLock(false);
+                this.updateById(customer);
+            }
+        });
+    }
+
+    /**
+     * 订单提交-开启
+     *
+     * @param customerId 客户 ID
+     *
+     * @author wangweijun
+     * @since 2025/1/8 10:56
+     */
+    @Override
+    public void orderSubmitEnable(Long customerId) {
+        switchCustomerStatus(customerId, customer -> {
+            if (!customer.isEnableSubmitOrder()) {
+                customer.setEnableSubmitOrder(true);
+                this.updateById(customer);
+            }
+        });
+    }
+
+    /**
+     * 订单提交-关闭
+     *
+     * @param customerId 客户 ID
+     *
+     * @author wangweijun
+     * @since 2025/1/8 10:56
+     */
+    @Override
+    public void orderSubmitDisable(Long customerId) {
+        switchCustomerStatus(customerId, customer -> {
+            if (customer.isEnableSubmitOrder()) {
+                customer.setEnableSubmitOrder(false);
+                this.updateById(customer);
+            }
+        });
+    }
+
+    /**
+     * 设置客户状态
+     *
+     * @param customerId 客户 ID
+     * @param consumer   逻辑
+     *
+     * @author wangweijun
+     * @since 2025/1/8 11:25
+     */
+    private void switchCustomerStatus(Long customerId, Consumer<Customer> consumer) {
         Processor.prepare()
                 .start(() -> {
                     String tenantId = SecurityUtils.getTenantIdWithException();
@@ -221,14 +272,46 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
                 })
                 .validate(customer -> {
                     if (customer == null) {
-                        throw new DataNotFoundException("客户不存在");
+                        throw customerNotFoundException;
                     }
                 })
-                .complete(customer -> {
-                    if (customer.isLock()) {
-                        customer.setLock(false);
-                        this.updateById(customer);
+                .complete(consumer);
+    }
+
+    /**
+     * 添加子账户
+     *
+     * @param createRequest 请求
+     *
+     * @author wangweijun
+     * @since 2025/1/7 16:53
+     */
+    @Override
+    public void subAccountCreate(CustomerSubAccountCreateRequest createRequest) {
+        String tenantId = createRequest.getTenantId();
+        String username = createRequest.getUsername();
+        Processor.prepare()
+                .start(() -> {
+                    Long customerId = createRequest.getCustomerId();
+                    return this.getByTenantAndId(tenantId, customerId);
+                })
+                .validate(owner -> {
+                    if (owner == null) {
+                        throw customerNotFoundException;
                     }
-                });
+                    if (!owner.isEnableSubAccount()) {
+                        throw new BizException("用户未开启子账号权限");
+                    }
+                    Customer subAccount = this.getByUsername(tenantId, username);
+                    if (subAccount != null) {
+                        throw new InvalidDataException("用户名已存在");
+                    }
+                })
+                .next(owner -> {
+                    String password = createRequest.getPassword();
+                    String name = createRequest.getName();
+                    return owner.createSubAccount(username, password, name);
+                })
+                .complete(this::save);
     }
 }
