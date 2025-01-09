@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
+import io.github.thebesteric.framework.agile.commons.util.IpUtils;
 import io.github.thebesteric.framework.agile.plugins.database.core.annotation.EntityClass;
 import io.github.thebesteric.framework.agile.plugins.database.core.annotation.EntityColumn;
+import io.github.thebesteric.project.intelligent.core.base.BaseBizEntity;
 import io.github.thebesteric.project.intelligent.core.base.BaseTenantBizEntity;
 import io.github.thebesteric.project.intelligent.core.constant.ApplicationConstants;
 import io.github.thebesteric.project.intelligent.core.constant.AuditStatus;
@@ -14,10 +16,13 @@ import io.github.thebesteric.project.intelligent.core.constant.crm.RegisterSourc
 import io.github.thebesteric.project.intelligent.core.mapper.handler.CommaStringToListTypeHandler;
 import io.github.thebesteric.project.intelligent.core.model.domain.crm.request.CustomerAuditRequest;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.apache.ibatis.type.JdbcType;
+import org.springframework.beans.BeanUtils;
 
 import java.beans.Transient;
 import java.io.Serial;
@@ -25,6 +30,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 客户
@@ -41,6 +47,9 @@ import java.util.List;
 public class Customer extends BaseTenantBizEntity {
     @Serial
     private static final long serialVersionUID = 1712056308739028043L;
+
+    /** 总共允许登录失败的的次数 */
+    public static final int TOTAL_ALLOW_LOGIN_FAILED_COUNT = 5;
 
     @EntityColumn(length = 32, nullable = false, comment = "登录账号")
     private String username;
@@ -94,20 +103,29 @@ public class Customer extends BaseTenantBizEntity {
     @EntityColumn(comment = "省市区 ID")
     private Long areaId;
 
-    @EntityColumn(comment = "是否开票")
-    private Boolean isInvoice = false;
+    @TableField(value = "is_invoice")
+    @EntityColumn(comment = "是否开票", nullable = false, defaultExpression = "false")
+    private boolean isInvoice = false;
 
-    @EntityColumn(comment = "是否免运费")
-    private Boolean isFreeFreight = false;
+    @TableField(value = "is_free_freight")
+    @EntityColumn(comment = "是否免运费", nullable = false, defaultExpression = "false")
+    private boolean freeFreight = false;
 
-    @EntityColumn(comment = "是否启用积分")
-    private Boolean isEnableIntegral = false;
+    @TableField(value = "is_enable_integral")
+    @EntityColumn(comment = "是否启用积分", nullable = false, defaultExpression = "false")
+    private boolean enableIntegral = false;
 
-    @EntityColumn(comment = "是否启用子账户")
-    private Boolean isEnableSubAccount = false;
+    @TableField(value = "is_enable_sub_account")
+    @EntityColumn(comment = "是否启用子账户", nullable = false, defaultExpression = "false")
+    private boolean enableSubAccount = false;
 
-    @EntityColumn(comment = "子账号提交订单是否需要审核")
-    private Boolean requiresSubAccountOrderApproval = false;
+    @TableField(value = "is_enable_order_approval")
+    @EntityColumn(comment = "子账号提交订单是否需要审核", nullable = false, defaultExpression = "false")
+    private boolean enableOrderApproval = false;
+
+    @TableField(value = "is_enable_submit_order")
+    @EntityColumn(comment = "是否允许提交订单", nullable = false, defaultExpression = "true")
+    private boolean enableSubmitOrder = true;
 
     @EntityColumn(type = EntityColumn.Type.TEXT, comment = "店面图片")
     @TableField(jdbcType = JdbcType.VARCHAR, typeHandler = CommaStringToListTypeHandler.class)
@@ -140,12 +158,27 @@ public class Customer extends BaseTenantBizEntity {
     @EntityColumn(length = 64, comment = "登录 IP")
     private String loginIp;
 
-    @EntityColumn(comment = "登录次数")
-    private Integer loginTimes;
+    @EntityColumn(comment = "登录次数", nullable = false, defaultExpression = "0")
+    private Integer loginTimes = 0;
 
-    @EntityColumn(comment = "登录错误次数")
-    private Integer loginContinueErrorTimes;
+    @EntityColumn(comment = "登录连续错误次数", nullable = false, defaultExpression = "0")
+    private Integer loginContinueErrorTimes = 0;
 
+    @EntityColumn(type = EntityColumn.Type.DATETIME, comment = "最后一次登录日期")
+    private Date lastLoginTime;
+
+    @TableField(value = "is_lock")
+    @EntityColumn(comment = "账户是否锁定", nullable = false, defaultExpression = "false")
+    private boolean lock = false;
+
+    /**
+     * 设置客户审核信息
+     *
+     * @param auditRequest 请求
+     *
+     * @author wangweijun
+     * @since 2025/1/6 13:54
+     */
     @Transient
     public void setCustomerAuditInfo(CustomerAuditRequest auditRequest) {
         this.auditStatus = auditRequest.getAuditStatus();
@@ -154,21 +187,104 @@ public class Customer extends BaseTenantBizEntity {
         this.referrerUserId = auditRequest.getReferrerUserId();
     }
 
+    /**
+     * 设置成功登录信息
+     *
+     * @param request Http 请求
+     *
+     * @author wangweijun
+     * @since 2025/1/6 13:55
+     */
     @Transient
-    public void setSuccessLoginInfo(String loginIp) {
-        this.setLoginInfo(loginIp, this.loginTimes++, 0);
+    public void setSuccessLoginInfo(HttpServletRequest request) {
+        this.loginTimes = this.loginTimes == null ? 1 : ++this.loginTimes;
+        this.setLoginInfo(IpUtils.getClientIP(request), this.loginTimes, 0);
     }
 
+    /**
+     * 设置失败登录信息
+     *
+     * @param request Http 请求
+     *
+     * @author wangweijun
+     * @since 2025/1/6 18:36
+     */
     @Transient
-    public void setErrorLoginInfo(String loginIp) {
-        this.setLoginInfo(loginIp, this.loginTimes++, this.loginContinueErrorTimes++);
+    public void setErrorLoginInfo(HttpServletRequest request) {
+        this.loginTimes = this.loginTimes == null ? 1 : ++this.loginTimes;
+        this.loginContinueErrorTimes = this.loginContinueErrorTimes == null ? 1 : ++this.loginContinueErrorTimes;
+        this.setLoginInfo(IpUtils.getClientIP(request), this.loginTimes, this.loginContinueErrorTimes);
     }
 
+    /**
+     * 设置登录信息
+     *
+     * @param loginIp                 登录 IP
+     * @param loginTimes              登录次数
+     * @param loginContinueErrorTimes 登录连续错误次数
+     *
+     * @author wangweijun
+     * @since 2025/1/6 18:37
+     */
     @Transient
     private void setLoginInfo(String loginIp, Integer loginTimes, Integer loginContinueErrorTimes) {
         this.loginIp = loginIp;
         this.loginTimes = loginTimes;
         this.loginContinueErrorTimes = loginContinueErrorTimes;
+        this.lastLoginTime = new Date();
+    }
+
+    /**
+     * 获取登录失败后剩余登录次数
+     *
+     * @return int
+     *
+     * @author wangweijun
+     * @since 2025/1/7 14:32
+     */
+    @Transient
+    public int getLoginFailedRemainTimes() {
+        int loginRemainTimes = TOTAL_ALLOW_LOGIN_FAILED_COUNT - this.loginContinueErrorTimes;
+        return Math.max(loginRemainTimes, 0);
+    }
+
+    /**
+     * 是否需要被锁定
+     *
+     * @return boolean
+     *
+     * @author wangweijun
+     * @since 2025/1/7 14:36
+     */
+    @Transient
+    public boolean shouldBeLock() {
+        return this.loginContinueErrorTimes >= Customer.TOTAL_ALLOW_LOGIN_FAILED_COUNT;
+    }
+
+    /**
+     * 创建子账户
+     *
+     * @param username 子账户-用户名
+     * @param password 子账户-密码
+     * @param name     子账户-名称
+     *
+     * @return Customer
+     *
+     * @author wangweijun
+     * @since 2025/1/7 20:20
+     */
+    @Transient
+    public Customer createSubAccount(@NotNull String username, @NotNull String password, @NotNull String name) {
+        Customer subAccount = new Customer();
+        String[] ignoreProperties = getProperties(BaseBizEntity.class,
+                "loginIp", "loginTimes", "loginContinueErrorTimes", "lastLoginTime", "lock");
+        BeanUtils.copyProperties(this, subAccount, ignoreProperties);
+        subAccount.setAccountType(AccountType.SLAVE);
+        subAccount.setUsername(username);
+        subAccount.setPassword(password);
+        subAccount.setName(name);
+        subAccount.setOwnerId(Objects.requireNonNull(this.id));
+        return subAccount;
     }
 
     /**

@@ -6,6 +6,7 @@ import io.github.thebesteric.project.intelligent.core.model.domain.security.OAut
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
@@ -26,11 +27,11 @@ public interface SecurityAuthenticationOpenApi {
                                @RequestParam(value = "auth_type", defaultValue = "password") String authType,
                                @RequestParam(value = "auth_source", defaultValue = "intelligent-core-api") String authSource,
                                @RequestParam(value = "scope", defaultValue = "profile") String scope,
-                               @RequestParam(value = SecurityConstants.REQUEST_HEADER_AUTHORIZATION, required = false) String authorization);
+                               @RequestHeader(value = SecurityConstants.REQUEST_HEADER_AUTHORIZATION) String authorization);
 
     @PostMapping("/security/authentication/refresh_token")
     @Operation(summary = "刷新 Token")
     R<OAuth2Token> refreshToken(@RequestParam String refreshToken,
-                                @RequestParam(value = SecurityConstants.REQUEST_HEADER_AUTHORIZATION, required = false) String authorization);
+                                @RequestHeader(value = SecurityConstants.REQUEST_HEADER_AUTHORIZATION) String authorization);
 
 }

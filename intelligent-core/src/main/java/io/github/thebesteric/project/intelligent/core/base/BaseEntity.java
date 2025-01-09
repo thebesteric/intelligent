@@ -11,7 +11,10 @@ import java.beans.Introspector;
 import java.beans.Transient;
 import java.io.Serial;
 import java.io.Serializable;
+import java.lang.reflect.Field;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -42,6 +45,21 @@ public abstract class BaseEntity implements Serializable {
     @TableField(value = "`desc`")
     @EntityColumn(type = EntityColumn.Type.VARCHAR, length = 255, comment = "描述")
     protected String desc;
+
+    @Transient
+    public String[] getProperties(Class<? extends BaseEntity> entityClass, String... otherProperties) {
+        Set<String> properties = new HashSet<>();
+        Class<?> curClass = entityClass;
+        do {
+            Field[] declaredFields = curClass.getDeclaredFields();
+            for (Field declaredField : declaredFields) {
+                properties.add(declaredField.getName());
+            }
+            curClass = curClass.getSuperclass();
+        } while (curClass != null && curClass != Object.class);
+        properties.addAll(Set.of(otherProperties));
+        return properties.toArray(new String[0]);
+    }
 
     @Transient
     public String getTableName() {

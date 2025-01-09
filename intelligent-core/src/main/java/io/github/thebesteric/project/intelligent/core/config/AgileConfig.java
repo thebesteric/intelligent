@@ -7,6 +7,7 @@ import io.github.thebesteric.framework.agile.plugins.logger.processor.ignore.Req
 import io.github.thebesteric.framework.agile.plugins.logger.processor.ignore.impl.HeaderIgnoreProcessor;
 import io.github.thebesteric.framework.agile.starter.annotaion.EnableAgile;
 import io.github.thebesteric.project.intelligent.core.annotation.SkipAuth;
+import io.github.thebesteric.project.intelligent.core.initializer.DatabaseAgileSensitiveLoader;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +26,11 @@ import java.util.Map;
 @Configuration
 @EnableAgile
 public class AgileConfig {
+
+    @Bean
+    public DatabaseAgileSensitiveLoader databaseAgileSensitiveLoader() {
+        return new DatabaseAgileSensitiveLoader();
+    }
 
     @Bean
     public RequestIgnoreProcessor headerIgnoreProcessor() {

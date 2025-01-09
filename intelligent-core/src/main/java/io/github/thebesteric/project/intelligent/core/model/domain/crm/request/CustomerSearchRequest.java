@@ -22,4 +22,7 @@ public class CustomerSearchRequest extends PagingRequest {
 
     @Schema(description = "客户名称/编号/关键字/账号/手机号")
     private String keyword;
+
+    @Schema(description = "是否只显示子账号")
+    private boolean showSubAccountOnly = false;
 }

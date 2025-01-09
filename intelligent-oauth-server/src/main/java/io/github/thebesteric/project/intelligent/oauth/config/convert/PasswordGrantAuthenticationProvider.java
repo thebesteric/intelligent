@@ -52,9 +52,6 @@ import java.util.stream.Stream;
 @Slf4j
 public class PasswordGrantAuthenticationProvider implements AuthenticationProvider {
 
-    private static final String ERROR_URI = "https://datatracker.ietf.org/doc/html/rfc6749#section-5.2";
-
-
     private final UserDetailsService userDetailsService;
     private final PasswordEncoder passwordEncoder;
     private final OAuth2AuthorizationService authorizationService;
@@ -113,7 +110,7 @@ public class PasswordGrantAuthenticationProvider implements AuthenticationProvid
         // 请求参数权限范围专场集合
         Set<String> requestScopeSet = Stream.of(requestScopesStr.split(" ")).collect(Collectors.toSet());
 
-        // 确保客户端已经过身份验证
+        // 确保客户端已经过身份验证：Basic 认证是否通过
         OAuth2ClientAuthenticationToken clientPrincipal = getAuthenticatedClientElseThrowInvalidClient(passwordGrantAuthenticationToken);
         RegisteredClient registeredClient = clientPrincipal.getRegisteredClient();
 
@@ -121,13 +118,13 @@ public class PasswordGrantAuthenticationProvider implements AuthenticationProvid
         // 判断当前授权模式是否包含 authorization_password
         assert registeredClient != null;
         if (!registeredClient.getAuthorizationGrantTypes().contains(authorizationGrantType)) {
-            throw new OAuth2AuthenticationException(OAuth2ErrorCodes.UNAUTHORIZED_CLIENT);
+            throw new OAuth2AuthenticationException(SecurityConstants.OAuth2ErrorCode.GRANT_TYPE_UNAUTHORIZED);
         }
 
         // 校验用户名信息
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         if (!passwordEncoder.matches(password, userDetails.getPassword())) {
-            throw new OAuth2AuthenticationException("密码不正确！");
+            throw new OAuth2AuthenticationException(SecurityConstants.OAuth2ErrorCode.INVALID_PASSWORD);
         }
 
         // 由于在上面已验证过用户名、密码，现在构建一个已认证的对象 UsernamePasswordAuthenticationToken
@@ -153,9 +150,7 @@ public class PasswordGrantAuthenticationProvider implements AuthenticationProvid
         OAuth2TokenContext tokenContext = tokenContextBuilder.tokenType(OAuth2TokenType.ACCESS_TOKEN).build();
         OAuth2Token generatedAccessToken = this.tokenGenerator.generate(tokenContext);
         if (generatedAccessToken == null) {
-            OAuth2Error error = new OAuth2Error(OAuth2ErrorCodes.SERVER_ERROR,
-                    "The token generator failed to generate the access token.", ERROR_URI);
-            throw new OAuth2AuthenticationException(error);
+            throw new OAuth2AuthenticationException(SecurityConstants.OAuth2ErrorCode.GENERATE_ACCESS_TOKEN_FAILURE);
         }
 
         if (log.isTraceEnabled()) {
@@ -181,9 +176,7 @@ public class PasswordGrantAuthenticationProvider implements AuthenticationProvid
             tokenContext = tokenContextBuilder.tokenType(OAuth2TokenType.REFRESH_TOKEN).build();
             OAuth2Token generatedRefreshToken = this.tokenGenerator.generate(tokenContext);
             if (!(generatedRefreshToken instanceof OAuth2RefreshToken)) {
-                OAuth2Error error = new OAuth2Error(OAuth2ErrorCodes.SERVER_ERROR,
-                        "The token generator failed to generate the refresh token.", ERROR_URI);
-                throw new OAuth2AuthenticationException(error);
+                throw new OAuth2AuthenticationException(SecurityConstants.OAuth2ErrorCode.GENERATE_REFRESH_TOKEN_FAILURE);
             }
 
             if (log.isTraceEnabled()) {
@@ -208,9 +201,7 @@ public class PasswordGrantAuthenticationProvider implements AuthenticationProvid
             // @formatter:on
             OAuth2Token generatedIdToken = this.tokenGenerator.generate(tokenContext);
             if (!(generatedIdToken instanceof Jwt)) {
-                OAuth2Error error = new OAuth2Error(OAuth2ErrorCodes.SERVER_ERROR,
-                        "The token generator failed to generate the ID token.", ERROR_URI);
-                throw new OAuth2AuthenticationException(error);
+                throw new OAuth2AuthenticationException(SecurityConstants.OAuth2ErrorCode.GENERATE_ID_TOKEN_FAILURE);
             }
 
             if (log.isTraceEnabled()) {
@@ -260,7 +251,7 @@ public class PasswordGrantAuthenticationProvider implements AuthenticationProvid
         if (clientPrincipal != null && clientPrincipal.isAuthenticated()) {
             return clientPrincipal;
         }
-        throw new OAuth2AuthenticationException(OAuth2ErrorCodes.INVALID_CLIENT);
+        throw new OAuth2AuthenticationException(SecurityConstants.OAuth2ErrorCode.INVALID_CLIENT);
     }
 
     /**

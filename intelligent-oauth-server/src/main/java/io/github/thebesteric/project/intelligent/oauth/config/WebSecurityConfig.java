@@ -367,6 +367,8 @@ public class WebSecurityConfig {
                 claims.claim(SecurityConstants.CLAIM_SID, new StandardSessionIdGenerator().generateSessionId());
                 claims.claim(SecurityConstants.CLAIM_ROLES, clone(roleCodes));
                 claims.claim(SecurityConstants.CLAIM_AUTHORITIES, clone(authorities.stream().map(GrantedAuthority::getAuthority).toList()));
+                claims.claim(SecurityConstants.CLAIM_AUTH_TYPE, userDetails.getAuthType());
+                claims.claim(SecurityConstants.CLAIM_AUTH_SOURCE, userDetails.getAuthSource());
             }
         };
     }

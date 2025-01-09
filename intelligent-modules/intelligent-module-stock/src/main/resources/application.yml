@@ -28,6 +28,10 @@ sourceflag:
       show-sql: true
       ddl-auto: update
       delete-column: false
+    sensitive:
+      enable: true
+      load-type: other
+      placeholder: "***"
 
 application:
   components:

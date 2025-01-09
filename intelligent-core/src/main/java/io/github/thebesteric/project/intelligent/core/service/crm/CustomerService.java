@@ -7,6 +7,7 @@ import io.github.thebesteric.project.intelligent.core.constant.crm.RegisterSourc
 import io.github.thebesteric.project.intelligent.core.model.domain.crm.request.CustomerAuditRequest;
 import io.github.thebesteric.project.intelligent.core.model.domain.crm.request.CustomerCreateRequest;
 import io.github.thebesteric.project.intelligent.core.model.domain.crm.request.CustomerSearchRequest;
+import io.github.thebesteric.project.intelligent.core.model.domain.crm.request.CustomerSubAccountCreateRequest;
 import io.github.thebesteric.project.intelligent.core.model.domain.crm.response.CustomerResponse;
 import io.github.thebesteric.project.intelligent.core.model.entity.crm.Customer;
 
@@ -67,4 +68,67 @@ public interface CustomerService extends IBaseService<Customer> {
      * @since 2024/12/25 11:10
      */
     CustomerResponse detail(Long id);
+
+    /**
+     * 根据用户名获取用户
+     *
+     * @param tenantId 租户 ID
+     * @param username 用户名
+     *
+     * @return Customer
+     *
+     * @author wangweijun
+     * @since 2025/1/6 11:28
+     */
+    Customer getByUsername(String tenantId, String username);
+
+    /**
+     * 锁定用户
+     *
+     * @param customerId 客户 ID
+     *
+     * @author wangweijun
+     * @since 2025/1/7 13:33
+     */
+    void lock(Long customerId);
+
+    /**
+     * 解锁用户
+     *
+     * @param customerId 客户 ID
+     *
+     * @author wangweijun
+     * @since 2025/1/7 13:34
+     */
+    void unlock(Long customerId);
+
+    /**
+     * 订单提交-开启
+     *
+     * @param customerId 客户 ID
+     *
+     * @author wangweijun
+     * @since 2025/1/8 10:56
+     */
+    void orderSubmitEnable(Long customerId);
+
+    /**
+     * 订单提交-关闭
+     *
+     * @param customerId 客户 ID
+     *
+     * @author wangweijun
+     * @since 2025/1/8 10:56
+     */
+    void orderSubmitDisable(Long customerId);
+
+    /**
+     * 添加子账户
+     *
+     * @param createRequest 请求
+     *
+     * @author wangweijun
+     * @since 2025/1/7 16:53
+     */
+    void subAccountCreate(CustomerSubAccountCreateRequest createRequest);
 }

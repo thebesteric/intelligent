@@ -1,14 +1,16 @@
 package io.github.thebesteric.project.intelligent.core.model.entity.common;
 
-import com.baomidou.mybatisplus.annotation.TableField;
+import cn.hutool.core.lang.Snowflake;
+import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.core.type.TypeReference;
+import io.github.thebesteric.framework.agile.commons.util.JsonUtils;
 import io.github.thebesteric.framework.agile.plugins.database.core.annotation.EntityClass;
 import io.github.thebesteric.framework.agile.plugins.database.core.annotation.EntityColumn;
-import io.github.thebesteric.framework.agile.plugins.database.core.domain.EntityClassDomain;
 import io.github.thebesteric.framework.agile.plugins.database.core.jdbc.JdbcTemplateHelper;
 import io.github.thebesteric.framework.agile.plugins.database.core.listener.EntityClassCreateListener;
 import io.github.thebesteric.framework.agile.plugins.database.core.listener.EntityClassUpdateListener;
-import io.github.thebesteric.project.intelligent.core.base.BaseEntity;
+import io.github.thebesteric.project.intelligent.core.base.BaseBizEntity;
 import io.github.thebesteric.project.intelligent.core.constant.ApplicationConstants;
 import io.vavr.control.Try;
 import lombok.Data;
@@ -21,41 +23,27 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.Serial;
+import java.util.Date;
 import java.util.List;
 
 /**
- * 全国省市自治区表
+ * 敏感词
  *
  * @author wangweijun
  * @version v1.0
- * @since 2024-12-10 17:27:04
+ * @since 2025-01-09 11:21:33
  */
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@TableName(ApplicationConstants.Application.Module.OpenApi.TABLE_NAME_PREFIX + "area")
-@EntityClass(comment = "全国省市自治区表", schemas = ApplicationConstants.Application.Module.OpenApi.DATASOURCE_INTELLIGENT_MODULE_OPEN_API)
-public class Area extends BaseEntity implements EntityClassCreateListener, EntityClassUpdateListener {
+@TableName(ApplicationConstants.Application.Module.OpenApi.TABLE_NAME_PREFIX + "sensitive")
+@EntityClass(comment = "敏感词", schemas = ApplicationConstants.Application.Module.OpenApi.DATASOURCE_INTELLIGENT_MODULE_OPEN_API)
+public class Sensitive extends BaseBizEntity implements EntityClassCreateListener, EntityClassUpdateListener {
     @Serial
-    private static final long serialVersionUID = -209963749862545214L;
+    private static final long serialVersionUID = -1735995981862919148L;
 
-    @EntityColumn(length = 32, comment = "编码")
-    private String code;
-
-    @EntityColumn(length = 32, comment = "名称")
-    private String name;
-
-    @EntityColumn(length = 32, comment = "父级编码")
-    private String parentCode;
-
-    @EntityColumn(length = 32, comment = "子集", exist = false)
-    @TableField(exist = false)
-    private List<Area> children;
-
-    @Override
-    public EntityClassDomain preCreateTable(EntityClassDomain entityClassDomain, JdbcTemplateHelper jdbcTemplateHelper) {
-        return entityClassDomain;
-    }
+    @EntityColumn(nullable = false, comment = "敏感词")
+    private String keyword;
 
     @Override
     public void postCreateTable(JdbcTemplateHelper jdbcTemplateHelper) {
@@ -69,16 +57,19 @@ public class Area extends BaseEntity implements EntityClassCreateListener, Entit
             JdbcTemplate jdbcTemplate = jdbcTemplateHelper.getJdbcTemplate();
             Long count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM " + tableName, Long.class);
             if (count == null || count == 0) {
-                ClassPathResource resource = new ClassPathResource("asserts/t_open_area.sql");
+                ClassPathResource resource = new ClassPathResource("asserts/sensitive.json");
                 File file = resource.getFile();
-                FileReader fileReader = new FileReader(file);
-                BufferedReader reader = new BufferedReader(fileReader);
+                BufferedReader reader = new BufferedReader(new FileReader(file));
                 StringBuilder sb = new StringBuilder();
                 String line;
                 while ((line = reader.readLine()) != null) {
                     sb.append(line);
                 }
-                jdbcTemplate.execute(sb.toString());
+                List<String> sensitiveKeywords = JsonUtils.MAPPER.readValue(sb.toString(), new TypeReference<>() {
+                });
+                String insertSql = "INSERT INTO " + tableName + " (`id`, `keyword`, `created_at`) VALUES (?, ?, ?)";
+                Snowflake snowflake = IdUtil.getSnowflake(1, 1);
+                sensitiveKeywords.forEach(kw -> jdbcTemplate.update(insertSql, snowflake.nextId(), kw, new Date()));
             }
         }).onFailure(Throwable::printStackTrace);
     }

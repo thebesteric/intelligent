@@ -4,12 +4,15 @@ import io.github.thebesteric.framework.agile.core.domain.R;
 import io.github.thebesteric.framework.agile.distributed.locks.exeption.DistributedLocksException;
 import io.github.thebesteric.framework.agile.plugins.idempotent.exception.IdempotentException;
 import io.github.thebesteric.framework.agile.plugins.limiter.exception.RateLimitException;
+import io.github.thebesteric.framework.agile.plugins.sensitive.filter.exception.SensitiveException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.security.authorization.ExpressionAuthorizationDecision;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
@@ -95,6 +98,17 @@ public class GlobalExceptionHandler {
         return R.error(HttpStatus.BAD_REQUEST, message);
     }
 
+    @ExceptionHandler(value = AuthorizationDeniedException.class)
+    public R<Map<String, Object>> handleException(AuthorizationDeniedException ex) {
+        String errorMessage = ex.getMessage();
+        Map<String, Object> data = new HashMap<>();
+        if (ex.getAuthorizationResult() instanceof ExpressionAuthorizationDecision decision) {
+            String expressionString = decision.getExpression().getExpressionString();
+            data.put("expression", expressionString);
+        }
+        return R.error(HttpStatus.FORBIDDEN, errorMessage, data);
+    }
+
     @ExceptionHandler(value = BizException.class)
     public R<String> handleException(BizException e) {
         String errorCode = e.getBizCode().getErrorCode();
@@ -167,6 +181,12 @@ public class GlobalExceptionHandler {
     public R<String> handleException(DistributedLocksException e) {
         log.error(e.getMessage(), e);
         return R.error(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+    }
+
+    @ExceptionHandler(value = SensitiveException.class)
+    public R<List<String>> handleException(SensitiveException e) {
+        log.error(e.getMessage(), e);
+        return R.error(HttpStatus.BAD_REQUEST.value(), "包含未经允许的敏感词", e.getSensitiveWords());
     }
 
     @ExceptionHandler(value = AccessDeniedException.class)

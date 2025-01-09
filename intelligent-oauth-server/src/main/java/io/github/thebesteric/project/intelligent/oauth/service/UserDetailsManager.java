@@ -3,6 +3,7 @@ package io.github.thebesteric.project.intelligent.oauth.service;
 import io.github.thebesteric.framework.agile.commons.util.DataValidator;
 import io.github.thebesteric.project.intelligent.core.constant.security.AuthSource;
 import io.github.thebesteric.project.intelligent.core.constant.security.AuthType;
+import io.github.thebesteric.project.intelligent.core.exception.BizException;
 import io.github.thebesteric.project.intelligent.core.exception.InvalidDataException;
 import io.github.thebesteric.project.intelligent.oauth.config.SecurityContextHolder;
 import io.github.thebesteric.project.intelligent.oauth.detail.UserDetailsFactory;
@@ -46,7 +47,15 @@ public class UserDetailsManager implements UserDetailsService {
     public UserDetails loadUserByUsername(String identity) throws UsernameNotFoundException {
         // 根据认证源查找对应的用户信息
         CustomUserDetails userDetails = loadUserByIdentity(identity);
+        // 校验用户信息
+        DataValidator.create()
+                .validate(userDetails == null, new UsernameNotFoundException("用户不存在"))
+                .validate(Objects.requireNonNull(userDetails).isAccountLocked(), new BizException(BizException.BizCode.INVALID_DATA_ERROR, "用户已锁定"))
+                .validate(Objects.requireNonNull(userDetails).isAccountExpired(), new BizException(BizException.BizCode.INVALID_DATA_ERROR, "用户已过期"))
+                .validate(Objects.requireNonNull(userDetails).isCredentialsExpired(), new BizException(BizException.BizCode.INVALID_DATA_ERROR, "认证已过期"));
+        // 设置用户信息
         SecurityContextHolder.setUserDetails(userDetails);
+        // 返回用户信息
         return new User(identity, userDetails.getPassword(), userDetails.getAuthorities());
     }
 

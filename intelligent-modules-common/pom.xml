@@ -20,6 +20,16 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>io.github.thebesteric.framework.agile.plugins</groupId>
+            <artifactId>sensitive-filter-plugin</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.thebesteric.framework.agile.wechat</groupId>
+            <artifactId>wechat-open-platform-plugin</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

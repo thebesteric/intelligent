@@ -1,6 +1,7 @@
 package io.github.thebesteric.project.intelligent.oauth.config.convert;
 
 import io.github.thebesteric.project.intelligent.core.constant.security.GrantType;
+import io.github.thebesteric.project.intelligent.core.constant.security.SecurityConstants;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -39,13 +40,13 @@ public class PasswordGrantAuthenticationConverter implements AuthenticationConve
         String username = parameters.getFirst(OAuth2ParameterNames.USERNAME);
         if (!StringUtils.hasText(username) ||
             parameters.get(OAuth2ParameterNames.USERNAME).size() != 1) {
-            throw new OAuth2AuthenticationException("无效请求，用户名不能为空");
+            throw new OAuth2AuthenticationException(SecurityConstants.OAuth2ErrorCode.INVALID_USERNAME);
         }
         // password (REQUIRED)
         String password = parameters.getFirst(OAuth2ParameterNames.PASSWORD);
         if (!StringUtils.hasText(password) ||
             parameters.get(OAuth2ParameterNames.PASSWORD).size() != 1) {
-            throw new OAuth2AuthenticationException("无效请求，密码不能为空");
+            throw new OAuth2AuthenticationException(SecurityConstants.OAuth2ErrorCode.INVALID_PASSWORD);
         }
 
         // 收集要传入 PasswordGrantAuthenticationToken 构造方法的参数，
