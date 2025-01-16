@@ -2,6 +2,7 @@ package io.github.thebesteric.project.intelligent.core.base;
 
 import cn.hutool.core.text.CharSequenceUtil;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import io.github.thebesteric.framework.agile.plugins.database.core.annotation.EntityClass;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -13,7 +14,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 
-public interface IBaseMapper<T extends BaseEntity> extends com.baomidou.mybatisplus.core.mapper.BaseMapper<T> {
+public interface IBaseMapper<T extends BaseEntity> extends BaseMapper<T> {
 
     /**
      * 非空时保存

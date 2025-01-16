@@ -33,13 +33,13 @@ public interface CustomerRegionUserMapper extends IBaseMapper<Customer> {
                         c.sales_user_ids as 'customer.sales_user_ids',
                     r.id as 'region.id', r.name as 'region.name', r.code as 'region.code'
                 FROM t_crm_customer c
-                LEFT JOIN t_crm_customer_region r ON c.region_id = r.id
-                LEFT JOIN t_crm_customer_level l ON c.customer_level_id = l.id
-                LEFT JOIN t_crm_customer_type t ON c.customer_type_id = t.id
+                    LEFT JOIN t_crm_customer_region r ON c.region_id = r.id
+                    LEFT JOIN t_crm_customer_level l ON c.customer_level_id = l.id
+                    LEFT JOIN t_crm_customer_type t ON c.customer_type_id = t.id
                 <where>
                     <if test="request != null">
                         <if test="request.keyword != null and request.keyword != 'null' and request.keyword != ''">
-                            AND c.name like CONCAT('%',#{request.keyword},'%') OR c.serial_no like CONCAT('%',#{request.keyword},'%')
+                            AND (c.name like CONCAT('%',#{request.keyword},'%') OR c.serial_no like CONCAT('%',#{request.keyword},'%'))
                         </if>
                         <if test="request.customerLevelId != null">
                             AND c.customer_level_id = #{request.customerLevelId}
