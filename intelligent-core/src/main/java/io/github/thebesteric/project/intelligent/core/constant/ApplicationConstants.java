@@ -45,6 +45,8 @@ public final class ApplicationConstants extends AbstractUtils {
 
             /** 核心服务 */
             public static final class OpenApi extends AbstractUtils {
+                /** 模块名称 */
+                public static final String NAME = "open-api";
                 /** 数据库 */
                 public static final String DATASOURCE_INTELLIGENT_MODULE_OPEN_API = "intelligent-module-open-api";
                 public static final String TABLE_NAME_PREFIX = "t_open_";
@@ -52,6 +54,8 @@ public final class ApplicationConstants extends AbstractUtils {
 
             /** 客户管理 */
             public static final class CRM extends AbstractUtils {
+                /** 模块名称 */
+                public static final String NAME = "crm";
                 /** 数据库 */
                 public static final String DATASOURCE_INTELLIGENT_MODULE_CRM = "intelligent-module-crm";
                 /** 表前缀 */
@@ -60,6 +64,8 @@ public final class ApplicationConstants extends AbstractUtils {
 
             /** 商品管理 */
             public static final class Product extends AbstractUtils {
+                /** 模块名称 */
+                public static final String NAME = "product";
                 /** 数据库 */
                 public static final String DATASOURCE_INTELLIGENT_MODULE_PRODUCT = "intelligent-module-product";
                 /** 表前缀 */
@@ -68,6 +74,8 @@ public final class ApplicationConstants extends AbstractUtils {
 
             /** 库存管理 */
             public static final class Stock extends AbstractUtils {
+                /** 模块名称 */
+                public static final String NAME = "stock";
                 /** 数据库 */
                 public static final String DATASOURCE_INTELLIGENT_MODULE_STOCK = "intelligent-module-stock";
                 /** 表前缀 */

@@ -79,7 +79,7 @@ public class ProductCatalogServiceImpl extends ServiceImpl<ProductCatalogMapper,
         parents.forEach(parent -> {
             List<ProductCatalog> children = findByParentId(tenantId, parent.getId());
             List<ProductCatalogResponse> childResponses = recursion(tenantId, children);
-            ProductCatalogResponse parentResponse = (ProductCatalogResponse) new ProductCatalogResponse().transform(parent);
+            ProductCatalogResponse parentResponse = new ProductCatalogResponse().transform(parent);
             parentResponse.setChildren(childResponses);
             catalogResponses.add(parentResponse);
         });

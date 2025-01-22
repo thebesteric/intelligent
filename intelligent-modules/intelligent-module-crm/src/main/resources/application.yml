@@ -41,4 +41,4 @@ application:
       enable: true
       entry-ttl: 3600s
       cache-type: redis
-      cache-name-suffix: ${application.name:}
+      cache-name-suffix: ${spring.application.name:}

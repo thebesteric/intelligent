@@ -96,7 +96,7 @@ public class ScoreServiceImpl extends ServiceImpl<ScoreMapper, Score> implements
     @Override
     public void adjust(ScoreAdjustRequest adjustRequest) {
         Processor.prepare()
-                .interim(() -> {
+                .start(() -> {
                     if (ScoreType.ADD == adjustRequest.getScoreType()) {
                         adjustRequest.setChangeScore(adjustRequest.getChangeScore().abs());
                     } else {

@@ -129,7 +129,7 @@ public class ApplicationProperties {
             /** 是否启用 */
             private boolean enable = false;
             /** 缓存前缀 */
-            private String cacheNamePrefix = "group_platform";
+            private String cacheNamePrefix = "intelligent";
             /** 缓存后缀 */
             private String cacheNameSuffix = "cache";
             /** 缓存分隔符 */

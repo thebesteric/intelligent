@@ -90,7 +90,7 @@ public class CustomerRegionServiceImpl extends ServiceImpl<CustomerRegionMapper,
                     // 加入自身
                     if (regionId != null) {
                         CustomerRegion currentRegion = getById(regionId);
-                        regionResponses.add(0, (CustomerRegionResponse) new CustomerRegionResponse().transform(currentRegion));
+                        regionResponses.add(0, new CustomerRegionResponse().transform(currentRegion));
                     }
                     return regionResponses;
                 });

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.BeanUtils;
 
+import javax.annotation.Nonnull;
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Map;
@@ -26,9 +27,10 @@ public abstract class BaseResponse<T extends BaseEntity> implements Serializable
     @Schema(description = "ID")
     protected Long id;
 
-    public BaseResponse<T> transform(T entity, String... ignoreProperties) {
+    @SuppressWarnings("unchecked")
+    public <C extends BaseResponse<T>> C transform(@Nonnull T entity, String... ignoreProperties) {
         BeanUtils.copyProperties(entity, this, ignoreProperties);
-        return this;
+        return (C) this;
     }
 
     public String toJson(T t) {
