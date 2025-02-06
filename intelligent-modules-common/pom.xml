@@ -30,6 +30,11 @@
             <artifactId>wechat-open-platform-plugin</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>io.github.thebesteric.framework.agile.plugins</groupId>
+            <artifactId>mocker-plugin</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

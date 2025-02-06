@@ -27,7 +27,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/brand")
 @RequiredArgsConstructor
-@Tag(name = "商品-属性-品牌管理")
+@Tag(name = "商品-商品属性-品牌管理")
 @PreAuthorize("@auth.hasAuthority('product:management:attrs:brand')")
 public class ProductBrandController {
 

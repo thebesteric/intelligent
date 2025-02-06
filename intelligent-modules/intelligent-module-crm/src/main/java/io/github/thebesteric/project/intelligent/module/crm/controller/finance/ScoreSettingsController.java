@@ -14,7 +14,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * ScoreSettingsController
+ * 客户-财务-积分设置
  *
  * @author wangweijun
  * @version v1.0

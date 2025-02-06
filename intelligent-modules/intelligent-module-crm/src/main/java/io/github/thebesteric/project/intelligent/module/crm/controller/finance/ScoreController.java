@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * ScoreController
+ * 客户-财务-积分查询
  *
  * @author wangweijun
  * @version v1.0

@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/catalog")
 @RequiredArgsConstructor
-@Tag(name = "商品-属性-标签管理")
+@Tag(name = "商品-商品属性-标签管理")
 @PreAuthorize("@auth.hasAuthority('product:management:attrs:tag')")
 public class ProductTagController {
 

@@ -25,7 +25,7 @@ public class OAuth2Properties {
     @Data
     public static class Cors {
         private List<String> allowedOrigins = new ArrayList<>();
-        private List<String> allowedMethods = List.of("GET", "POST", "PUT", "DELETE", "OPTION");
+        private List<String> allowedMethods = List.of("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS");
         private List<String> allowedHeaders = List.of("Origin", "X-Requested-With", "Content-Type", "Accept", "Authorization", "If-Modified-Since");
         private boolean allowCredentials = true;
 
