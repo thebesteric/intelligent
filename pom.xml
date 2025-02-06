@@ -34,7 +34,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mybatis-plus-boot-starter.version>3.5.9</mybatis-plus-boot-starter.version>
         <dynamic-datasource.version>4.3.1</dynamic-datasource.version>
-        <agile.version>1.0.19.4</agile.version>
+        <agile.version>1.0.20</agile.version>
         <spring-boot.version>>3.4.1</spring-boot.version>
         <spring-cloud.version>2024.0.0</spring-cloud.version>
         <spring-cloud-alibaba.version>2023.0.3.2</spring-cloud-alibaba.version>
@@ -48,6 +48,7 @@
         <apache.commons.lang3.version>3.17.0</apache.commons.lang3.version>
         <apache.commons.beanutils.version>1.9.4</apache.commons.beanutils.version>
         <pinyin4j.version>2.5.1</pinyin4j.version>
+        <redisson.version>3.43.0</redisson.version>
     </properties>
 
     <dependencies>
@@ -71,6 +72,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson-spring-boot-starter</artifactId>
+            <version>${redisson.version}</version>
         </dependency>
 
         <dependency>
@@ -225,6 +232,12 @@
             <dependency>
                 <groupId>io.github.thebesteric.framework.agile.plugins</groupId>
                 <artifactId>sensitive-filter-plugin</artifactId>
+                <version>${agile.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.github.thebesteric.framework.agile.plugins</groupId>
+                <artifactId>mocker-plugin</artifactId>
                 <version>${agile.version}</version>
             </dependency>
 

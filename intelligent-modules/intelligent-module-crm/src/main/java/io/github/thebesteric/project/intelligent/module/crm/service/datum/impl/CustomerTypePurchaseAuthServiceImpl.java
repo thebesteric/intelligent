@@ -75,14 +75,14 @@ public class CustomerTypePurchaseAuthServiceImpl extends ServiceImpl<CustomerTyp
     public CustomerTypePurchaseAuthResponse purchaseAuthGet(Long customerTypeId) {
         String tenantId = SecurityUtils.getTenantIdWithException();
         CustomerTypePurchaseAuth purchaseAuth = this.getByCustomerTypeId(tenantId, customerTypeId);
-        CustomerTypePurchaseAuthResponse response = (CustomerTypePurchaseAuthResponse) new CustomerTypePurchaseAuthResponse().transform(purchaseAuth);
+        CustomerTypePurchaseAuthResponse response = new CustomerTypePurchaseAuthResponse().transform(purchaseAuth);
 
         // 处理品牌
         List<String> authBrandIds = purchaseAuth.getBrandIds();
         List<ProductBrand> brands = brandService.listByTenantId(tenantId, OrderByParam.of("keyword", OrderByOperator.ASC));
         List<BrandPurchaseAuthInfoResponse> brandInfoResponses = brands.stream().map(i -> {
             BrandPurchaseAuthInfoResponse info = new BrandPurchaseAuthInfoResponse();
-            info.setBrand((ProductBrandResponse) new ProductBrandResponse().transform(i));
+            info.setBrand(new ProductBrandResponse().transform(i));
             if (authBrandIds.contains(String.valueOf(i.getId()))) {
                 info.setPurchaseAuth(true);
             }
@@ -101,7 +101,7 @@ public class CustomerTypePurchaseAuthServiceImpl extends ServiceImpl<CustomerTyp
         List<Warehouse> warehouses = warehouseService.listByTenantId(tenantId, OrderByParam.of("seq", OrderByOperator.ASC));
         List<WarehousePurchaseAuthInfoResponse> warehouseInfoResponses = warehouses.stream().map(i -> {
             WarehousePurchaseAuthInfoResponse info = new WarehousePurchaseAuthInfoResponse();
-            info.setWarehouse((WarehouseResponse) new WarehouseResponse().transform(i));
+            info.setWarehouse(new WarehouseResponse().transform(i));
             if (authWarehouseIds.contains(String.valueOf(i.getId()))) {
                 info.setPurchaseAuth(true);
             }
@@ -114,7 +114,7 @@ public class CustomerTypePurchaseAuthServiceImpl extends ServiceImpl<CustomerTyp
         List<ProductTag> tags = tagService.listByTenantId(tenantId, OrderByParam.of("seq", OrderByOperator.ASC));
         List<TagPurchaseAuthInfoResponse> tagInfoResponses = tags.stream().map(i -> {
             TagPurchaseAuthInfoResponse info = new TagPurchaseAuthInfoResponse();
-            info.setTag((ProductTagResponse) new ProductTagResponse().transform(i));
+            info.setTag(new ProductTagResponse().transform(i));
             if (authTagIds.contains(String.valueOf(i.getId()))) {
                 info.setPurchaseAuth(true);
             }

@@ -19,10 +19,7 @@ import lombok.ToString;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.Serial;
+import java.io.*;
 import java.util.Date;
 import java.util.List;
 
@@ -58,8 +55,8 @@ public class Sensitive extends BaseBizEntity implements EntityClassCreateListene
             Long count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM " + tableName, Long.class);
             if (count == null || count == 0) {
                 ClassPathResource resource = new ClassPathResource("asserts/sensitive.json");
-                File file = resource.getFile();
-                BufferedReader reader = new BufferedReader(new FileReader(file));
+                InputStream in = resource.getInputStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in));
                 StringBuilder sb = new StringBuilder();
                 String line;
                 while ((line = reader.readLine()) != null) {

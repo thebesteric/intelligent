@@ -162,7 +162,7 @@ public class CustomerServiceImpl extends ServiceImpl<CustomerMapper, Customer> i
         Customer customer = this.getByTenantAndId(tenantId, id);
         DataValidator.create(BizException.class)
                 .validate(customer == null, customerNotFoundException);
-        return (CustomerResponse) new CustomerResponse().transform(customer);
+        return new CustomerResponse().transform(customer);
     }
 
     /**

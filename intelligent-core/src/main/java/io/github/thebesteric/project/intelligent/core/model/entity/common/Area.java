@@ -17,10 +17,7 @@ import lombok.ToString;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.Serial;
+import java.io.*;
 import java.util.List;
 
 /**
@@ -70,9 +67,8 @@ public class Area extends BaseEntity implements EntityClassCreateListener, Entit
             Long count = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM " + tableName, Long.class);
             if (count == null || count == 0) {
                 ClassPathResource resource = new ClassPathResource("asserts/t_open_area.sql");
-                File file = resource.getFile();
-                FileReader fileReader = new FileReader(file);
-                BufferedReader reader = new BufferedReader(fileReader);
+                InputStream in = resource.getInputStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(in));
                 StringBuilder sb = new StringBuilder();
                 String line;
                 while ((line = reader.readLine()) != null) {

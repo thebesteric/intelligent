@@ -104,11 +104,11 @@ public class CustomerDiscountInfoServiceImpl extends ServiceImpl<CustomerDiscoun
                 // 获取唯一折扣信息
                 CustomerDiscountInfo discountInfo = this.getUnique(tenantId, customerLevelId, DiscountType.BRAND, brand.getId());
                 if (discountInfo != null) {
-                    CustomerDiscountInfoResponse discountInfoResponse = (CustomerDiscountInfoResponse) new CustomerDiscountInfoResponse().transform(discountInfo);
+                    CustomerDiscountInfoResponse discountInfoResponse = new CustomerDiscountInfoResponse().transform(discountInfo);
                     response.setDiscountInfoResponse(discountInfoResponse);
                 }
                 // 获取品牌信息
-                ProductBrandResponse brandResponse = (ProductBrandResponse) new ProductBrandResponse().transform(brand);
+                ProductBrandResponse brandResponse = new ProductBrandResponse().transform(brand);
                 response.setBrandResponse(brandResponse);
                 return response;
             }).toList();
@@ -156,7 +156,7 @@ public class CustomerDiscountInfoServiceImpl extends ServiceImpl<CustomerDiscoun
             // 获取唯一折扣信息
             CustomerDiscountInfo discountInfo = this.getUnique(tenantId, customerLevelId, DiscountType.CATALOG, parent.getId());
             if (discountInfo != null) {
-                CustomerDiscountInfoResponse discountInfoResponse = (CustomerDiscountInfoResponse) new CustomerDiscountInfoResponse().transform(discountInfo);
+                CustomerDiscountInfoResponse discountInfoResponse = new CustomerDiscountInfoResponse().transform(discountInfo);
                 response.setDiscountInfoResponse(discountInfoResponse);
             }
             List<ProductCatalogResponse> children = parent.getChildren();

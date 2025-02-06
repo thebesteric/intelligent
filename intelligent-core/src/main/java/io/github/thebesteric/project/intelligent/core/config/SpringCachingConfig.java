@@ -1,6 +1,7 @@
 package io.github.thebesteric.project.intelligent.core.config;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
+import io.github.thebesteric.framework.agile.commons.util.MessageUtils;
 import io.github.thebesteric.project.intelligent.core.properties.ApplicationProperties;
 import io.github.thebesteric.project.intelligent.core.resolver.RedisCacheManagerCustomized;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -63,6 +64,7 @@ public class SpringCachingConfig {
                 throw new IllegalArgumentException("RedisConnectionFactory can not be null in Cache Redis implementation");
             }
             // 配置序列化
+            String cacheNameFormatter = "cacheable" + cacheNameSpectator + cacheNamePrefix + cacheNameSpectator + cacheNameSuffix + cacheNameSpectator + "{}" + cacheNameSpectator;
             RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
                     // 过期时间
                     .entryTtl(entryTtl)
@@ -73,7 +75,7 @@ public class SpringCachingConfig {
                     // value 不为空
                     .disableCachingNullValues()
                     // 缓存 key 的前缀
-                    .computePrefixWith(cacheName -> cacheNamePrefix + cacheNameSpectator + cacheNameSuffix + cacheNameSpectator + cacheName + cacheNameSpectator);
+                    .computePrefixWith(cacheName -> MessageUtils.format(cacheNameFormatter, cacheName));
 
             // cacheManager = RedisCacheManager.builder(redisConnectionFactory).cacheDefaults(redisCacheConfiguration).build();
             cacheManager = new RedisCacheManagerCustomized(RedisCacheWriter.nonLockingRedisCacheWriter(redisConnectionFactory), redisCacheConfiguration);

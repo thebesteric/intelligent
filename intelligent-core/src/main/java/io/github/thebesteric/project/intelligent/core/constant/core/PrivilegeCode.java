@@ -34,15 +34,15 @@ public enum PrivilegeCode {
 
     CUSTOMER_FINANCE("财务管理", "customer:management:finance", "1.3", PrivilegeType.CATALOG, PrivilegeCode.CUSTOMER_MANAGEMENT),
     CUSTOMER_FINANCE_SCORE("积分查询", "customer:management:finance:score", "1.3.1", PrivilegeType.MENU, PrivilegeCode.CUSTOMER_FINANCE),
-    CUSTOMER_FINANCE_SETTING("积分设置", "customer:management:finance:setting", "1.3.2", PrivilegeType.MENU, PrivilegeCode.CUSTOMER_FINANCE),
+    CUSTOMER_FINANCE_SETTINGS("积分设置", "customer:management:finance:settings", "1.3.2", PrivilegeType.MENU, PrivilegeCode.CUSTOMER_FINANCE),
     CUSTOMER_FINANCE_PREPAID("预存款", "customer:management:finance:prepaid", "1.3.3", PrivilegeType.MENU, PrivilegeCode.CUSTOMER_FINANCE),
     CUSTOMER_FINANCE_AUTH("授信管理", "customer:management:finance:auth", "1.3.4", PrivilegeType.MENU, PrivilegeCode.CUSTOMER_FINANCE),
 
-    CUSTOMER_SETTING("相关设置", "customer:management:setting", "1.4", PrivilegeType.CATALOG, PrivilegeCode.CUSTOMER_MANAGEMENT),
-    CUSTOMER_SETTING_CUSTOMER("客户设置", "customer:management:setting:customer", "1.4.1", PrivilegeType.MENU, PrivilegeCode.CUSTOMER_SETTING),
-    CUSTOMER_SETTING_ACCOUNT("账号管理", "customer:management:setting:account", "1.4.2", PrivilegeType.MENU, PrivilegeCode.CUSTOMER_SETTING),
-    CUSTOMER_SETTING_PRIVACY("隐私协议", "customer:management:setting:privacy", "1.4.3", PrivilegeType.MENU, PrivilegeCode.CUSTOMER_SETTING),
-    CUSTOMER_SETTING_SERVICE("服务协议", "customer:management:setting:service", "1.4.4", PrivilegeType.MENU, PrivilegeCode.CUSTOMER_SETTING),
+    CUSTOMER_SETTINGS("相关设置", "customer:management:settings", "1.4", PrivilegeType.CATALOG, PrivilegeCode.CUSTOMER_MANAGEMENT),
+    CUSTOMER_SETTINGS_CUSTOMER("客户设置", "customer:management:settings:customer", "1.4.1", PrivilegeType.MENU, PrivilegeCode.CUSTOMER_SETTINGS),
+    CUSTOMER_SETTINGS_ACCOUNT("账号管理", "customer:management:settings:account", "1.4.2", PrivilegeType.MENU, PrivilegeCode.CUSTOMER_SETTINGS),
+    CUSTOMER_SETTINGS_PRIVACY("隐私协议", "customer:management:settings:privacy", "1.4.3", PrivilegeType.MENU, PrivilegeCode.CUSTOMER_SETTINGS),
+    CUSTOMER_SETTINGS_SERVICE("服务协议", "customer:management:settings:service", "1.4.4", PrivilegeType.MENU, PrivilegeCode.CUSTOMER_SETTINGS),
 
     // ======================= 商品管理 =======================
 
